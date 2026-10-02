@@ -49,14 +49,16 @@ export async function GroupPrayers({ groupId, slug, viewer, isMember }: { groupI
       ) : (
         <ul className="divide-y divide-border rounded-card border border-border bg-surface">
           {prayers.map((p) => (
-            <li key={p.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-sm">
-              <Link href={`/gebet/${p.id}`} className="min-w-0 flex-1 font-medium hover:underline">
-                {p.title}
-              </Link>
-              <Badge variant={PRAYER_STATUS[p.status].variant}>{PRAYER_STATUS[p.status].label}</Badge>
-              <span className="text-xs text-muted-foreground">
+            <li key={p.id} className="px-4 py-3 text-sm">
+              <div className="flex items-start justify-between gap-3">
+                <Link href={`/gebet/${p.id}`} className="min-w-0 font-medium hover:underline">
+                  {p.title}
+                </Link>
+                <Badge variant={PRAYER_STATUS[p.status].variant}>{PRAYER_STATUS[p.status].label}</Badge>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
                 {p.isAnonymous ? "anonym" : p.author.name} · {formatRelative(p.createdAt)}
-              </span>
+              </p>
             </li>
           ))}
         </ul>
