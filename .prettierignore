@@ -1,0 +1,9 @@
+node_modules
+.next
+data
+research_notes
+reports
+src/generated
+package-lock.json
+public
+*.md

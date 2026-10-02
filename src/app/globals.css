@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+/* Dark mode is toggled by adding the "dark" class to <html>; system preference is applied by a small inline script. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------- Semantic design tokens (light) ---------- */
+:root {
+  --background: #faf7f2; /* warm paper */
+  --surface: #ffffff;
+  --surface-muted: #f3eee6;
+  --foreground: #221f1a;
+  --muted-foreground: #6b645b;
+  --border: #e6dfd4;
+  --ring: #2f4f86;
+
+  --primary: #27416f; /* deep calm blue */
+  --primary-hover: #1f3559;
+  --primary-foreground: #ffffff;
+  --primary-soft: #e4ebf7;
+
+  --accent: #b8891f; /* warm gold */
+  --accent-hover: #9c7318;
+  --accent-foreground: #1b1507;
+  --accent-soft: #f7edd2;
+
+  --success: #2e7d4f;
+  --success-soft: #e1f3e8;
+  --warning: #b3620f;
+  --warning-soft: #fbead6;
+  --danger: #b3261e;
+  --danger-soft: #f9e1df;
+
+  --highlight-yellow: #fff2a8;
+  --highlight-green: #d6f5d6;
+  --highlight-blue: #d6e8ff;
+  --highlight-pink: #ffd9e8;
+  --highlight-orange: #ffe1c4;
+
+  --radius: 0.75rem;
+  --shadow-soft: 0 1px 2px rgb(34 31 26 / 0.04), 0 8px 24px -12px rgb(34 31 26 / 0.18);
+}
+
+.dark {
+  --background: #12161d;
+  --surface: #1a2029;
+  --surface-muted: #222a35;
+  --foreground: #ebe6dd;
+  --muted-foreground: #a39c91;
+  --border: #2d3644;
+  --ring: #8fb0ea;
+
+  --primary: #8fb0ea;
+  --primary-hover: #a9c3f2;
+  --primary-foreground: #0f1726;
+  --primary-soft: #1f2d45;
+
+  --accent: #e0bc4e;
+  --accent-hover: #ebcb6c;
+  --accent-foreground: #1b1507;
+  --accent-soft: #3a3016;
+
+  --success: #6fcf97;
+  --success-soft: #16301f;
+  --warning: #f0a04b;
+  --warning-soft: #3a2611;
+  --danger: #ef7b72;
+  --danger-soft: #3b1917;
+
+  --highlight-yellow: #5a4d12;
+  --highlight-green: #1d4a1d;
+  --highlight-blue: #1c3a63;
+  --highlight-pink: #5a2338;
+  --highlight-orange: #5a3613;
+
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+}
+
+/* ---------- Tailwind theme mapping ---------- */
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+
+  --color-highlight-yellow: var(--highlight-yellow);
+  --color-highlight-green: var(--highlight-green);
+  --color-highlight-blue: var(--highlight-blue);
+  --color-highlight-pink: var(--highlight-pink);
+  --color-highlight-orange: var(--highlight-orange);
+
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+
+  --radius-card: var(--radius);
+  --shadow-soft: var(--shadow-soft);
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  mark {
+    background: var(--accent-soft);
+    color: inherit;
+    border-radius: 0.15em;
+    padding: 0 0.1em;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ---------- Scripture typography ---------- */
+@utility scripture {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.85;
+  letter-spacing: 0.005em;
+}
+
+@utility prose-reader {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+/* Verse number superscript inside the reader */
+.verse-number {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.65em;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  vertical-align: super;
+  margin-right: 0.25em;
+  user-select: none;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
