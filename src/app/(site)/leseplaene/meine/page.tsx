@@ -42,10 +42,10 @@ export default async function MyPlansPage() {
             fallback={
               <EmptyState
                 icon={<Compass />}
-                title={active.length > 0 ? "Für heute ist alles gelesen." : "Du hast noch keinen Plan gestartet."}
+                title={active.length > 0 ? "Gerade ist nichts offen." : "Du hast noch keinen Plan gestartet."}
                 description={
                   active.length > 0
-                    ? "Schön, dass du dabei bist. Morgen geht es weiter."
+                    ? "Alle deine gestarteten Pläne sind gelesen. Wenn du magst, starte einen neuen."
                     : "Such dir einen Plan aus – kurz oder lang, in deinem Tempo."
                 }
                 action={

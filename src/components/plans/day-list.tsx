@@ -87,7 +87,7 @@ export function DayList({ planId, days, completedDays, currentDay, interactive, 
             open={containsCurrent}
             className="group rounded-card border border-border bg-surface open:shadow-soft"
           >
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-medium select-none marker:hidden [&::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-medium select-none [&::-webkit-details-marker]:hidden">
               <span>
                 Woche {week.week}
                 <span className="ml-2 font-normal text-muted-foreground">

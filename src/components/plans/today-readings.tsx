@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,7 +14,7 @@ export interface TodayReadingsProps {
   /** preferred translation id; looked up when omitted */
   translation?: string;
   /** shown when there is nothing to read (default: nothing) */
-  fallback?: React.ReactNode;
+  fallback?: ReactNode;
   className?: string;
 }
 
