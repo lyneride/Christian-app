@@ -35,7 +35,9 @@ export default async function EditEventPage(props: PageProps<"/veranstaltungen/[
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Treffen bearbeiten</h1>
-      <p className="mt-3 max-w-prose text-muted-foreground">Wer schon zugesagt hat, sieht die Änderungen beim nächsten Besuch.</p>
+      <p className="text-muted-foreground mt-3 max-w-prose">
+        Wer schon zugesagt hat, sieht die Änderungen beim nächsten Besuch.
+      </p>
       <div className="mt-8">
         <EventForm groups={groups} eventId={event.id} initial={initial} />
       </div>

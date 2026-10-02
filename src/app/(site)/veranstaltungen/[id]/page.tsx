@@ -50,7 +50,10 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
       <nav aria-label="Zurück" className="mb-6 text-sm">
-        <Link href="/veranstaltungen" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground">
+        <Link
+          href="/veranstaltungen"
+          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+        >
           <ArrowLeft aria-hidden="true" className="size-4" /> Alle Treffen
         </Link>
       </nav>
@@ -78,16 +81,19 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
               <ViewerStatusBadge status={event.viewerStatus} />
             </div>
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{event.title}</h1>
-            <p className="flex items-center gap-2 text-muted-foreground">
+            <p className="text-muted-foreground flex items-center gap-2">
               <Clock aria-hidden="true" className="size-4 shrink-0" />
               <time dateTime={event.startsAt.toISOString()}>{formatEventDate(event.startsAt, event.endsAt)}</time>
             </p>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
               <span className="inline-flex items-center gap-2">
                 Eingeladen von <UserLink user={event.host} />
               </span>
               {event.group ? (
-                <Link href={`/gruppen/${event.group.slug}`} className="inline-flex items-center gap-1 hover:text-foreground">
+                <Link
+                  href={`/gruppen/${event.group.slug}`}
+                  className="hover:text-foreground inline-flex items-center gap-1"
+                >
                   <Users aria-hidden="true" className="size-4" /> {event.group.name}
                 </Link>
               ) : null}
@@ -95,7 +101,7 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
           </div>
         </header>
 
-        <section aria-label="Deine Antwort" className="rounded-card border border-border bg-surface p-5 shadow-soft">
+        <section aria-label="Deine Antwort" className="rounded-card border-border bg-surface shadow-soft border p-5">
           <RsvpBar
             eventId={event.id}
             status={event.viewerStatus}
@@ -115,16 +121,24 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
           {event.isOnline ? (
             user ? (
               event.onlineUrl ? (
-                <a href={event.onlineUrl} target="_blank" rel="noopener noreferrer" className={buttonClasses("outline", "md")}>
+                <a
+                  href={event.onlineUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonClasses("outline", "md")}
+                >
                   <ExternalLink aria-hidden="true" /> Zum Online-Treffen
                 </a>
               ) : (
-                <p className="text-sm text-muted-foreground">Der Link folgt noch.</p>
+                <p className="text-muted-foreground text-sm">Der Link folgt noch.</p>
               )
             ) : (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Den Link sehen nur angemeldete Mitglieder.{" "}
-                <Link href={`/anmelden?next=${encodeURIComponent(path)}`} className="text-primary underline-offset-4 hover:underline">
+                <Link
+                  href={`/anmelden?next=${encodeURIComponent(path)}`}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
                   Anmelden
                 </Link>
               </p>
@@ -132,14 +146,14 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
           ) : (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <p className="inline-flex items-center gap-2">
-                <MapPin aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+                <MapPin aria-hidden="true" className="text-muted-foreground size-4 shrink-0" />
                 {placeLabel(event)}
               </p>
               <a
                 href={mapsHref(event.location, event.city)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-primary underline-offset-4 hover:underline"
+                className="text-primary inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline"
               >
                 In Karten öffnen <ExternalLink aria-hidden="true" className="size-3.5" />
               </a>
@@ -161,7 +175,7 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
           <AttendeeList attendees={event.attendees} more={event.moreAttendees} hostId={event.hostId} />
         </section>
 
-        <footer className="flex flex-wrap items-center gap-3 border-t border-border pt-6">
+        <footer className="border-border flex flex-wrap items-center gap-3 border-t pt-6">
           <a href={`/api/veranstaltungen/${event.id}/ics`} download className={buttonClasses("outline", "sm")}>
             <CalendarPlus aria-hidden="true" /> Zum Kalender hinzufügen (.ics)
           </a>
@@ -173,7 +187,9 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
               <DeleteEventButton eventId={event.id} />
             </>
           ) : null}
-          {!isHost ? <ReportButton targetType="event" targetId={event.id} signedIn={!!user} variant="link" className="ml-auto" /> : null}
+          {!isHost ? (
+            <ReportButton targetType="event" targetId={event.id} signedIn={!!user} variant="link" className="ml-auto" />
+          ) : null}
         </footer>
       </article>
     </main>

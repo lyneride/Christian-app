@@ -59,7 +59,7 @@ function FilterPills<T extends string>({
   hrefFor: (value: T) => string;
 }) {
   return (
-    <nav aria-label={label} className="flex flex-wrap gap-1 rounded-full bg-surface-muted p-1">
+    <nav aria-label={label} className="bg-surface-muted flex flex-wrap gap-1 rounded-full p-1">
       {options.map((value) => {
         const active = value === current;
         return (
@@ -112,7 +112,7 @@ export default async function EventsPage(props: PageProps<"/veranstaltungen">) {
       <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Treffen</h1>
-          <p className="mt-4 max-w-prose text-lg text-muted-foreground">
+          <p className="text-muted-foreground mt-4 max-w-prose text-lg">
             Bibelabende, Gebetstreffen, Spaziergänge – online oder vor Ort.
           </p>
         </div>
@@ -143,7 +143,14 @@ export default async function EventsPage(props: PageProps<"/veranstaltungen">) {
           <label htmlFor="ort" className="sr-only">
             Nach Stadt filtern
           </label>
-          <Input id="ort" name="ort" type="search" placeholder="Stadt, z. B. Leipzig" defaultValue={city ?? ""} className="md:w-56" />
+          <Input
+            id="ort"
+            name="ort"
+            type="search"
+            placeholder="Stadt, z. B. Leipzig"
+            defaultValue={city ?? ""}
+            className="md:w-56"
+          />
           <button type="submit" className={buttonClasses("outline", "md")} aria-label="Filtern">
             <Search aria-hidden="true" />
           </button>
@@ -151,10 +158,14 @@ export default async function EventsPage(props: PageProps<"/veranstaltungen">) {
       </div>
 
       {city || group ? (
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+        <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-sm">
           <span>Gefiltert nach:</span>
           {group ? (
-            <Link href={href({ gruppe: undefined })} className={chipClass} aria-label={`Filter Gruppe ${group.name} entfernen`}>
+            <Link
+              href={href({ gruppe: undefined })}
+              className={chipClass}
+              aria-label={`Filter Gruppe ${group.name} entfernen`}
+            >
               Gruppe: {group.name} <X aria-hidden="true" className="size-3.5" />
             </Link>
           ) : null}
@@ -193,7 +204,10 @@ export default async function EventsPage(props: PageProps<"/veranstaltungen">) {
           </p>
           {months.map((month) => (
             <section key={month.key} aria-labelledby={`monat-${month.key}`}>
-              <h2 id={`monat-${month.key}`} className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+              <h2
+                id={`monat-${month.key}`}
+                className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase"
+              >
                 {month.label}
               </h2>
               <div className="space-y-4">

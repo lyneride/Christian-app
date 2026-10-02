@@ -119,9 +119,13 @@ export async function updateEvent(id: string, _prev: ActionState, formData: Form
   const user = await actionUser();
   if (!user) return failure(LOGIN_REQUIRED, { values: eventFormValues(formData) });
 
-  const existing = await prisma.event.findFirst({ where: { id, deletedAt: null }, select: { hostId: true, groupId: true } });
+  const existing = await prisma.event.findFirst({
+    where: { id, deletedAt: null },
+    select: { hostId: true, groupId: true },
+  });
   if (!existing) return failure(NOT_FOUND);
-  if (existing.hostId !== user.id && !isModerator(user)) return failure("Nur wer eingeladen hat, kann das Treffen bearbeiten.");
+  if (existing.hostId !== user.id && !isModerator(user))
+    return failure("Nur wer eingeladen hat, kann das Treffen bearbeiten.");
 
   const result = await parseEventForm(user, formData, updateEventSchema, existing.groupId);
   if (!result.ok) return result.error;
@@ -178,7 +182,16 @@ export async function setRsvp(eventId: string, status: RsvpStatus): Promise<Acti
 
   const event = await prisma.event.findFirst({
     where: { id: eventId, deletedAt: null },
-    select: { id: true, hostId: true, title: true, visibility: true, groupId: true, startsAt: true, endsAt: true, capacity: true },
+    select: {
+      id: true,
+      hostId: true,
+      title: true,
+      visibility: true,
+      groupId: true,
+      startsAt: true,
+      endsAt: true,
+      capacity: true,
+    },
   });
   if (!event || !(await canViewEvent(event, user))) return failure(NOT_FOUND);
   if (isPastEvent(event)) return failure("Dieses Treffen ist schon vorbei.");
@@ -196,7 +209,11 @@ export async function setRsvp(eventId: string, status: RsvpStatus): Promise<Acti
         const going = await tx.eventRsvp.count({ where: { eventId, status: "GOING" } });
         if (going >= event.capacity) throw new CapacityReachedError();
       }
-      await tx.eventRsvp.upsert({ where: key, create: { eventId, userId: user.id, status: next }, update: { status: next } });
+      await tx.eventRsvp.upsert({
+        where: key,
+        create: { eventId, userId: user.id, status: next },
+        update: { status: next },
+      });
     });
   } catch (err) {
     if (err instanceof CapacityReachedError) {
