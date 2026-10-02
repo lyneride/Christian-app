@@ -61,7 +61,8 @@ export async function findGroupBySlug(slug: string): Promise<EventGroup | null> 
 // Where fragments
 // ---------------------------------------------------------------------------
 
-type VisibilityClause = { visibility: Visibility } | { visibility: "GROUP"; groupId: { in: string[] } } | { authorId: string };
+type VisibilityClause =
+  { visibility: Visibility } | { visibility: "GROUP"; groupId: { in: string[] } } | { authorId: string };
 
 /** `visibilityWhere` for the Event model, where the owner column is `hostId`. */
 export function eventVisibilityWhere(viewer: Viewer | null, memberGroupIds: string[]): Prisma.EventWhereInput {

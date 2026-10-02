@@ -25,7 +25,7 @@ export function EventCard({ event }: { event: EventListItem }) {
   const past = isPastEvent(event);
 
   return (
-    <Card className="transition hover:border-primary/40">
+    <Card className="hover:border-primary/40 transition">
       <article className="flex gap-4 p-4 sm:p-5">
         <DateBlock date={event.startsAt} past={past} />
         <div className="min-w-0 flex-1 space-y-2">
@@ -39,11 +39,11 @@ export function EventCard({ event }: { event: EventListItem }) {
             <ViewerStatusBadge status={event.viewerStatus} />
           </div>
 
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             <time dateTime={event.startsAt.toISOString()}>{formatEventDate(event.startsAt, event.endsAt)}</time>
           </p>
 
-          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
             {event.isOnline ? (
               <Badge variant="primary">
                 <Video aria-hidden="true" className="size-3" /> Online
@@ -61,9 +61,9 @@ export function EventCard({ event }: { event: EventListItem }) {
             ) : null}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+          <div className="border-border flex flex-wrap items-center justify-between gap-3 border-t pt-3">
             <UserLink user={event.host} showUsername={false} />
-            <span className="text-sm text-muted-foreground">{attendeeSummary(event.going, event.capacity)}</span>
+            <span className="text-muted-foreground text-sm">{attendeeSummary(event.going, event.capacity)}</span>
           </div>
         </div>
       </article>

@@ -3,9 +3,17 @@ import { Badge } from "@/components/ui/badge";
 import { moreAttendeesLabel } from "@/lib/events/format";
 import type { EventAttendee } from "@/lib/events/queries";
 
-export function AttendeeList({ attendees, more, hostId }: { attendees: EventAttendee[]; more: number; hostId: string }) {
+export function AttendeeList({
+  attendees,
+  more,
+  hostId,
+}: {
+  attendees: EventAttendee[];
+  more: number;
+  hostId: string;
+}) {
   if (attendees.length === 0) {
-    return <p className="text-sm text-muted-foreground">Noch hat niemand zugesagt. Vielleicht du?</p>;
+    return <p className="text-muted-foreground text-sm">Noch hat niemand zugesagt. Vielleicht du?</p>;
   }
   return (
     <ul className="flex flex-wrap gap-x-5 gap-y-3">
@@ -16,7 +24,7 @@ export function AttendeeList({ attendees, more, hostId }: { attendees: EventAtte
           {status === "MAYBE" ? <Badge variant="outline">vielleicht</Badge> : null}
         </li>
       ))}
-      {more > 0 ? <li className="self-center text-sm text-muted-foreground">{moreAttendeesLabel(more)}</li> : null}
+      {more > 0 ? <li className="text-muted-foreground self-center text-sm">{moreAttendeesLabel(more)}</li> : null}
     </ul>
   );
 }

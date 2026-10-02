@@ -39,7 +39,7 @@ function SelectWithChevron({ children }: { children: React.ReactNode }) {
       {children}
       <ChevronDown
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground"
+        className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
       />
     </div>
   );
@@ -56,15 +56,20 @@ export function EventForm({ groups, eventId, initial }: EventFormProps) {
   const values = state.values ?? {};
   const value = (key: keyof EventFormInitial, fallback = "") => values[key] ?? initial?.[key] ?? fallback;
 
-  const [isOnline, setIsOnline] = useState<boolean>("isOnline" in values ? values.isOnline === "on" : (initial?.isOnline ?? false));
+  const [isOnline, setIsOnline] = useState<boolean>(
+    "isOnline" in values ? values.isOnline === "on" : (initial?.isOnline ?? false),
+  );
 
   const visibilities = groups.length > 0 ? EVENT_VISIBILITIES : EVENT_VISIBILITIES.filter((v) => v !== "GROUP");
   const initialVisibility = values.visibility ?? initial?.visibility ?? "PUBLIC";
   const [visibility, setVisibility] = useState<EventVisibility>(
-    isVisibility(initialVisibility) && (visibilities as readonly string[]).includes(initialVisibility) ? initialVisibility : "PUBLIC",
+    isVisibility(initialVisibility) && (visibilities as readonly string[]).includes(initialVisibility)
+      ? initialVisibility
+      : "PUBLIC",
   );
 
-  const describedBy = (key: string, hint?: boolean) => (errors[key] ? `${key}-error` : hint ? `${key}-hint` : undefined);
+  const describedBy = (key: string, hint?: boolean) =>
+    errors[key] ? `${key}-error` : hint ? `${key}-hint` : undefined;
 
   return (
     <form action={formAction} className="space-y-6">
@@ -130,7 +135,7 @@ export function EventForm({ groups, eventId, initial }: EventFormProps) {
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="isOnline" className="flex items-start gap-2.5 text-sm text-foreground">
+        <label htmlFor="isOnline" className="text-foreground flex items-start gap-2.5 text-sm">
           <Checkbox
             id="isOnline"
             name="isOnline"
@@ -141,13 +146,19 @@ export function EventForm({ groups, eventId, initial }: EventFormProps) {
           />
           <span>Online-Treffen</span>
         </label>
-        <p id="isOnline-hint" className="pl-6.5 text-xs text-muted-foreground">
+        <p id="isOnline-hint" className="text-muted-foreground pl-6.5 text-xs">
           Per Video oder Telefon statt an einem Ort.
         </p>
       </div>
 
       {isOnline ? (
-        <Field label="Link zum Treffen" htmlFor="onlineUrl" hint="Nur angemeldete Mitglieder sehen den Link." error={errors.onlineUrl} required>
+        <Field
+          label="Link zum Treffen"
+          htmlFor="onlineUrl"
+          hint="Nur angemeldete Mitglieder sehen den Link."
+          error={errors.onlineUrl}
+          required
+        >
           <Input
             id="onlineUrl"
             name="onlineUrl"
@@ -195,7 +206,12 @@ export function EventForm({ groups, eventId, initial }: EventFormProps) {
       )}
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <Field label="Wer darf es sehen?" htmlFor="visibility" hint={VISIBILITY_LABELS[visibility].hint} error={errors.visibility}>
+        <Field
+          label="Wer darf es sehen?"
+          htmlFor="visibility"
+          hint={VISIBILITY_LABELS[visibility].hint}
+          error={errors.visibility}
+        >
           <SelectWithChevron>
             <Select
               id="visibility"
@@ -218,7 +234,11 @@ export function EventForm({ groups, eventId, initial }: EventFormProps) {
           <Field
             label="Gruppe"
             htmlFor="groupId"
-            hint={visibility === "GROUP" ? "Nur Mitglieder dieser Gruppe sehen das Treffen." : "Optional: Das Treffen erscheint bei der Gruppe."}
+            hint={
+              visibility === "GROUP"
+                ? "Nur Mitglieder dieser Gruppe sehen das Treffen."
+                : "Optional: Das Treffen erscheint bei der Gruppe."
+            }
             error={errors.groupId}
             required={visibility === "GROUP"}
           >
@@ -243,7 +263,13 @@ export function EventForm({ groups, eventId, initial }: EventFormProps) {
         ) : null}
       </div>
 
-      <Field label="Plätze (optional)" htmlFor="capacity" hint="Leer lassen, wenn es keine Grenze gibt." error={errors.capacity} className="sm:max-w-xs">
+      <Field
+        label="Plätze (optional)"
+        htmlFor="capacity"
+        hint="Leer lassen, wenn es keine Grenze gibt."
+        error={errors.capacity}
+        className="sm:max-w-xs"
+      >
         <Input
           id="capacity"
           name="capacity"

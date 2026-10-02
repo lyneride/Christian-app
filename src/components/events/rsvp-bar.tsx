@@ -55,27 +55,38 @@ function readState(data: Record<string, unknown> | undefined, fallback: RsvpStat
 }
 
 const icons: Record<RsvpStatus, typeof Check> = { GOING: Check, MAYBE: CircleQuestionMark, DECLINED: X };
-const activeClass: Record<RsvpStatus, string> = { GOING: "text-success", MAYBE: "text-warning", DECLINED: "text-muted-foreground" };
+const activeClass: Record<RsvpStatus, string> = {
+  GOING: "text-success",
+  MAYBE: "text-warning",
+  DECLINED: "text-muted-foreground",
+};
 
 /**
  * Three answer buttons with live counts. The choice is applied optimistically
  * and settled on the server result; errors (e.g. "Leider schon voll.") are
  * announced inline.
  */
-export function RsvpBar({ eventId, status, going, maybe, capacity, isPast, signedIn, nextPath, className }: RsvpBarProps) {
+export function RsvpBar({
+  eventId,
+  status,
+  going,
+  maybe,
+  capacity,
+  isPast,
+  signedIn,
+  nextPath,
+  className,
+}: RsvpBarProps) {
   const [state, setState] = useState<RsvpState>({ status, going, maybe });
   const [optimistic, setOptimistic] = useOptimistic(state);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const summary = attendeeSummary(optimistic.going, capacity) + (optimistic.maybe > 0 ? ` · ${optimistic.maybe} vielleicht` : "");
+  const summary =
+    attendeeSummary(optimistic.going, capacity) + (optimistic.maybe > 0 ? ` · ${optimistic.maybe} vielleicht` : "");
 
   if (isPast) {
-    return (
-      <p className={cn("text-sm text-muted-foreground", className)}>
-        Dieses Treffen ist vorbei. {summary}.
-      </p>
-    );
+    return <p className={cn("text-muted-foreground text-sm", className)}>Dieses Treffen ist vorbei. {summary}.</p>;
   }
 
   if (!signedIn) {
@@ -84,7 +95,7 @@ export function RsvpBar({ eventId, status, going, maybe, capacity, isPast, signe
         <Link href={`/anmelden?next=${encodeURIComponent(nextPath)}`} className={buttonClasses("primary", "md")}>
           Anmelden und zusagen
         </Link>
-        <span className="text-sm text-muted-foreground">{summary}</span>
+        <span className="text-muted-foreground text-sm">{summary}</span>
       </div>
     );
   }
@@ -129,14 +140,16 @@ export function RsvpBar({ eventId, status, going, maybe, capacity, isPast, signe
           );
         })}
       </div>
-      <p className="text-sm text-muted-foreground" aria-live="polite">
+      <p className="text-muted-foreground text-sm" aria-live="polite">
         {summary}
       </p>
       {full ? (
-        <p className="text-sm text-warning">Alle Plätze sind belegt. Mit „Vielleicht“ bleibst du trotzdem auf dem Laufenden.</p>
+        <p className="text-warning text-sm">
+          Alle Plätze sind belegt. Mit „Vielleicht“ bleibst du trotzdem auf dem Laufenden.
+        </p>
       ) : null}
       {error ? (
-        <p role="alert" className="text-sm font-medium text-danger">
+        <p role="alert" className="text-danger text-sm font-medium">
           {error}
         </p>
       ) : null}

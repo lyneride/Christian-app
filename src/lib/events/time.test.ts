@@ -87,8 +87,12 @@ describe("formatEventDate", () => {
 describe("isPastEvent", () => {
   const now = new Date("2026-10-09T12:00:00Z");
   it("uses the end when present, otherwise the start", () => {
-    expect(isPastEvent({ startsAt: new Date("2026-10-09T10:00:00Z"), endsAt: new Date("2026-10-09T13:00:00Z") }, now)).toBe(false);
-    expect(isPastEvent({ startsAt: new Date("2026-10-09T10:00:00Z"), endsAt: new Date("2026-10-09T11:00:00Z") }, now)).toBe(true);
+    expect(
+      isPastEvent({ startsAt: new Date("2026-10-09T10:00:00Z"), endsAt: new Date("2026-10-09T13:00:00Z") }, now),
+    ).toBe(false);
+    expect(
+      isPastEvent({ startsAt: new Date("2026-10-09T10:00:00Z"), endsAt: new Date("2026-10-09T11:00:00Z") }, now),
+    ).toBe(true);
     expect(isPastEvent({ startsAt: new Date("2026-10-09T10:00:00Z"), endsAt: null }, now)).toBe(true);
     expect(isPastEvent({ startsAt: new Date("2026-10-09T14:00:00Z"), endsAt: null }, now)).toBe(false);
   });

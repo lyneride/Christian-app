@@ -111,7 +111,9 @@ describe("event schema – online", () => {
 
 describe("event schema – dates", () => {
   it("rejects missing, malformed and past starts", () => {
-    expect(fieldErrors(schema.safeParse({ ...onsite, startsAt: "" })).startsAt).toEqual(["Bitte gib an, wann es losgeht."]);
+    expect(fieldErrors(schema.safeParse({ ...onsite, startsAt: "" })).startsAt).toEqual([
+      "Bitte gib an, wann es losgeht.",
+    ]);
     expect(fieldErrors(schema.safeParse({ ...onsite, startsAt: "morgen" })).startsAt).toEqual([
       "Bitte gib ein gültiges Datum mit Uhrzeit an.",
     ]);
@@ -140,7 +142,9 @@ describe("event schema – dates", () => {
 
 describe("event schema – visibility, group, capacity", () => {
   it("requires a group for GROUP visibility and keeps the group otherwise", () => {
-    expect(fieldErrors(schema.safeParse({ ...onsite, visibility: "GROUP" })).groupId).toEqual(["Bitte wähle eine Gruppe."]);
+    expect(fieldErrors(schema.safeParse({ ...onsite, visibility: "GROUP" })).groupId).toEqual([
+      "Bitte wähle eine Gruppe.",
+    ]);
     expect(schema.parse({ ...onsite, visibility: "GROUP", groupId: "g1" }).groupId).toBe("g1");
     expect(schema.parse({ ...onsite, visibility: "PUBLIC", groupId: "g1" }).groupId).toBe("g1");
     expect(schema.parse({ ...onsite, groupId: "" }).groupId).toBeNull();
@@ -155,8 +159,12 @@ describe("event schema – visibility, group, capacity", () => {
   it("validates the capacity range", () => {
     expect(schema.parse({ ...onsite, capacity: "12" }).capacity).toBe(12);
     expect(fieldErrors(schema.safeParse({ ...onsite, capacity: "0" })).capacity).toEqual(["Mindestens 1 Platz."]);
-    expect(fieldErrors(schema.safeParse({ ...onsite, capacity: "10001" })).capacity).toEqual(["Höchstens 10.000 Plätze."]);
-    expect(fieldErrors(schema.safeParse({ ...onsite, capacity: "2.5" })).capacity).toEqual(["Bitte gib eine ganze Zahl an."]);
+    expect(fieldErrors(schema.safeParse({ ...onsite, capacity: "10001" })).capacity).toEqual([
+      "Höchstens 10.000 Plätze.",
+    ]);
+    expect(fieldErrors(schema.safeParse({ ...onsite, capacity: "2.5" })).capacity).toEqual([
+      "Bitte gib eine ganze Zahl an.",
+    ]);
     expect(fieldErrors(schema.safeParse({ ...onsite, capacity: "viele" })).capacity).toBeDefined();
   });
 

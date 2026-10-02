@@ -37,7 +37,14 @@ describe("foldIcsLine", () => {
     expect(physical.length).toBe(3);
     for (const line of physical) expect(Buffer.byteLength(line, "utf8")).toBeLessThanOrEqual(75);
     expect(physical[1].startsWith(" ")).toBe(true);
-    expect(physical.join("").replace(/\r\n /g, "")).toBe("DESCRIPTION:" + "x".repeat(200).slice(0, 63) + " " + "x".repeat(200).slice(63, 137) + " " + "x".repeat(200).slice(137));
+    expect(physical.join("").replace(/\r\n /g, "")).toBe(
+      "DESCRIPTION:" +
+        "x".repeat(200).slice(0, 63) +
+        " " +
+        "x".repeat(200).slice(63, 137) +
+        " " +
+        "x".repeat(200).slice(137),
+    );
   });
 
   it("never splits multi-byte characters", () => {
@@ -53,7 +60,11 @@ describe("foldIcsLine", () => {
 
 describe("buildIcs", () => {
   it("produces a VCALENDAR with one VEVENT in UTC", () => {
-    const ics = buildIcs(event, { now, pageUrl: "https://bleibe.example/veranstaltungen/ev1", domain: "bleibe.example" });
+    const ics = buildIcs(event, {
+      now,
+      pageUrl: "https://bleibe.example/veranstaltungen/ev1",
+      domain: "bleibe.example",
+    });
     expect(ics.startsWith("BEGIN:VCALENDAR\r\nVERSION:2.0\r\n")).toBe(true);
     expect(ics.endsWith("END:VEVENT\r\nEND:VCALENDAR\r\n")).toBe(true);
     const lines = unfold(ics);
@@ -79,7 +90,9 @@ describe("buildIcs", () => {
   });
 
   it("writes LOCATION:Online and the link only when provided", () => {
-    const withLink = unfold(buildIcs({ ...event, isOnline: true, onlineUrl: "https://meet.example.org/x", location: null }, { now }));
+    const withLink = unfold(
+      buildIcs({ ...event, isOnline: true, onlineUrl: "https://meet.example.org/x", location: null }, { now }),
+    );
     expect(withLink).toContain("LOCATION:Online");
     expect(withLink).toContain("URL:https://meet.example.org/x");
     const withoutLink = unfold(buildIcs({ ...event, isOnline: true, onlineUrl: null, location: null }, { now }));

@@ -44,7 +44,10 @@ export function escapeIcsText(value: string): string {
 
 /** "20261009T173000Z" */
 export function formatIcsDate(date: Date): string {
-  return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  return date
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
 }
 
 function utf8Length(ch: string): number {

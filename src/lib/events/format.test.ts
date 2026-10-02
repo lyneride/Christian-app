@@ -9,7 +9,9 @@ describe("placeLabel / mapsHref", () => {
     expect(placeLabel({ isOnline: true, location: "egal", city: null })).toBe("Online");
   });
   it("links to OpenStreetMap with an encoded query", () => {
-    expect(mapsHref("Marktplatz 1", "Köln")).toBe("https://www.openstreetmap.org/search?query=Marktplatz%201%2C%20K%C3%B6ln");
+    expect(mapsHref("Marktplatz 1", "Köln")).toBe(
+      "https://www.openstreetmap.org/search?query=Marktplatz%201%2C%20K%C3%B6ln",
+    );
   });
 });
 

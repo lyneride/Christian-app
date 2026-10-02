@@ -14,7 +14,8 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/veranstaltun
   const user = await getCurrentUser();
   const viewer = user ? { id: user.id, role: user.role } : null;
   const event = await getEvent(id, viewer);
-  if (!event) return new Response("Nicht gefunden", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+  if (!event)
+    return new Response("Nicht gefunden", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
 
   const base = (process.env.APP_URL || req.nextUrl.origin).replace(/\/+$/, "");
   let domain = "bleibe";

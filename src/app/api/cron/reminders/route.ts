@@ -30,14 +30,16 @@ function authorize(req: NextRequest): Auth {
     return {
       ok: false,
       status: 503,
-      message: "CRON_SECRET ist nicht gesetzt. Lege die Variable in .env an (z. B. `openssl rand -hex 32`) und starte neu.",
+      message:
+        "CRON_SECRET ist nicht gesetzt. Lege die Variable in .env an (z. B. `openssl rand -hex 32`) und starte neu.",
     };
   }
   const header = req.headers.get("authorization") ?? "";
   const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
   const a = new TextEncoder().encode(token);
   const b = new TextEncoder().encode(secret);
-  if (a.byteLength !== b.byteLength || !timingSafeEqual(a, b)) return { ok: false, status: 403, message: "Kein Zugriff." };
+  if (a.byteLength !== b.byteLength || !timingSafeEqual(a, b))
+    return { ok: false, status: 403, message: "Kein Zugriff." };
   return { ok: true };
 }
 

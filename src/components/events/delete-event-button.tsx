@@ -22,7 +22,7 @@ export function DeleteEventButton({ eventId, className }: { eventId: string; cla
         <Trash aria-hidden="true" /> Löschen
       </Button>
       {state.ok === false && state.message ? (
-        <p role="alert" className="mt-1 text-xs font-medium text-danger">
+        <p role="alert" className="text-danger mt-1 text-xs font-medium">
           {state.message}
         </p>
       ) : null}

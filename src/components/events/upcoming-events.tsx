@@ -26,13 +26,16 @@ export async function UpcomingEvents({ userId, limit = 5, className }: UpcomingE
         <h2 id="upcoming-events-heading" className="text-lg font-semibold tracking-tight">
           Deine nächsten Treffen
         </h2>
-        <Link href="/veranstaltungen" className="inline-flex items-center gap-1 text-sm text-primary underline-offset-4 hover:underline">
+        <Link
+          href="/veranstaltungen"
+          className="text-primary inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline"
+        >
           Alle Treffen <ArrowRight aria-hidden="true" className="size-4" />
         </Link>
       </div>
 
       {events.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Nichts geplant. In der{" "}
           <Link href="/veranstaltungen" className="text-primary underline-offset-4 hover:underline">
             Übersicht
@@ -40,7 +43,7 @@ export async function UpcomingEvents({ userId, limit = 5, className }: UpcomingE
           findest du Bibelabende, Gebetstreffen und mehr.
         </p>
       ) : (
-        <ul className="divide-y divide-border rounded-card border border-border bg-surface">
+        <ul className="divide-border rounded-card border-border bg-surface divide-y border">
           {events.map((event) => (
             <li key={event.id} className="flex items-center gap-3 p-3">
               <DateBlock date={event.startsAt} size="sm" />
@@ -48,10 +51,14 @@ export async function UpcomingEvents({ userId, limit = 5, className }: UpcomingE
                 <Link href={`/veranstaltungen/${event.id}`} className="block truncate font-medium hover:underline">
                   {event.title}
                 </Link>
-                <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                <p className="text-muted-foreground flex flex-wrap items-center gap-x-2 text-xs">
                   <span>{formatEventDate(event.startsAt, event.endsAt)}</span>
                   <span className="inline-flex items-center gap-1">
-                    {event.isOnline ? <Video aria-hidden="true" className="size-3" /> : <MapPin aria-hidden="true" className="size-3" />}
+                    {event.isOnline ? (
+                      <Video aria-hidden="true" className="size-3" />
+                    ) : (
+                      <MapPin aria-hidden="true" className="size-3" />
+                    )}
                     {placeLabel(event)}
                   </span>
                 </p>

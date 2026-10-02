@@ -15,17 +15,22 @@ export function DateBlock({ date, past, size = "md", className }: DateBlockProps
     <time
       dateTime={p.iso}
       className={cn(
-        "flex shrink-0 flex-col items-center justify-center rounded-xl border border-border bg-surface-muted text-center leading-none",
+        "border-border bg-surface-muted flex shrink-0 flex-col items-center justify-center rounded-xl border text-center leading-none",
         size === "md" ? "w-16 py-2.5" : "w-12 py-1.5",
         past && "opacity-70",
         className,
       )}
     >
-      <span className={cn("font-medium tracking-wide text-muted-foreground uppercase", size === "md" ? "text-[11px]" : "text-[10px]")}>
+      <span
+        className={cn(
+          "text-muted-foreground font-medium tracking-wide uppercase",
+          size === "md" ? "text-[11px]" : "text-[10px]",
+        )}
+      >
         {p.weekday}
       </span>
       <span className={cn("mt-1 font-semibold tabular-nums", size === "md" ? "text-2xl" : "text-lg")}>{p.day}</span>
-      <span className={cn("mt-1 font-medium text-primary", size === "md" ? "text-xs" : "text-[11px]")}>{p.month}</span>
+      <span className={cn("text-primary mt-1 font-medium", size === "md" ? "text-xs" : "text-[11px]")}>{p.month}</span>
     </time>
   );
 }
