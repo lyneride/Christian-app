@@ -32,11 +32,11 @@ export default async function ReportsPage(props: PageProps<"/admin/meldungen">) 
       <h1 id="reports-heading" className="text-2xl font-semibold tracking-tight">
         Meldungen
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <p className="text-muted-foreground mt-1 text-sm">
         Jede Meldung wird geprüft. Entferne nur, was gegen die Regeln verstößt, und begründe jede Entscheidung.
       </p>
 
-      <nav aria-label="Status" className="mt-6 flex flex-wrap gap-1 border-b border-border">
+      <nav aria-label="Status" className="border-border mt-6 flex flex-wrap gap-1 border-b">
         {REPORT_STATUSES.map((s) => {
           const active = s === status;
           return (
@@ -46,21 +46,30 @@ export default async function ReportsPage(props: PageProps<"/admin/meldungen">) 
               aria-current={active ? "page" : undefined}
               className={cn(
                 "-mb-px inline-flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
-                active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground",
+                active
+                  ? "border-primary text-primary"
+                  : "text-muted-foreground hover:text-foreground border-transparent",
               )}
             >
               {REPORT_STATUS_LABELS[s]}
-              <span className="rounded-full bg-surface-muted px-1.5 text-xs tabular-nums text-muted-foreground">{counts[s]}</span>
+              <span className="bg-surface-muted text-muted-foreground rounded-full px-1.5 text-xs tabular-nums">
+                {counts[s]}
+              </span>
             </Link>
           );
         })}
       </nav>
 
       {items.length === 0 ? (
-        <EmptyState icon={<Inbox />} title={EMPTY[status].title} description={EMPTY[status].description} className="mt-6" />
+        <EmptyState
+          icon={<Inbox />}
+          title={EMPTY[status].title}
+          description={EMPTY[status].description}
+          className="mt-6"
+        />
       ) : (
         <>
-          <p className="mt-4 text-sm text-muted-foreground">{pluralize(total, "Meldung", "Meldungen")}</p>
+          <p className="text-muted-foreground mt-4 text-sm">{pluralize(total, "Meldung", "Meldungen")}</p>
           <ul className="mt-3 space-y-3">
             {items.map((report) => (
               <ReportRow key={report.id} report={report} target={targets.get(reportTargetKey(report)) ?? null} />

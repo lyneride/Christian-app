@@ -18,13 +18,14 @@ export interface TargetPreviewProps {
 export function TargetPreview({ target, targetType, targetId, compact = false, className }: TargetPreviewProps) {
   if (!target) {
     return (
-      <div className={cn("rounded-xl border border-dashed border-border p-4 text-sm", className)}>
+      <div className={cn("border-border rounded-xl border border-dashed p-4 text-sm", className)}>
         <div className="flex flex-wrap items-center gap-2">
           <TargetTypeBadge type={targetType} />
           <Badge variant="default">Nicht mehr vorhanden</Badge>
         </div>
-        <p className="mt-2 text-muted-foreground">
-          {targetTypeLabel(targetType)} mit der Kennung <code className="text-xs">{targetId}</code> existiert nicht mehr.
+        <p className="text-muted-foreground mt-2">
+          {targetTypeLabel(targetType)} mit der Kennung <code className="text-xs">{targetId}</code> existiert nicht
+          mehr.
         </p>
       </div>
     );
@@ -32,18 +33,21 @@ export function TargetPreview({ target, targetType, targetId, compact = false, c
 
   const linkable = target.href && !target.deleted;
   return (
-    <div className={cn("rounded-xl border border-border bg-surface-muted/40 p-4", className)}>
+    <div className={cn("border-border bg-surface-muted/40 rounded-xl border p-4", className)}>
       <div className="flex flex-wrap items-center gap-2">
         <TargetTypeBadge type={target.kind} />
         {target.deleted ? <Badge variant="danger">{target.kind === "group" ? "Verborgen" : "Entfernt"}</Badge> : null}
         {!compact && target.createdAt ? (
-          <span className="text-xs text-muted-foreground">erstellt am {formatDateTime(target.createdAt)}</span>
+          <span className="text-muted-foreground text-xs">erstellt am {formatDateTime(target.createdAt)}</span>
         ) : null}
       </div>
 
-      <p className={cn("mt-2 font-semibold", target.deleted && "line-through decoration-muted-foreground/60")}>
+      <p className={cn("mt-2 font-semibold", target.deleted && "decoration-muted-foreground/60 line-through")}>
         {linkable ? (
-          <Link href={target.href as string} className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline">
+          <Link
+            href={target.href as string}
+            className="text-primary inline-flex items-center gap-1 underline-offset-4 hover:underline"
+          >
             {target.title}
             <ExternalLink className="size-3.5" aria-hidden="true" />
           </Link>
@@ -53,19 +57,24 @@ export function TargetPreview({ target, targetType, targetId, compact = false, c
       </p>
 
       {target.excerpt ? (
-        <p className={cn("mt-1 text-sm text-muted-foreground", compact ? "line-clamp-2" : "whitespace-pre-wrap")}>{target.excerpt}</p>
+        <p className={cn("text-muted-foreground mt-1 text-sm", compact ? "line-clamp-2" : "whitespace-pre-wrap")}>
+          {target.excerpt}
+        </p>
       ) : null}
 
-      {target.note ? <p className="mt-2 text-xs text-warning">{target.note}</p> : null}
+      {target.note ? <p className="text-warning mt-2 text-xs">{target.note}</p> : null}
 
       {target.authorId ? (
-        <p className="mt-3 text-xs text-muted-foreground">
+        <p className="text-muted-foreground mt-3 text-xs">
           {target.kind === "user" ? "Mitglied: " : target.kind === "message" ? "Gesendet von " : "Von "}
-          <Link href={`/admin/mitglieder/${target.authorId}`} className="font-medium text-foreground underline-offset-4 hover:underline">
+          <Link
+            href={`/admin/mitglieder/${target.authorId}`}
+            className="text-foreground font-medium underline-offset-4 hover:underline"
+          >
             {target.authorName}
           </Link>{" "}
           <span>@{target.authorUsername}</span>
-          {target.authorStatus === "SUSPENDED" ? <span className="ml-2 text-danger">(gesperrt)</span> : null}
+          {target.authorStatus === "SUSPENDED" ? <span className="text-danger ml-2">(gesperrt)</span> : null}
           {target.authorStatus === "DELETED" ? <span className="ml-2">(Konto gelöscht)</span> : null}
         </p>
       ) : null}

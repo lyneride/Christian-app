@@ -59,9 +59,9 @@ describe("resolveReportSchema", () => {
 
   it("caps the note at 1000 characters", () => {
     expect(resolveReportSchema.safeParse({ status: "RESOLVED", resolution: "x".repeat(1000) }).success).toBe(true);
-    expect(fieldErrors(resolveReportSchema.safeParse({ status: "RESOLVED", resolution: "x".repeat(1001) })).resolution).toEqual([
-      "Die Notiz darf höchstens 1000 Zeichen lang sein.",
-    ]);
+    expect(
+      fieldErrors(resolveReportSchema.safeParse({ status: "RESOLVED", resolution: "x".repeat(1001) })).resolution,
+    ).toEqual(["Die Notiz darf höchstens 1000 Zeichen lang sein."]);
   });
 });
 
@@ -72,12 +72,17 @@ describe("setUserRoleSchema / setUserStatusSchema", () => {
   });
 
   it("only accepts ACTIVE and SUSPENDED as a status (never DELETED)", () => {
-    expect(setUserStatusSchema.parse({ status: "SUSPENDED", reason: " Spam " })).toEqual({ status: "SUSPENDED", reason: "Spam" });
+    expect(setUserStatusSchema.parse({ status: "SUSPENDED", reason: " Spam " })).toEqual({
+      status: "SUSPENDED",
+      reason: "Spam",
+    });
     expect(setUserStatusSchema.parse({ status: "ACTIVE", reason: "" }).status).toBe("ACTIVE");
-    expect(fieldErrors(setUserStatusSchema.safeParse({ status: "DELETED", reason: "" })).status).toEqual(["Unbekannter Status."]);
-    expect(fieldErrors(setUserStatusSchema.safeParse({ status: "SUSPENDED", reason: "x".repeat(501) })).reason).toEqual([
-      "Die Begründung darf höchstens 500 Zeichen lang sein.",
+    expect(fieldErrors(setUserStatusSchema.safeParse({ status: "DELETED", reason: "" })).status).toEqual([
+      "Unbekannter Status.",
     ]);
+    expect(fieldErrors(setUserStatusSchema.safeParse({ status: "SUSPENDED", reason: "x".repeat(501) })).reason).toEqual(
+      ["Die Begründung darf höchstens 500 Zeichen lang sein."],
+    );
   });
 });
 

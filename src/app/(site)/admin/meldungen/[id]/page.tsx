@@ -41,7 +41,10 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
   return (
     <article className="space-y-8">
       <div>
-        <Link href="/admin/meldungen" className="inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline">
+        <Link
+          href="/admin/meldungen"
+          className="text-muted-foreground inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline"
+        >
           <ArrowLeft className="size-4" aria-hidden="true" />
           Alle Meldungen
         </Link>
@@ -50,7 +53,7 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
           <ReportStatusBadge status={report.status} />
           <ReasonBadge reason={report.reason} />
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="text-muted-foreground mt-1 text-sm">
           Eingegangen am <time dateTime={report.createdAt.toISOString()}>{formatDateTime(report.createdAt)}</time>
         </p>
       </div>
@@ -60,13 +63,18 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
           <Card>
             <CardHeader>
               <CardTitle>Gemeldeter Inhalt</CardTitle>
-              <CardDescription>So sieht die Moderation den Inhalt – unabhängig von seiner Sichtbarkeit.</CardDescription>
+              <CardDescription>
+                So sieht die Moderation den Inhalt – unabhängig von seiner Sichtbarkeit.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <TargetPreview target={target} targetType={report.targetType} targetId={report.targetId} />
               {target?.authorId ? (
                 <p className="mt-3 text-sm">
-                  <Link href={`/admin/mitglieder/${target.authorId}`} className="font-medium text-primary underline-offset-4 hover:underline">
+                  <Link
+                    href={`/admin/mitglieder/${target.authorId}`}
+                    className="text-primary font-medium underline-offset-4 hover:underline"
+                  >
                     Mitglied verwalten
                   </Link>
                 </p>
@@ -82,7 +90,10 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
               <div className="flex items-start gap-3">
                 <Avatar name={report.reporter.name} src={report.reporter.avatarUrl} size="sm" />
                 <div className="text-sm">
-                  <Link href={`/admin/mitglieder/${report.reporter.id}`} className="font-medium underline-offset-4 hover:underline">
+                  <Link
+                    href={`/admin/mitglieder/${report.reporter.id}`}
+                    className="font-medium underline-offset-4 hover:underline"
+                  >
                     {report.reporter.name}
                   </Link>
                   <p className="text-muted-foreground">
@@ -96,7 +107,9 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
                 <dt className="text-muted-foreground">Beschreibung</dt>
                 <dd>
                   {report.details ? (
-                    <blockquote className="whitespace-pre-wrap border-l-2 border-border pl-3">{report.details}</blockquote>
+                    <blockquote className="border-border border-l-2 pl-3 whitespace-pre-wrap">
+                      {report.details}
+                    </blockquote>
                   ) : (
                     <span className="text-muted-foreground">Keine weiteren Angaben.</span>
                   )}
@@ -119,13 +132,18 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
                   <dt className="text-muted-foreground">Durch</dt>
                   <dd>
                     {report.resolvedBy ? (
-                      <Link href={`/admin/mitglieder/${report.resolvedBy.id}`} className="font-medium underline-offset-4 hover:underline">
+                      <Link
+                        href={`/admin/mitglieder/${report.resolvedBy.id}`}
+                        className="font-medium underline-offset-4 hover:underline"
+                      >
                         {report.resolvedBy.name}
                       </Link>
                     ) : (
                       <span className="text-muted-foreground">Unbekannt</span>
                     )}
-                    {report.resolvedAt ? <span className="text-muted-foreground"> · {formatDateTime(report.resolvedAt)}</span> : null}
+                    {report.resolvedAt ? (
+                      <span className="text-muted-foreground"> · {formatDateTime(report.resolvedAt)}</span>
+                    ) : null}
                   </dd>
                   <dt className="text-muted-foreground">Notiz</dt>
                   <dd>
@@ -147,7 +165,7 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
                 <CardDescription>Mehrere unabhängige Meldungen sind ein Hinweis, aber kein Urteil.</CardDescription>
               </CardHeader>
               <CardContent>
-                <ul className="divide-y divide-border text-sm">
+                <ul className="divide-border divide-y text-sm">
                   {previous.map((r) => (
                     <li key={r.id} className="flex flex-wrap items-center gap-2 py-2.5">
                       <ReasonBadge reason={r.reason} />
@@ -155,7 +173,10 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
                       <span className="text-muted-foreground">
                         von {r.reporter.name} · {formatRelative(r.createdAt)}
                       </span>
-                      <Link href={`/admin/meldungen/${r.id}`} className="ml-auto font-medium text-primary underline-offset-4 hover:underline">
+                      <Link
+                        href={`/admin/meldungen/${r.id}`}
+                        className="text-primary ml-auto font-medium underline-offset-4 hover:underline"
+                      >
                         Öffnen
                       </Link>
                     </li>
@@ -199,12 +220,16 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
                 <CardTitle>Mitglied</CardTitle>
                 <CardDescription>
                   {author.authorName} (@{author.authorUsername})
-                  {author.authorStatus === "SUSPENDED" ? " ist zurzeit gesperrt." : author.authorStatus === "DELETED" ? " hat das Konto gelöscht." : ""}
+                  {author.authorStatus === "SUSPENDED"
+                    ? " ist zurzeit gesperrt."
+                    : author.authorStatus === "DELETED"
+                      ? " hat das Konto gelöscht."
+                      : ""}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {!authorActionable ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {author.authorId === viewer.id ? "Das bist du selbst." : "Keine Maßnahme möglich."}
                   </p>
                 ) : author.authorStatus === "SUSPENDED" ? (

@@ -41,14 +41,26 @@ export default async function MembersPage(props: PageProps<"/admin/mitglieder">)
       <h1 id="members-heading" className="text-2xl font-semibold tracking-tight">
         Mitglieder
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">Suche nach Name, Benutzername oder E-Mail-Adresse.</p>
+      <p className="text-muted-foreground mt-1 text-sm">Suche nach Name, Benutzername oder E-Mail-Adresse.</p>
 
-      <Form action="/admin/mitglieder" role="search" className="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_10rem_10rem_auto] sm:items-end">
+      <Form
+        action="/admin/mitglieder"
+        role="search"
+        className="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_10rem_10rem_auto] sm:items-end"
+      >
         <div>
           <label htmlFor="q" className="block text-sm font-medium">
             Suche
           </label>
-          <Input id="q" name="q" type="search" defaultValue={q} maxLength={SEARCH_MAX} autoComplete="off" className="mt-1.5" />
+          <Input
+            id="q"
+            name="q"
+            type="search"
+            defaultValue={q}
+            maxLength={SEARCH_MAX}
+            autoComplete="off"
+            className="mt-1.5"
+          />
         </div>
         <div>
           <label htmlFor="rolle" className="block text-sm font-medium">
@@ -82,7 +94,7 @@ export default async function MembersPage(props: PageProps<"/admin/mitglieder">)
         </Button>
       </Form>
 
-      <p className="mt-5 text-sm text-muted-foreground">
+      <p className="text-muted-foreground mt-5 text-sm">
         {pluralize(total, "Mitglied", "Mitglieder")}
         {filtered ? " gefunden" : ""}
       </p>
@@ -91,19 +103,33 @@ export default async function MembersPage(props: PageProps<"/admin/mitglieder">)
         <EmptyState
           icon={<Users />}
           title="Keine Mitglieder gefunden"
-          description={filtered ? "Versuche einen anderen Suchbegriff oder setze die Filter zurück." : "Es gibt noch keine Mitglieder."}
+          description={
+            filtered
+              ? "Versuche einen anderen Suchbegriff oder setze die Filter zurück."
+              : "Es gibt noch keine Mitglieder."
+          }
           className="mt-4"
         />
       ) : (
-        <div className="mt-3 overflow-x-auto rounded-card border border-border bg-surface shadow-soft">
+        <div className="rounded-card border-border bg-surface shadow-soft mt-3 overflow-x-auto border">
           <table className="w-full min-w-[44rem] text-left">
-            <thead className="text-xs text-muted-foreground uppercase">
+            <thead className="text-muted-foreground text-xs uppercase">
               <tr>
-                <th scope="col" className="px-4 py-3 font-medium">Mitglied</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Rolle</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Status</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Dabei seit</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Zuletzt aktiv</th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Mitglied
+                </th>
+                <th scope="col" className="py-3 pr-4 font-medium">
+                  Rolle
+                </th>
+                <th scope="col" className="py-3 pr-4 font-medium">
+                  Status
+                </th>
+                <th scope="col" className="py-3 pr-4 font-medium">
+                  Dabei seit
+                </th>
+                <th scope="col" className="py-3 pr-4 font-medium">
+                  Zuletzt aktiv
+                </th>
               </tr>
             </thead>
             <tbody className="[&_td:first-child]:pl-4 [&_td:last-child]:pr-4">

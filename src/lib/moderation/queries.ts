@@ -22,7 +22,12 @@ export type Person = { id: string; name: string; username: string; avatarUrl: st
 const DAY_MS = 86_400_000;
 const EXCERPT_LENGTH = 300;
 
-export const POST_KIND_LABELS = { POST: "Beitrag", TESTIMONY: "Zeugnis", QUESTION: "Frage", IMPULSE: "Impuls" } as const;
+export const POST_KIND_LABELS = {
+  POST: "Beitrag",
+  TESTIMONY: "Zeugnis",
+  QUESTION: "Frage",
+  IMPULSE: "Impuls",
+} as const;
 
 // ---------------------------------------------------------------------------
 // Public paths of content (kept in one place for previews and revalidation)
@@ -40,7 +45,11 @@ export function groupPath(slug: string) {
 export function eventPath(id: string) {
   return `/veranstaltungen/${id}`;
 }
-export function commentPath(comment: { id: string; postId: string | null; prayerRequestId: string | null }): string | null {
+export function commentPath(comment: {
+  id: string;
+  postId: string | null;
+  prayerRequestId: string | null;
+}): string | null {
   const base = comment.postId
     ? targetPath({ postId: comment.postId })
     : comment.prayerRequestId
@@ -116,7 +125,15 @@ export async function dashboardStats(): Promise<DashboardStats> {
       prisma.report.count({ where: { status: "OPEN" } }),
       prisma.report.count({ where: { status: { in: ["RESOLVED", "DISMISSED"] }, resolvedAt: { gte: since30 } } }),
     ]);
-  return { members: { total, active, suspended, newLast7Days }, posts, prayers, groups, events, openReports, resolvedLast30Days };
+  return {
+    members: { total, active, suspended, newLast7Days },
+    posts,
+    prayers,
+    groups,
+    events,
+    openReports,
+    resolvedLast30Days,
+  };
 }
 
 export const countOpenReports = cache(async (): Promise<number> => prisma.report.count({ where: { status: "OPEN" } }));
@@ -233,7 +250,15 @@ function author(a: AuthorRow | null | undefined) {
 async function loadPosts(ids: string[]) {
   const rows = await prisma.post.findMany({
     where: { id: { in: ids } },
-    select: { id: true, kind: true, title: true, body: true, deletedAt: true, createdAt: true, author: { select: authorSelect } },
+    select: {
+      id: true,
+      kind: true,
+      title: true,
+      body: true,
+      deletedAt: true,
+      createdAt: true,
+      author: { select: authorSelect },
+    },
   });
   return rows.map((p) => ({
     kind: "post" as const,
@@ -275,7 +300,15 @@ async function loadComments(ids: string[]) {
 async function loadPrayers(ids: string[]) {
   const rows = await prisma.prayerRequest.findMany({
     where: { id: { in: ids } },
-    select: { id: true, title: true, body: true, isAnonymous: true, deletedAt: true, createdAt: true, author: { select: authorSelect } },
+    select: {
+      id: true,
+      title: true,
+      body: true,
+      isAnonymous: true,
+      deletedAt: true,
+      createdAt: true,
+      author: { select: authorSelect },
+    },
   });
   return rows.map((p) => ({
     kind: "prayer" as const,
@@ -311,7 +344,15 @@ async function loadUsers(ids: string[]) {
 async function loadGroups(ids: string[]) {
   const rows = await prisma.group.findMany({
     where: { id: { in: ids } },
-    select: { id: true, slug: true, name: true, description: true, visibility: true, createdAt: true, createdBy: { select: authorSelect } },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      description: true,
+      visibility: true,
+      createdAt: true,
+      createdBy: { select: authorSelect },
+    },
   });
   return rows.map((g) => ({
     kind: "group" as const,
@@ -329,7 +370,14 @@ async function loadGroups(ids: string[]) {
 async function loadEvents(ids: string[]) {
   const rows = await prisma.event.findMany({
     where: { id: { in: ids } },
-    select: { id: true, title: true, description: true, deletedAt: true, createdAt: true, host: { select: authorSelect } },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      deletedAt: true,
+      createdAt: true,
+      host: { select: authorSelect },
+    },
   });
   return rows.map((e) => ({
     kind: "event" as const,
@@ -432,14 +480,25 @@ export interface ListUsersArgs {
   page: Page;
 }
 
-export async function listUsers({ q, role, status, page }: ListUsersArgs): Promise<{ items: UserRow[]; total: number }> {
+export async function listUsers({
+  q,
+  role,
+  status,
+  page,
+}: ListUsersArgs): Promise<{ items: UserRow[]; total: number }> {
   const where: Prisma.UserWhereInput = {
     ...(role ? { role } : {}),
     ...(status ? { status } : {}),
     ...(q ? { OR: [{ name: { contains: q } }, { username: { contains: q } }, { email: { contains: q } }] } : {}),
   };
   const [items, total] = await Promise.all([
-    prisma.user.findMany({ where, select: userRowSelect, orderBy: { createdAt: "desc" }, skip: page.skip, take: page.take }),
+    prisma.user.findMany({
+      where,
+      select: userRowSelect,
+      orderBy: { createdAt: "desc" },
+      skip: page.skip,
+      take: page.take,
+    }),
     prisma.user.count({ where }),
   ]);
   return { items, total };
@@ -602,7 +661,13 @@ export interface AuditRow {
   createdAt: Date;
 }
 
-export async function listAudit({ page, actorId }: { page: Page; actorId?: string }): Promise<{ items: AuditRow[]; total: number }> {
+export async function listAudit({
+  page,
+  actorId,
+}: {
+  page: Page;
+  actorId?: string;
+}): Promise<{ items: AuditRow[]; total: number }> {
   const where: Prisma.AuditLogWhereInput = actorId ? { actorId } : {};
   const [rows, total] = await Promise.all([
     prisma.auditLog.findMany({ where, orderBy: { createdAt: "desc" }, skip: page.skip, take: page.take }),

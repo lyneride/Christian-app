@@ -18,7 +18,8 @@ export function AdminNav({ openCount }: { openCount: number | null }) {
     <nav aria-label="Moderation">
       <ul className="flex flex-wrap gap-1">
         {ITEMS.map((item) => {
-          const active = "exact" in item ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const active =
+            "exact" in item ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
           const badge = item.href === "/admin/meldungen" && openCount !== null && openCount > 0 ? openCount : null;
           return (
             <li key={item.href}>

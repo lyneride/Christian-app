@@ -111,7 +111,10 @@ export async function resolveReport(reportId: string, _prev: ActionState, formDa
   if (auth.error) return auth.error;
   const { user } = auth;
 
-  const parsed = resolveReportSchema.safeParse({ status: str(formData, "status"), resolution: str(formData, "resolution") });
+  const parsed = resolveReportSchema.safeParse({
+    status: str(formData, "status"),
+    resolution: str(formData, "resolution"),
+  });
   if (!parsed.success) return failure(CHECK_INPUT, { errors: fieldErrors(parsed.error) });
   const { status, resolution } = parsed.data;
 
@@ -229,7 +232,11 @@ export async function removeContent(
 
   revalidateAdmin();
   revalidateContent(kind, target);
-  return success(kind === "group" ? "Die Gruppe ist jetzt verborgen." : "Der Inhalt wurde entfernt. Das Mitglied wurde benachrichtigt.");
+  return success(
+    kind === "group"
+      ? "Die Gruppe ist jetzt verborgen."
+      : "Der Inhalt wurde entfernt. Das Mitglied wurde benachrichtigt.",
+  );
 }
 
 /** Undoes a removal. Works with `useActionState(() => restoreContent(type, id), …)` and plain transitions. */
@@ -269,13 +276,20 @@ export async function restoreContent(targetType: string, targetId: string): Prom
           select: { details: true },
         });
         const previous = parseAuditDetails(last?.details ?? null)?.previousVisibility;
-        const visibility = previous === "PUBLIC" || previous === "MEMBERS" || previous === "GROUP" ? previous : "MEMBERS";
+        const visibility =
+          previous === "PUBLIC" || previous === "MEMBERS" || previous === "GROUP" ? previous : "MEMBERS";
         await prisma.group.update({ where: { id }, data: { visibility } });
         break;
       }
     }
     if (target.authorId) {
-      await notify({ userId: target.authorId, type: "moderation", title: RESTORED_TITLES[kind], body: quote(target.title), href: target.href ?? undefined });
+      await notify({
+        userId: target.authorId,
+        type: "moderation",
+        title: RESTORED_TITLES[kind],
+        body: quote(target.title),
+        href: target.href ?? undefined,
+      });
     }
     await logAudit({
       actorId: user.id,
@@ -335,7 +349,13 @@ export async function suspendUser(userId: string, _prev: ActionState, formData: 
       body: `Begründung der Moderation: ${reason}`,
       href: "/hilfe",
     });
-    await logAudit({ actorId: user.id, action: "user.suspend", targetType: "user", targetId: member.id, details: { reason } });
+    await logAudit({
+      actorId: user.id,
+      action: "user.suspend",
+      targetType: "user",
+      targetId: member.id,
+      details: { reason },
+    });
   } catch (err) {
     console.error("[admin] Mitglied konnte nicht gesperrt werden:", err);
     return failure(GENERIC_ERROR);

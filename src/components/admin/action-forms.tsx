@@ -47,7 +47,12 @@ export function ResolveReportForm({ reportId }: { reportId: string }) {
   return (
     <form action={formAction} onSubmit={onSubmit} className="space-y-4">
       <FormMessage state={state} />
-      <Field label="Notiz zur Entscheidung" htmlFor={id} hint="Intern, nur für die Moderation sichtbar. Optional." error={errors.resolution}>
+      <Field
+        label="Notiz zur Entscheidung"
+        htmlFor={id}
+        hint="Intern, nur für die Moderation sichtbar. Optional."
+        error={errors.resolution}
+      >
         <Textarea
           id={id}
           name="resolution"
@@ -74,7 +79,10 @@ export function ResolveReportForm({ reportId }: { reportId: string }) {
 // ---------------------------------------------------------------------------
 
 export function RemoveContentForm({ targetType, targetId }: { targetType: string; targetId: string }) {
-  const [state, formAction, pending] = useActionState(removeContent.bind(null, targetType, targetId), initialActionState);
+  const [state, formAction, pending] = useActionState(
+    removeContent.bind(null, targetType, targetId),
+    initialActionState,
+  );
   const errors = state.errors ?? {};
   const id = `reason-${targetType}-${targetId}`;
   const isGroup = targetType === "group";
@@ -90,7 +98,13 @@ export function RemoveContentForm({ targetType, targetId }: { targetType: string
       className="space-y-4"
     >
       <FormMessage state={state} />
-      <Field label="Begründung" htmlFor={id} hint="Wird dem Mitglied mitgeteilt. Bitte sachlich und konkret." required error={errors.reason}>
+      <Field
+        label="Begründung"
+        htmlFor={id}
+        hint="Wird dem Mitglied mitgeteilt. Bitte sachlich und konkret."
+        required
+        error={errors.reason}
+      >
         <Textarea
           id={id}
           name="reason"
@@ -112,7 +126,11 @@ export function RemoveContentForm({ targetType, targetId }: { targetType: string
 export function RestoreContentForm({ targetType, targetId }: { targetType: string; targetId: string }) {
   const [state, formAction, pending] = useActionState(() => restoreContent(targetType, targetId), initialActionState);
   return (
-    <form action={formAction} onSubmit={confirmOnSubmit("Inhalt wiederherstellen? Er ist danach wieder sichtbar.")} className="space-y-4">
+    <form
+      action={formAction}
+      onSubmit={confirmOnSubmit("Inhalt wiederherstellen? Er ist danach wieder sichtbar.")}
+      className="space-y-4"
+    >
       <FormMessage state={state} />
       <Button type="submit" variant="outline" loading={pending}>
         Wiederherstellen
@@ -132,11 +150,19 @@ export function SuspendUserForm({ userId, name }: { userId: string; name: string
   return (
     <form
       action={formAction}
-      onSubmit={confirmOnSubmit(`${name} sperren? Alle Sitzungen werden beendet, eine Anmeldung ist nicht mehr möglich.`)}
+      onSubmit={confirmOnSubmit(
+        `${name} sperren? Alle Sitzungen werden beendet, eine Anmeldung ist nicht mehr möglich.`,
+      )}
       className="space-y-4"
     >
       <FormMessage state={state} />
-      <Field label="Begründung" htmlFor={id} hint="Wird dem Mitglied nach einer Aufhebung angezeigt." required error={errors.reason}>
+      <Field
+        label="Begründung"
+        htmlFor={id}
+        hint="Wird dem Mitglied nach einer Aufhebung angezeigt."
+        required
+        error={errors.reason}
+      >
         <Textarea
           id={id}
           name="reason"
@@ -172,9 +198,18 @@ export function SetRoleForm({ userId, currentRole }: { userId: string; currentRo
   const errors = state.errors ?? {};
   const id = `role-${userId}`;
   return (
-    <form action={formAction} onSubmit={confirmOnSubmit("Rolle ändern? Das Mitglied wird benachrichtigt.")} className="space-y-4">
+    <form
+      action={formAction}
+      onSubmit={confirmOnSubmit("Rolle ändern? Das Mitglied wird benachrichtigt.")}
+      className="space-y-4"
+    >
       <FormMessage state={state} />
-      <Field label="Rolle" htmlFor={id} hint="Moderation darf Inhalte und Mitglieder verwalten; Administration zusätzlich Rollen." error={errors.role}>
+      <Field
+        label="Rolle"
+        htmlFor={id}
+        hint="Moderation darf Inhalte und Mitglieder verwalten; Administration zusätzlich Rollen."
+        error={errors.role}
+      >
         <Select
           id={id}
           name="role"

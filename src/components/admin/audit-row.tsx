@@ -12,14 +12,18 @@ export function AuditDetails({ details }: { details: string | null }) {
   if (!details) return <span className="text-muted-foreground">–</span>;
   const parsed = parseAuditDetails(details);
   if (!parsed) return <span className="break-words whitespace-pre-wrap">{details}</span>;
-  const entries = Object.entries(parsed).filter(([k, v]) => !HIDDEN_KEYS.has(k) && v !== null && v !== undefined && v !== "");
+  const entries = Object.entries(parsed).filter(
+    ([k, v]) => !HIDDEN_KEYS.has(k) && v !== null && v !== undefined && v !== "",
+  );
   if (entries.length === 0) return <span className="text-muted-foreground">–</span>;
   return (
     <dl className="space-y-0.5">
       {entries.map(([key, value]) => (
         <div key={key} className="flex gap-2">
-          <dt className="shrink-0 text-muted-foreground">{AUDIT_DETAIL_LABELS[key] ?? key}:</dt>
-          <dd className="min-w-0 break-words">{key === "targetType" ? targetTypeLabel(String(value)) : String(value)}</dd>
+          <dt className="text-muted-foreground shrink-0">{AUDIT_DETAIL_LABELS[key] ?? key}:</dt>
+          <dd className="min-w-0 break-words">
+            {key === "targetType" ? targetTypeLabel(String(value)) : String(value)}
+          </dd>
         </div>
       ))}
     </dl>
@@ -35,10 +39,11 @@ function targetLink(entry: AuditRowData): string | null {
 /** Table row of the audit log. Columns: Zeit · Wer · Aktion · Ziel · Details. */
 export function AuditRow({ entry }: { entry: AuditRowData }) {
   const href = targetLink(entry);
-  const typeLabel = entry.targetType === "report" ? "Meldung" : entry.targetType ? targetTypeLabel(entry.targetType) : null;
+  const typeLabel =
+    entry.targetType === "report" ? "Meldung" : entry.targetType ? targetTypeLabel(entry.targetType) : null;
   return (
-    <tr className="border-t border-border align-top text-sm">
-      <td className="py-3 pr-4 whitespace-nowrap text-muted-foreground">
+    <tr className="border-border border-t align-top text-sm">
+      <td className="text-muted-foreground py-3 pr-4 whitespace-nowrap">
         <time dateTime={entry.createdAt.toISOString()}>{formatDateTime(entry.createdAt)}</time>
       </td>
       <td className="py-3 pr-4">

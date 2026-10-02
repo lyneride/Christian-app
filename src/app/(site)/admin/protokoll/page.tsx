@@ -31,7 +31,7 @@ export default async function AuditPage(props: PageProps<"/admin/protokoll">) {
       <h1 id="audit-heading" className="text-2xl font-semibold tracking-tight">
         Protokoll
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <p className="text-muted-foreground mt-1 text-sm">
         Jede Moderationsentscheidung mit Zeit, Person und Begründung. Einträge werden nicht gelöscht.
       </p>
 
@@ -44,7 +44,7 @@ export default async function AuditPage(props: PageProps<"/admin/protokoll">) {
         </p>
       ) : null}
 
-      <p className="mt-4 text-sm text-muted-foreground">{pluralize(total, "Eintrag", "Einträge")}</p>
+      <p className="text-muted-foreground mt-4 text-sm">{pluralize(total, "Eintrag", "Einträge")}</p>
 
       {items.length === 0 ? (
         <EmptyState
@@ -54,15 +54,25 @@ export default async function AuditPage(props: PageProps<"/admin/protokoll">) {
           className="mt-4"
         />
       ) : (
-        <div className="mt-3 overflow-x-auto rounded-card border border-border bg-surface shadow-soft">
+        <div className="rounded-card border-border bg-surface shadow-soft mt-3 overflow-x-auto border">
           <table className="w-full min-w-[48rem] text-left">
-            <thead className="text-xs text-muted-foreground uppercase">
+            <thead className="text-muted-foreground text-xs uppercase">
               <tr>
-                <th scope="col" className="px-4 py-3 font-medium">Zeit</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Wer</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Aktion</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Ziel</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Details</th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Zeit
+                </th>
+                <th scope="col" className="py-3 pr-4 font-medium">
+                  Wer
+                </th>
+                <th scope="col" className="py-3 pr-4 font-medium">
+                  Aktion
+                </th>
+                <th scope="col" className="py-3 pr-4 font-medium">
+                  Ziel
+                </th>
+                <th scope="col" className="py-3 pr-4 font-medium">
+                  Details
+                </th>
               </tr>
             </thead>
             <tbody className="[&_td:first-child]:pl-4 [&_td:last-child]:pr-4">
@@ -74,7 +84,13 @@ export default async function AuditPage(props: PageProps<"/admin/protokoll">) {
         </div>
       )}
 
-      <Pagination basePath="/admin/protokoll" params={{ akteur: actorId }} page={page.page} perPage={page.perPage} total={total} />
+      <Pagination
+        basePath="/admin/protokoll"
+        params={{ akteur: actorId }}
+        page={page.page}
+        perPage={page.perPage}
+        total={total}
+      />
     </section>
   );
 }

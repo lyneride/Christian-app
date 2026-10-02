@@ -32,25 +32,25 @@ function ContentList({ title, items, emptyText }: { title: string; items: Conten
     <section aria-label={title}>
       <h3 className="text-sm font-semibold">{title}</h3>
       {items.length === 0 ? (
-        <p className="mt-2 text-sm text-muted-foreground">{emptyText}</p>
+        <p className="text-muted-foreground mt-2 text-sm">{emptyText}</p>
       ) : (
-        <ul className="mt-2 divide-y divide-border">
+        <ul className="divide-border mt-2 divide-y">
           {items.map((item) => (
             <li key={item.id} className="py-2.5 text-sm">
               <div className="flex flex-wrap items-center gap-2">
                 {item.href && !item.deleted ? (
-                  <Link href={item.href} className="font-medium text-primary underline-offset-4 hover:underline">
+                  <Link href={item.href} className="text-primary font-medium underline-offset-4 hover:underline">
                     {item.title}
                   </Link>
                 ) : (
                   <span className="font-medium">{item.title}</span>
                 )}
                 {item.deleted ? <Badge variant="danger">Entfernt</Badge> : null}
-                <time dateTime={item.createdAt.toISOString()} className="text-xs text-muted-foreground">
+                <time dateTime={item.createdAt.toISOString()} className="text-muted-foreground text-xs">
                   {formatRelative(item.createdAt)}
                 </time>
               </div>
-              {item.excerpt ? <p className="mt-0.5 line-clamp-2 text-muted-foreground">{item.excerpt}</p> : null}
+              {item.excerpt ? <p className="text-muted-foreground mt-0.5 line-clamp-2">{item.excerpt}</p> : null}
             </li>
           ))}
         </ul>
@@ -75,7 +75,10 @@ export default async function MemberDetailPage(props: PageProps<"/admin/mitglied
   return (
     <article className="space-y-8">
       <div>
-        <Link href="/admin/mitglieder" className="inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline">
+        <Link
+          href="/admin/mitglieder"
+          className="text-muted-foreground inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline"
+        >
           <ArrowLeft className="size-4" aria-hidden="true" />
           Alle Mitglieder
         </Link>
@@ -87,27 +90,33 @@ export default async function MemberDetailPage(props: PageProps<"/admin/mitglied
               <RoleBadge role={member.role} />
               <UserStatusBadge status={member.status} />
             </div>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-sm">
               @{member.username} · {member.email}
               {member.emailVerifiedAt ? "" : <span className="text-warning"> (E-Mail unbestätigt)</span>}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-sm">
               Dabei seit <time dateTime={member.createdAt.toISOString()}>{formatDate(member.createdAt)}</time>
               {member.lastSeenAt ? (
                 <>
                   {" "}
-                  · zuletzt aktiv <time dateTime={member.lastSeenAt.toISOString()}>{formatDateTime(member.lastSeenAt)}</time>
+                  · zuletzt aktiv{" "}
+                  <time dateTime={member.lastSeenAt.toISOString()}>{formatDateTime(member.lastSeenAt)}</time>
                 </>
               ) : (
                 " · noch nie aktiv"
               )}
             </p>
             {member.location || member.church ? (
-              <p className="mt-1 text-sm text-muted-foreground">{[member.location, member.church].filter(Boolean).join(" · ")}</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {[member.location, member.church].filter(Boolean).join(" · ")}
+              </p>
             ) : null}
             {member.bio ? <p className="mt-3 max-w-prose text-sm whitespace-pre-wrap">{member.bio}</p> : null}
             <p className="mt-3 text-sm">
-              <Link href={profilePath(member.username)} className="inline-flex items-center gap-1 font-medium text-primary underline-offset-4 hover:underline">
+              <Link
+                href={profilePath(member.username)}
+                className="text-primary inline-flex items-center gap-1 font-medium underline-offset-4 hover:underline"
+              >
                 Öffentliches Profil
                 <ExternalLink className="size-3.5" aria-hidden="true" />
               </Link>
@@ -121,7 +130,12 @@ export default async function MemberDetailPage(props: PageProps<"/admin/mitglied
         <StatCard label="Kommentare" value={member._count.comments} />
         <StatCard label="Gebetsanliegen" value={member._count.prayerRequests} />
         <StatCard label="Gemeldet" value={member._count.reportsMade} hint="selbst gemeldet" />
-        <StatCard label="Meldungen" value={member.reportsAgainst} hint="gegen dieses Mitglied" tone={member.reportsAgainst > 0 ? "warning" : "default"} />
+        <StatCard
+          label="Meldungen"
+          value={member.reportsAgainst}
+          hint="gegen dieses Mitglied"
+          tone={member.reportsAgainst > 0 ? "warning" : "default"}
+        />
         <StatCard label="Sitzungen" value={member.activeSessions} hint="aktive Geräte" />
       </div>
 
@@ -144,7 +158,9 @@ export default async function MemberDetailPage(props: PageProps<"/admin/mitglied
               Meldungen zu diesem Mitglied
             </h2>
             {reportsAgainst.length === 0 ? (
-              <p className="mt-2 text-sm text-muted-foreground">Keine Meldungen zum Profil oder zu Inhalten dieses Mitglieds.</p>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Keine Meldungen zum Profil oder zu Inhalten dieses Mitglieds.
+              </p>
             ) : (
               <ul className="mt-3 space-y-3">
                 {reportsAgainst.map((report) => (
@@ -169,9 +185,9 @@ export default async function MemberDetailPage(props: PageProps<"/admin/mitglied
             </CardHeader>
             <CardContent>
               {isSelf ? (
-                <p className="text-sm text-muted-foreground">Das bist du selbst.</p>
+                <p className="text-muted-foreground text-sm">Das bist du selbst.</p>
               ) : !canModerate ? (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {member.status === "DELETED"
                     ? "Keine Maßnahme möglich."
                     : "Mitglieder mit Moderations- oder Admin-Rolle kann nur die Administration sperren."}
@@ -192,9 +208,9 @@ export default async function MemberDetailPage(props: PageProps<"/admin/mitglied
               </CardHeader>
               <CardContent>
                 {isSelf ? (
-                  <p className="text-sm text-muted-foreground">Deine eigene Rolle kannst du nicht ändern.</p>
+                  <p className="text-muted-foreground text-sm">Deine eigene Rolle kannst du nicht ändern.</p>
                 ) : member.status === "DELETED" ? (
-                  <p className="text-sm text-muted-foreground">Keine Maßnahme möglich.</p>
+                  <p className="text-muted-foreground text-sm">Keine Maßnahme möglich.</p>
                 ) : (
                   <SetRoleForm userId={member.id} currentRole={member.role} />
                 )}
@@ -202,7 +218,7 @@ export default async function MemberDetailPage(props: PageProps<"/admin/mitglied
             </Card>
           ) : null}
 
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             <Link href={`/admin/protokoll?akteur=${member.id}`} className="underline-offset-4 hover:underline">
               Protokoll-Einträge dieses Mitglieds
             </Link>

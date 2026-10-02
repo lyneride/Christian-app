@@ -20,13 +20,13 @@ async function NavWithCount() {
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 md:py-12">
-      <div className="flex flex-col gap-5 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
+      <div className="border-border flex flex-col gap-5 border-b pb-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+          <p className="text-primary inline-flex items-center gap-2 text-sm font-semibold">
             <Shield className="size-4" aria-hidden="true" />
             Moderation
           </p>
-          <p className="mt-1 max-w-prose text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-1 max-w-prose text-sm">
             Moderation handelt im Auftrag der Gemeinschaft – jede Entscheidung wird protokolliert.
           </p>
         </div>

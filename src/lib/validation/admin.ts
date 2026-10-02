@@ -23,10 +23,7 @@ export const REPORT_STATUS_LABELS: Record<ReportStatusValue, string> = {
 export const REPORT_RESOLUTIONS = ["RESOLVED", "DISMISSED"] as const;
 export type ReportResolution = (typeof REPORT_RESOLUTIONS)[number];
 
-export const resolutionNoteSchema = z
-  .string()
-  .trim()
-  .max(1000, "Die Notiz darf höchstens 1000 Zeichen lang sein.");
+export const resolutionNoteSchema = z.string().trim().max(1000, "Die Notiz darf höchstens 1000 Zeichen lang sein.");
 
 export const resolveReportSchema = z.object({
   status: z.enum(REPORT_RESOLUTIONS, { error: "Bitte wähle, wie die Meldung abgeschlossen wird." }),
@@ -73,10 +70,7 @@ export const USER_STATUS_LABELS: Record<UserStatusFilter, string> = {
 };
 
 /** Short note sent to the member with a removal or suspension. */
-export const reasonNoteSchema = z
-  .string()
-  .trim()
-  .max(500, "Die Begründung darf höchstens 500 Zeichen lang sein.");
+export const reasonNoteSchema = z.string().trim().max(500, "Die Begründung darf höchstens 500 Zeichen lang sein.");
 
 const requiredReason = reasonNoteSchema.min(3, "Bitte gib eine kurze Begründung an (mindestens 3 Zeichen).");
 

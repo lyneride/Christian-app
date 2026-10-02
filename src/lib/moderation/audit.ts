@@ -26,7 +26,9 @@ export function serializeAuditDetails(details: AuditInput["details"]): string | 
   const json =
     typeof details === "string"
       ? details
-      : JSON.stringify(Object.fromEntries(Object.entries(details).filter(([, v]) => v !== undefined && v !== null && v !== "")));
+      : JSON.stringify(
+          Object.fromEntries(Object.entries(details).filter(([, v]) => v !== undefined && v !== null && v !== "")),
+        );
   if (json === "{}" || json === "") return null;
   if (json.length <= AUDIT_DETAILS_MAX) return json;
   // Truncated JSON would not parse any more; store a plain-text marker instead.

@@ -1,6 +1,12 @@
 import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { REPORT_REASON_LABELS, REPORT_TARGET_LABELS } from "@/lib/validation/report";
-import { REPORT_STATUS_LABELS, ROLE_LABELS, USER_STATUS_LABELS, type UserRoleValue, type UserStatusFilter } from "@/lib/validation/admin";
+import {
+  REPORT_STATUS_LABELS,
+  ROLE_LABELS,
+  USER_STATUS_LABELS,
+  type UserRoleValue,
+  type UserStatusFilter,
+} from "@/lib/validation/admin";
 
 /** Small, consistent labels for roles, statuses and report metadata in the moderation area. */
 
@@ -10,7 +16,11 @@ export function RoleBadge({ role }: { role: UserRoleValue }) {
   return <Badge variant={roleVariants[role]}>{ROLE_LABELS[role]}</Badge>;
 }
 
-const statusVariants: Record<UserStatusFilter, BadgeVariant> = { ACTIVE: "success", SUSPENDED: "danger", DELETED: "default" };
+const statusVariants: Record<UserStatusFilter, BadgeVariant> = {
+  ACTIVE: "success",
+  SUSPENDED: "danger",
+  DELETED: "default",
+};
 
 export function UserStatusBadge({ status }: { status: UserStatusFilter }) {
   return <Badge variant={statusVariants[status]}>{USER_STATUS_LABELS[status]}</Badge>;

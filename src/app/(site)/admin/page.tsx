@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarDays, Flag, HandHeart, MessageSquareText, ShieldCheck, UserPlus, UserX, Users, UsersRound } from "lucide-react";
+import {
+  CalendarDays,
+  Flag,
+  HandHeart,
+  MessageSquareText,
+  ShieldCheck,
+  UserPlus,
+  UserX,
+  Users,
+  UsersRound,
+} from "lucide-react";
 import { AuditRow } from "@/components/admin/audit-row";
 import { ReportRow } from "@/components/admin/report-row";
 import { StatCard } from "@/components/admin/stat-card";
@@ -66,7 +76,7 @@ export default async function AdminOverviewPage() {
           <h2 id="open-reports-heading" className="text-lg font-semibold tracking-tight">
             Offene Meldungen
           </h2>
-          <Link href="/admin/meldungen" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+          <Link href="/admin/meldungen" className="text-primary text-sm font-medium underline-offset-4 hover:underline">
             Alle Meldungen
           </Link>
         </div>
@@ -91,22 +101,32 @@ export default async function AdminOverviewPage() {
           <h2 id="audit-heading" className="text-lg font-semibold tracking-tight">
             Zuletzt im Protokoll
           </h2>
-          <Link href="/admin/protokoll" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+          <Link href="/admin/protokoll" className="text-primary text-sm font-medium underline-offset-4 hover:underline">
             Ganzes Protokoll
           </Link>
         </div>
         {audit.items.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">Noch keine Einträge.</p>
+          <p className="text-muted-foreground mt-4 text-sm">Noch keine Einträge.</p>
         ) : (
-          <div className="mt-4 overflow-x-auto rounded-card border border-border bg-surface shadow-soft">
+          <div className="rounded-card border-border bg-surface shadow-soft mt-4 overflow-x-auto border">
             <table className="w-full min-w-[40rem] text-left text-sm">
-              <thead className="text-xs text-muted-foreground uppercase">
+              <thead className="text-muted-foreground text-xs uppercase">
                 <tr>
-                  <th scope="col" className="px-4 py-3 font-medium">Zeit</th>
-                  <th scope="col" className="py-3 pr-4 font-medium">Wer</th>
-                  <th scope="col" className="py-3 pr-4 font-medium">Aktion</th>
-                  <th scope="col" className="py-3 pr-4 font-medium">Ziel</th>
-                  <th scope="col" className="py-3 pr-4 font-medium">Details</th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    Zeit
+                  </th>
+                  <th scope="col" className="py-3 pr-4 font-medium">
+                    Wer
+                  </th>
+                  <th scope="col" className="py-3 pr-4 font-medium">
+                    Aktion
+                  </th>
+                  <th scope="col" className="py-3 pr-4 font-medium">
+                    Ziel
+                  </th>
+                  <th scope="col" className="py-3 pr-4 font-medium">
+                    Details
+                  </th>
                 </tr>
               </thead>
               <tbody className="[&_td:first-child]:pl-4 [&_td:last-child]:pr-4">
