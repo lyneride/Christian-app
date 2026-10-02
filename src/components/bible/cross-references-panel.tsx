@@ -63,8 +63,11 @@ export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, 
   }, [open, key, verse, book, chapter, t]);
 
   useEffect(() => {
+    if (open) closeRef.current?.focus();
+  }, [open]);
+
+  useEffect(() => {
     if (!open) return;
-    closeRef.current?.focus();
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -78,23 +81,23 @@ export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, 
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-foreground/20" aria-hidden="true" onClick={onClose} />
+      <div className="bg-foreground/20 fixed inset-0 z-40" aria-hidden="true" onClick={onClose} />
       <aside
         role="dialog"
         aria-modal="true"
         aria-labelledby="querverweise-titel"
         className={cn(
-          "fixed z-50 flex flex-col border-border bg-surface shadow-soft",
+          "border-border bg-surface shadow-soft fixed z-50 flex flex-col",
           "inset-x-0 bottom-0 max-h-[80vh] rounded-t-2xl border-t",
-          "md:inset-y-0 md:right-0 md:left-auto md:w-[26rem] md:max-h-none md:rounded-none md:border-t-0 md:border-l",
+          "md:inset-y-0 md:right-0 md:left-auto md:max-h-none md:w-[26rem] md:rounded-none md:border-t-0 md:border-l",
         )}
       >
-        <header className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
+        <header className="border-border flex items-start justify-between gap-3 border-b px-5 py-4">
           <div>
             <h2 id="querverweise-titel" className="text-base font-semibold">
               Querverweise
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               zu {chapterLabel}
               {verse !== null ? `${sep}${verse}` : ""}
             </p>
@@ -104,14 +107,18 @@ export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, 
             type="button"
             onClick={onClose}
             aria-label="Querverweise schließen"
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full hover:bg-surface-muted"
+            className="hover:bg-surface-muted inline-flex size-9 shrink-0 items-center justify-center rounded-full"
           >
             <X className="size-5" aria-hidden="true" />
           </button>
         </header>
 
         {verses.length > 1 ? (
-          <div role="group" aria-label="Vers wählen" className="flex flex-wrap gap-1.5 border-b border-border px-5 py-3">
+          <div
+            role="group"
+            aria-label="Vers wählen"
+            className="border-border flex flex-wrap gap-1.5 border-b px-5 py-3"
+          >
             {verses.map((n) => (
               <button
                 key={n}
@@ -134,23 +141,30 @@ export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, 
             <ul className="space-y-4" aria-hidden="true">
               {[0, 1, 2, 3].map((i) => (
                 <li key={i} className="space-y-2">
-                  <div className="h-4 w-32 animate-pulse rounded bg-surface-muted" />
-                  <div className="h-3 w-full animate-pulse rounded bg-surface-muted" />
-                  <div className="h-3 w-5/6 animate-pulse rounded bg-surface-muted" />
+                  <div className="bg-surface-muted h-4 w-32 animate-pulse rounded" />
+                  <div className="bg-surface-muted h-3 w-full animate-pulse rounded" />
+                  <div className="bg-surface-muted h-3 w-5/6 animate-pulse rounded" />
                 </li>
               ))}
             </ul>
           ) : current?.error ? (
-            <p className="text-sm text-danger">{current.error}</p>
+            <p className="text-danger text-sm">{current.error}</p>
           ) : current?.refs && current.refs.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Zu diesem Vers sind keine Querverweise hinterlegt.</p>
+            <p className="text-muted-foreground text-sm">Zu diesem Vers sind keine Querverweise hinterlegt.</p>
           ) : (
             <ol className="space-y-4">
               {current?.refs?.map((ref) => (
                 <li key={ref.path}>
-                  <Link href={ref.path} onClick={onClose} className="group block rounded-lg -mx-2 px-2 py-1.5 hover:bg-surface-muted">
-                    <span className="text-sm font-semibold text-primary group-hover:underline">{ref.reference}</span>
-                    <span className="scripture mt-0.5 line-clamp-3 block text-[0.95rem] leading-relaxed text-foreground/90" lang={locale}>
+                  <Link
+                    href={ref.path}
+                    onClick={onClose}
+                    className="group hover:bg-surface-muted -mx-2 block rounded-lg px-2 py-1.5"
+                  >
+                    <span className="text-primary text-sm font-semibold group-hover:underline">{ref.reference}</span>
+                    <span
+                      className="scripture text-foreground/90 mt-0.5 line-clamp-3 block text-[0.95rem] leading-relaxed"
+                      lang={locale}
+                    >
                       {ref.text}
                     </span>
                   </Link>
@@ -159,7 +173,9 @@ export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, 
             </ol>
           )}
         </div>
-        <p className="border-t border-border px-5 py-2.5 text-xs text-muted-foreground">Querverweise: OpenBible.info (CC-BY 4.0)</p>
+        <p className="border-border text-muted-foreground border-t px-5 py-2.5 text-xs">
+          Querverweise: OpenBible.info (CC-BY 4.0)
+        </p>
       </aside>
     </>
   );

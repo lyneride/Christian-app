@@ -68,7 +68,7 @@ export function RecentChapters({ translations, className }: RecentChaptersProps)
 
   return (
     <section aria-labelledby="zuletzt-gelesen" className={className}>
-      <h2 id="zuletzt-gelesen" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+      <h2 id="zuletzt-gelesen" className="text-muted-foreground flex items-center gap-2 text-sm font-semibold">
         <Clock className="size-4" aria-hidden="true" />
         Zuletzt gelesen
       </h2>
@@ -81,12 +81,12 @@ export function RecentChapters({ translations, className }: RecentChaptersProps)
             <li key={`${entry.book}-${entry.chapter}`}>
               <Link
                 href={buildReaderUrl(book, entry.chapter, { t: entry.t })}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-sm transition hover:border-primary/40 hover:bg-primary-soft/50"
+                className="border-border bg-surface hover:border-primary/40 hover:bg-primary-soft/50 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition"
               >
                 <span className="font-medium">
                   {book.name.de} {entry.chapter}
                 </span>
-                {short ? <span className="text-xs text-muted-foreground">{short}</span> : null}
+                {short ? <span className="text-muted-foreground text-xs">{short}</span> : null}
               </Link>
             </li>
           );

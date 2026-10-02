@@ -28,7 +28,9 @@ const rom = getBookBySlug("rom")!;
 describe("urls", () => {
   it("builds reader urls with optional params in a stable order", () => {
     expect(buildReaderUrl(john, 3)).toBe("/bibel/john/3");
-    expect(buildReaderUrl("John", 3, { v: "16-18", t: "LUT1912", p: "KJV" })).toBe("/bibel/john/3?t=LUT1912&p=KJV&v=16-18");
+    expect(buildReaderUrl("John", 3, { v: "16-18", t: "LUT1912", p: "KJV" })).toBe(
+      "/bibel/john/3?t=LUT1912&p=KJV&v=16-18",
+    );
     expect(buildReaderUrl(john, 3, { t: null, p: undefined, v: "" })).toBe("/bibel/john/3");
   });
   it("builds book and search urls", () => {
@@ -73,7 +75,9 @@ describe("verse selections", () => {
     expect(formatSelectionReference("Johannes", 3, [])).toBe("Johannes 3");
     expect(formatCrossReference({ book: rom, chapter: 5, verseStart: 8 })).toBe("Römer 5,8");
     expect(formatCrossReference({ book: rom, chapter: 5, verseStart: 8, verseEnd: 10 }, "en")).toBe("Romans 5:8-10");
-    expect(formatCrossReference({ book: john, chapter: 11, verseStart: 25, verseEnd: 2, endChapter: 12 })).toBe("Johannes 11,25-12,2");
+    expect(formatCrossReference({ book: john, chapter: 11, verseStart: 25, verseEnd: 2, endChapter: 12 })).toBe(
+      "Johannes 11,25-12,2",
+    );
   });
   it("builds clipboard text", () => {
     expect(buildCopyText([{ verse: 16, text: "Also hat Gott … " }], "Johannes 3,16", "Luther 1912")).toBe(
@@ -92,7 +96,10 @@ describe("verse selections", () => {
   });
   it("excerpts at word boundaries", () => {
     expect(excerpt(["kurz"])).toBe("kurz");
-    const long = excerpt(Array.from({ length: 40 }, () => "wort"), 30);
+    const long = excerpt(
+      Array.from({ length: 40 }, () => "wort"),
+      30,
+    );
     expect(long.length).toBeLessThanOrEqual(31);
     expect(long.endsWith("…")).toBe(true);
     expect(long).not.toContain("  ");
@@ -103,7 +110,11 @@ describe("reader settings", () => {
   it("parses tolerantly", () => {
     expect(parseReaderSettings(null)).toEqual(DEFAULT_READER_SETTINGS);
     expect(parseReaderSettings("{nope")).toEqual(DEFAULT_READER_SETTINGS);
-    expect(parseReaderSettings('{"fontSize":"xl","font":"sans","layout":"flow"}')).toEqual({ fontSize: "xl", font: "sans", layout: "flow" });
+    expect(parseReaderSettings('{"fontSize":"xl","font":"sans","layout":"flow"}')).toEqual({
+      fontSize: "xl",
+      font: "sans",
+      layout: "flow",
+    });
     expect(parseReaderSettings('{"fontSize":"huge","font":1}')).toEqual(DEFAULT_READER_SETTINGS);
   });
   it("maps to inline styles", () => {

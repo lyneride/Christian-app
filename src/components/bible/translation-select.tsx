@@ -26,7 +26,19 @@ interface Props {
 const LANGUAGE_LABELS = { de: "Deutsch", en: "Englisch" } as const;
 
 /** <select> that navigates to the same page with a changed `t` or `p` query parameter. */
-export function TranslationSelect({ id, label, hideLabel, translations, value, param, pathname, query, noneLabel, exclude, className }: Props) {
+export function TranslationSelect({
+  id,
+  label,
+  hideLabel,
+  translations,
+  value,
+  param,
+  pathname,
+  query,
+  noneLabel,
+  exclude,
+  className,
+}: Props) {
   const router = useRouter();
 
   function onChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -45,7 +57,14 @@ export function TranslationSelect({ id, label, hideLabel, translations, value, p
   const languages = (["de", "en"] as const).filter((lang) => visible.some((t) => t.language === lang));
 
   return (
-    <SelectField id={id} label={label} hideLabel={hideLabel} value={value ?? ""} onChange={onChange} className={className}>
+    <SelectField
+      id={id}
+      label={label}
+      hideLabel={hideLabel}
+      value={value ?? ""}
+      onChange={onChange}
+      className={className}
+    >
       {noneLabel ? <option value="">{noneLabel}</option> : null}
       {languages.map((lang) => (
         <optgroup key={lang} label={LANGUAGE_LABELS[lang]}>

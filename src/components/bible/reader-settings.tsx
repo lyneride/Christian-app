@@ -64,8 +64,8 @@ function ToggleGroup<T extends string>({
 }) {
   return (
     <div>
-      <p className="mb-1.5 text-xs font-medium text-muted-foreground">{label}</p>
-      <div role="group" aria-label={label} className="flex gap-1 rounded-lg bg-surface-muted p-1">
+      <p className="text-muted-foreground mb-1.5 text-xs font-medium">{label}</p>
+      <div role="group" aria-label={label} className="bg-surface-muted flex gap-1 rounded-lg p-1">
         {options.map((o) => {
           const active = o.value === value;
           return (
@@ -144,7 +144,7 @@ export function ReaderSettingsMenu({ className }: { className?: string }) {
         role="dialog"
         aria-label="Leseansicht"
         className={cn(
-          "absolute right-0 z-50 mt-2 w-72 space-y-4 rounded-xl border border-border bg-surface p-4 shadow-soft",
+          "border-border bg-surface shadow-soft absolute right-0 z-50 mt-2 w-72 space-y-4 rounded-xl border p-4",
           open ? "block" : "hidden",
         )}
       >
@@ -154,8 +154,18 @@ export function ReaderSettingsMenu({ className }: { className?: string }) {
           value={settings.fontSize}
           onChange={(fontSize) => update({ fontSize })}
         />
-        <ToggleGroup label="Schriftart" options={FONT_OPTIONS} value={settings.font} onChange={(font) => update({ font })} />
-        <ToggleGroup label="Darstellung" options={LAYOUT_OPTIONS} value={settings.layout} onChange={(layout) => update({ layout })} />
+        <ToggleGroup
+          label="Schriftart"
+          options={FONT_OPTIONS}
+          value={settings.font}
+          onChange={(font) => update({ font })}
+        />
+        <ToggleGroup
+          label="Darstellung"
+          options={LAYOUT_OPTIONS}
+          value={settings.layout}
+          onChange={(layout) => update({ layout })}
+        />
       </div>
     </div>
   );

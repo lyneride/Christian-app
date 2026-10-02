@@ -43,7 +43,12 @@ function NavLink({ target, direction }: { target: ChapterTarget | null; directio
     );
   }
   return (
-    <Link href={target.href} aria-label={`${prefix}: ${target.label}`} title={`${prefix}: ${target.label}`} className={cls}>
+    <Link
+      href={target.href}
+      aria-label={`${prefix}: ${target.label}`}
+      title={`${prefix}: ${target.label}`}
+      className={cls}
+    >
       <Icon aria-hidden="true" />
     </Link>
   );
@@ -57,7 +62,7 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
   const query = { t, p, v };
 
   return (
-    <div className="sticky top-14 z-30 border-b border-border/80 bg-background/90 backdrop-blur">
+    <div className="border-border/80 bg-background/90 sticky top-14 z-30 border-b backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2 sm:px-6">
         <nav aria-label="Kapitelnavigation" className="flex items-center gap-1">
           <NavLink target={prev} direction="prev" />
@@ -92,7 +97,7 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
           <NavLink target={next} direction="next" />
         </nav>
 
-        <ReferenceJump t={t} p={p} />
+        <ReferenceJump t={t} p={p} className="hidden md:flex" />
 
         <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
           <TranslationSelect
@@ -104,7 +109,7 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
             param="t"
             pathname={pathname}
             query={query}
-            className="w-40"
+            className="w-32 sm:w-40"
           />
           <TranslationSelect
             id={`${id}-p`}
@@ -117,7 +122,7 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
             query={query}
             noneLabel="Parallel: keine"
             exclude={t}
-            className="w-40"
+            className="w-32 sm:w-40"
           />
           <ReaderSettingsMenu />
         </div>

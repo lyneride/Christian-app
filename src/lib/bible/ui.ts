@@ -131,7 +131,12 @@ export function formatVerseList(verses: readonly number[], locale: Locale = "de"
 }
 
 /** "Johannes 3,16-18" / "John 3:16-18" for an arbitrary verse selection. */
-export function formatSelectionReference(bookName: string, chapter: number, verses: readonly number[], locale: Locale = "de"): string {
+export function formatSelectionReference(
+  bookName: string,
+  chapter: number,
+  verses: readonly number[],
+  locale: Locale = "de",
+): string {
   const list = formatVerseList(verses, locale);
   if (!list) return `${bookName} ${chapter}`;
   return `${bookName} ${chapter}${locale === "de" ? "," : ":"}${list}`;
@@ -163,9 +168,7 @@ export function buildCopyText(
   translationShortName: string,
 ): string {
   const body =
-    verses.length > 1
-      ? verses.map((v) => `${v.verse} ${v.text.trim()}`).join(" ")
-      : (verses[0]?.text.trim() ?? "");
+    verses.length > 1 ? verses.map((v) => `${v.verse} ${v.text.trim()}`).join(" ") : (verses[0]?.text.trim() ?? "");
   return `${body}\n— ${reference} (${translationShortName})`;
 }
 
@@ -213,7 +216,10 @@ export function parseReaderSettings(raw: string | null | undefined): ReaderSetti
     if (!parsed || typeof parsed !== "object") return DEFAULT_READER_SETTINGS;
     const o = parsed as Record<string, unknown>;
     return {
-      fontSize: typeof o.fontSize === "string" && FONT_SIZES.has(o.fontSize) ? (o.fontSize as FontSize) : DEFAULT_READER_SETTINGS.fontSize,
+      fontSize:
+        typeof o.fontSize === "string" && FONT_SIZES.has(o.fontSize)
+          ? (o.fontSize as FontSize)
+          : DEFAULT_READER_SETTINGS.fontSize,
       font: o.font === "sans" || o.font === "serif" ? o.font : DEFAULT_READER_SETTINGS.font,
       layout: o.layout === "flow" || o.layout === "lines" ? o.layout : DEFAULT_READER_SETTINGS.layout,
     };
@@ -223,9 +229,16 @@ export function parseReaderSettings(raw: string | null | undefined): ReaderSetti
 }
 
 /** Inline style for the reader container (inline styles win over the `scripture` utility). */
-export function readerSettingsStyle(settings: ReaderSettings): { fontSize: string; lineHeight: string; fontFamily?: string } {
+export function readerSettingsStyle(settings: ReaderSettings): {
+  fontSize: string;
+  lineHeight: string;
+  fontFamily?: string;
+} {
   const size = FONT_SIZE_OPTIONS.find((o) => o.value === settings.fontSize) ?? FONT_SIZE_OPTIONS[1];
-  const style: { fontSize: string; lineHeight: string; fontFamily?: string } = { fontSize: size.fontSize, lineHeight: size.lineHeight };
+  const style: { fontSize: string; lineHeight: string; fontFamily?: string } = {
+    fontSize: size.fontSize,
+    lineHeight: size.lineHeight,
+  };
   if (settings.font === "sans") style.fontFamily = "var(--font-sans), ui-sans-serif, system-ui, sans-serif";
   return style;
 }

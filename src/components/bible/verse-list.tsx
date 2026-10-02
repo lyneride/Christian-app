@@ -73,7 +73,7 @@ function ActionButton({
       disabled={disabled}
       title={title}
       aria-label={title ? `${label} (${title})` : undefined}
-      className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-medium transition hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50"
+      className="hover:bg-surface-muted inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-medium transition disabled:pointer-events-none disabled:opacity-50"
     >
       <Icon className="size-4" aria-hidden="true" />
       <span>{label}</span>
@@ -166,60 +166,68 @@ export function VerseList({
   const style = readerSettingsStyle(settings);
 
   return (
-    <div
-      className={cn("scripture", className)}
-      style={style}
-      data-font-size={settings.fontSize}
-      data-font={settings.font}
-      data-layout={layout}
-    >
-      {isParallel && parallel ? (
-        <div className="grid gap-x-10 gap-y-1 md:grid-cols-2" lang={translation.language}>
-          <p className="hidden text-xs font-semibold tracking-wide text-muted-foreground uppercase md:block" style={{ fontFamily: "var(--font-sans)" }}>
-            {translation.shortName}
+    <>
+      <div
+        className={cn("scripture", className)}
+        style={style}
+        data-font-size={settings.fontSize}
+        data-font={settings.font}
+        data-layout={layout}
+      >
+        {isParallel && parallel ? (
+          <div className="grid gap-x-10 gap-y-1 md:grid-cols-2" lang={translation.language}>
+            <p
+              className="text-muted-foreground hidden text-xs font-semibold tracking-wide uppercase md:block"
+              style={{ fontFamily: "var(--font-sans)" }}
+            >
+              {translation.shortName}
+            </p>
+            <p
+              className="text-muted-foreground hidden text-xs font-semibold tracking-wide uppercase md:block"
+              style={{ fontFamily: "var(--font-sans)" }}
+            >
+              {parallel.shortName}
+            </p>
+            {verses.map((v) => (
+              <Fragment key={v.verse}>
+                <span id={`v${v.verse}`} className={verseClasses(v.verse)} {...verseProps(v.verse)}>
+                  <sup className="verse-number">{v.verse}</sup>
+                  {v.text}
+                </span>
+                <span
+                  id={`p${v.verse}`}
+                  lang={parallel.language}
+                  className={verseClasses(v.verse, "border-border mb-4 border-l-2 pl-3 md:mb-0 md:border-0 md:pl-1.5")}
+                  {...verseProps(v.verse)}
+                >
+                  <sup className="verse-number">{v.verse}</sup>
+                  {v.parallelText ?? <span className="text-muted-foreground italic">–</span>}
+                </span>
+              </Fragment>
+            ))}
+          </div>
+        ) : layout === "flow" ? (
+          <p lang={translation.language}>
+            {verses.map((v) => (
+              <Fragment key={v.verse}>
+                <span id={`v${v.verse}`} className={verseClasses(v.verse)} {...verseProps(v.verse)}>
+                  <sup className="verse-number">{v.verse}</sup>
+                  {v.text}
+                </span>{" "}
+              </Fragment>
+            ))}
           </p>
-          <p className="hidden text-xs font-semibold tracking-wide text-muted-foreground uppercase md:block" style={{ fontFamily: "var(--font-sans)" }}>
-            {parallel.shortName}
-          </p>
-          {verses.map((v) => (
-            <Fragment key={v.verse}>
-              <span id={`v${v.verse}`} className={verseClasses(v.verse)} {...verseProps(v.verse)}>
+        ) : (
+          <div className="space-y-1" lang={translation.language}>
+            {verses.map((v) => (
+              <span key={v.verse} id={`v${v.verse}`} className={verseClasses(v.verse)} {...verseProps(v.verse)}>
                 <sup className="verse-number">{v.verse}</sup>
                 {v.text}
               </span>
-              <span
-                id={`p${v.verse}`}
-                lang={parallel.language}
-                className={verseClasses(v.verse, "mb-4 border-l-2 border-border pl-3 md:mb-0 md:border-0 md:pl-1.5")}
-                {...verseProps(v.verse)}
-              >
-                <sup className="verse-number">{v.verse}</sup>
-                {v.parallelText ?? <span className="text-muted-foreground italic">–</span>}
-              </span>
-            </Fragment>
-          ))}
-        </div>
-      ) : layout === "flow" ? (
-        <p lang={translation.language}>
-          {verses.map((v) => (
-            <Fragment key={v.verse}>
-              <span id={`v${v.verse}`} className={verseClasses(v.verse)} {...verseProps(v.verse)}>
-                <sup className="verse-number">{v.verse}</sup>
-                {v.text}
-              </span>{" "}
-            </Fragment>
-          ))}
-        </p>
-      ) : (
-        <div className="space-y-1" lang={translation.language}>
-          {verses.map((v) => (
-            <span key={v.verse} id={`v${v.verse}`} className={verseClasses(v.verse)} {...verseProps(v.verse)}>
-              <sup className="verse-number">{v.verse}</sup>
-              {v.text}
-            </span>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
 
       {selected.length > 0 ? (
         <>
@@ -228,12 +236,11 @@ export function VerseList({
             role="region"
             aria-label="Aktionen für die ausgewählten Verse"
             className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
-            style={{ fontFamily: "var(--font-sans)", fontSize: "1rem", lineHeight: "1.5" }}
           >
-            <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-1 rounded-2xl border border-border bg-surface p-2 shadow-soft">
+            <div className="border-border bg-surface shadow-soft mx-auto flex max-w-3xl flex-wrap items-center gap-1 rounded-2xl border p-2">
               <p className="flex items-baseline gap-2 px-2 text-sm">
                 <span className="font-semibold">{selectionRef}</span>
-                <span aria-live="polite" className="text-xs text-success">
+                <span aria-live="polite" className="text-success text-xs">
                   {feedback}
                 </span>
               </p>
@@ -248,7 +255,7 @@ export function VerseList({
                   type="button"
                   onClick={() => setSelected([])}
                   aria-label="Auswahl aufheben"
-                  className="inline-flex size-9 items-center justify-center rounded-full hover:bg-surface-muted"
+                  className="hover:bg-surface-muted inline-flex size-9 items-center justify-center rounded-full"
                 >
                   <X className="size-4" aria-hidden="true" />
                 </button>
@@ -267,6 +274,6 @@ export function VerseList({
           />
         </>
       ) : null}
-    </div>
+    </>
   );
 }

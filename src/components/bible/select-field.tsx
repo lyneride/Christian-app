@@ -12,10 +12,18 @@ export interface SelectFieldProps extends React.SelectHTMLAttributes<HTMLSelectE
 }
 
 /** Native <select> with label and chevron. Hook-free, so usable from server and client components. */
-export function SelectField({ id, label, hideLabel, className, selectClassName, children, ...props }: SelectFieldProps) {
+export function SelectField({
+  id,
+  label,
+  hideLabel,
+  className,
+  selectClassName,
+  children,
+  ...props
+}: SelectFieldProps) {
   return (
     <div className={cn("min-w-0", className)}>
-      <label htmlFor={id} className={hideLabel ? "sr-only" : "mb-1 block text-xs font-medium text-muted-foreground"}>
+      <label htmlFor={id} className={hideLabel ? "sr-only" : "text-muted-foreground mb-1 block text-xs font-medium"}>
         {label}
       </label>
       <div className="relative">
@@ -24,7 +32,7 @@ export function SelectField({ id, label, hideLabel, className, selectClassName, 
         </Select>
         <ChevronDown
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+          className="text-muted-foreground pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2"
         />
       </div>
     </div>

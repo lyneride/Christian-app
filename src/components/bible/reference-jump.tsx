@@ -69,7 +69,7 @@ export function ReferenceJump({ t, p, className }: Props) {
         <p
           id={`${id}-error`}
           role="alert"
-          className="absolute top-full left-0 z-20 mt-1 max-w-xs rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-danger shadow-soft"
+          className="border-border bg-surface text-danger shadow-soft absolute top-full left-0 z-20 mt-1 max-w-xs rounded-lg border px-2.5 py-1.5 text-xs"
         >
           {error}
         </p>
