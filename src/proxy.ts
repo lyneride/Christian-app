@@ -4,8 +4,6 @@ const SESSION_COOKIE = "bleibe_session";
 
 /** Route prefixes that require a signed-in user (optimistic check; pages re-verify via the DAL). */
 const PROTECTED_PREFIXES = ["/start", "/profil/bearbeiten", "/einstellungen", "/tagebuch", "/merken", "/nachrichten", "/admin", "/benachrichtigungen"];
-/** Pages that signed-in users should not see again. */
-const GUEST_ONLY = ["/anmelden", "/registrieren"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -15,10 +13,6 @@ export function proxy(request: NextRequest) {
     const url = new URL("/anmelden", request.url);
     url.searchParams.set("next", pathname + request.nextUrl.search);
     return NextResponse.redirect(url);
-  }
-
-  if (hasSession && GUEST_ONLY.includes(pathname)) {
-    return NextResponse.redirect(new URL("/start", request.url));
   }
 
   const response = NextResponse.next();
