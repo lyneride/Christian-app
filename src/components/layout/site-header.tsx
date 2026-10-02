@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { UserMenu, UserMenuSkeleton } from "./user-menu";
+import { NotificationBell, NotificationBellSkeleton } from "@/components/notifications/bell";
 import { MobileNav } from "./mobile-nav";
 import { Logo } from "./logo";
 
@@ -29,6 +30,9 @@ export function SiteHeader() {
         </nav>
         <div className="ml-auto flex items-center gap-1">
           <ThemeToggle />
+          <Suspense fallback={<NotificationBellSkeleton />}>
+            <NotificationBell />
+          </Suspense>
           <Suspense fallback={<UserMenuSkeleton />}>
             <UserMenu />
           </Suspense>

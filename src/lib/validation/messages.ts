@@ -28,8 +28,8 @@ export const recipientUsernameSchema = z.preprocess(
   (value) => (typeof value === "string" ? value.trim().replace(/^@/, "") : value),
   z
     .string()
-    .min(3, "Bitte gib einen Benutzernamen mit mindestens 3 Zeichen an.")
-    .max(30, "Ein Benutzername hat höchstens 30 Zeichen.")
+    .min(3, { error: "Bitte gib einen Benutzernamen mit mindestens 3 Zeichen an.", abort: true })
+    .max(30, { error: "Ein Benutzername hat höchstens 30 Zeichen.", abort: true })
     .regex(/^[a-z0-9_.-]+$/i, "Nur Buchstaben, Zahlen, Punkt, Unterstrich und Bindestrich.")
     .transform((s) => s.toLowerCase()),
 );

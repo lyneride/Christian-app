@@ -5,8 +5,8 @@ import { getUserOrThrow, UnauthorizedError } from "@/lib/auth/dal";
 import { failure, success, type ActionState } from "@/lib/action-state";
 import { markAllRead } from "@/lib/notifications";
 
-/** Marks every notification of the current user as read. */
-export async function markAllNotificationsRead(_prev: ActionState, _formData: FormData): Promise<ActionState> {
+/** Marks every notification of the current user as read (usable with `useActionState`; prev state and form data are not needed). */
+export async function markAllNotificationsRead(): Promise<ActionState> {
   let userId: string;
   try {
     userId = (await getUserOrThrow()).id;
