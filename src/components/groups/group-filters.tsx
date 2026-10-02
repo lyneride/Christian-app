@@ -4,7 +4,6 @@ import { Search } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GROUP_FILTERS, GROUP_FILTER_LABELS, type GroupFilter } from "@/lib/validation/groups";
-import { cn } from "@/lib/utils";
 
 interface Props {
   filter: GroupFilter;
@@ -31,7 +30,7 @@ export function GroupFilters({ filter, city, q }: Props) {
             key={f}
             href={filterHref(f, city, q)}
             aria-current={f === filter ? "page" : undefined}
-            className={cn(buttonClasses(f === filter ? "primary" : "outline", "sm"))}
+            className={buttonClasses(f === filter ? "primary" : "outline", "sm")}
           >
             {GROUP_FILTER_LABELS[f]}
           </Link>

@@ -128,7 +128,7 @@ const findGroupBySlug = cache(async (slug: string): Promise<GroupRow | null> => 
  * get name, description and counts (`canViewContent` false); the page must not
  * load posts, prayers, events or members in that case.
  */
-export async function getGroupBySlug(slug: string, viewer: Viewer | null): Promise<GroupDetail | null> {
+export const getGroupBySlug = cache(async (slug: string, viewer: Viewer | null): Promise<GroupDetail | null> => {
   const group = await findGroupBySlug(slug);
   if (!group) return null;
   const membership = viewer ? await getMembership(group.id, viewer.id) : null;
@@ -146,7 +146,7 @@ export async function getGroupBySlug(slug: string, viewer: Viewer | null): Promi
     isOwner: isOwner(membership),
     canViewContent: group.visibility === "PUBLIC" || active || moderator,
   };
-}
+});
 
 export interface MemberRowData extends Membership {
   user: MemberUser;

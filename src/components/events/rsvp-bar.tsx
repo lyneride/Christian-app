@@ -2,7 +2,7 @@
 
 import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
-import { Check, CircleHelp, X } from "lucide-react";
+import { Check, CircleQuestionMark, X } from "lucide-react";
 import type { RsvpStatus } from "@/generated/prisma/enums";
 import { setRsvp } from "@/app/(site)/veranstaltungen/actions";
 import { buttonClasses } from "@/components/ui/button";
@@ -54,7 +54,7 @@ function readState(data: Record<string, unknown> | undefined, fallback: RsvpStat
   };
 }
 
-const icons: Record<RsvpStatus, typeof Check> = { GOING: Check, MAYBE: CircleHelp, DECLINED: X };
+const icons: Record<RsvpStatus, typeof Check> = { GOING: Check, MAYBE: CircleQuestionMark, DECLINED: X };
 const activeClass: Record<RsvpStatus, string> = { GOING: "text-success", MAYBE: "text-warning", DECLINED: "text-muted-foreground" };
 
 /**

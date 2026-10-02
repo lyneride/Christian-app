@@ -143,14 +143,18 @@ export async function canViewPost(
   return canView(post, viewer, member);
 }
 
-/** The post with reaction stats, or null when it does not exist, is deleted or the viewer may not see it. */
-export async function getPost(id: string, viewer: Viewer | null): Promise<PostListItem | null> {
+/**
+ * The post with reaction stats, or null when it does not exist, is deleted or
+ * the viewer may not see it. Memoised per request (pass the same viewer object
+ * from `getCurrentUser()` in page and `generateMetadata`).
+ */
+export const getPost = cache(async (id: string, viewer: Viewer | null): Promise<PostListItem | null> => {
   const row = await findPostRow(id);
   if (!row) return null;
   if (!(await canViewPost(row, viewer))) return null;
   const stats = await reactionStats([row.id], viewer?.id ?? null);
   return withStats([row], stats)[0];
-}
+});
 
 export interface VerseQuote {
   /** "Römer 8,28" */

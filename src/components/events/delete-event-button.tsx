@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash } from "lucide-react";
 import { deleteEvent } from "@/app/(site)/veranstaltungen/actions";
 import { Button } from "@/components/ui/button";
 import { initialActionState } from "@/lib/action-state";
@@ -19,7 +19,7 @@ export function DeleteEventButton({ eventId, className }: { eventId: string; cla
       }}
     >
       <Button type="submit" variant="ghost" size="sm" loading={pending} className="text-danger hover:bg-danger-soft">
-        <Trash2 aria-hidden="true" /> Löschen
+        <Trash aria-hidden="true" /> Löschen
       </Button>
       {state.ok === false && state.message ? (
         <p role="alert" className="mt-1 text-xs font-medium text-danger">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { CalendarDays, HandHeart, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
@@ -13,7 +14,7 @@ const PRAYER_STATUS: Record<"OPEN" | "ANSWERED" | "CLOSED", { label: string; var
   CLOSED: { label: "Geschlossen", variant: "outline" },
 };
 
-function SectionHeading({ icon, title, action }: { icon: React.ReactNode; title: string; action?: React.ReactNode }) {
+function SectionHeading({ icon, title, action }: { icon: ReactNode; title: string; action?: ReactNode }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
       <h2 className="flex items-center gap-2 text-lg font-semibold tracking-tight">

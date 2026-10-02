@@ -37,6 +37,7 @@ function RadioCards<T extends string>({
   name,
   legend,
   options,
+  labels,
   value,
   onChange,
   error,
@@ -44,18 +45,18 @@ function RadioCards<T extends string>({
   name: string;
   legend: string;
   options: readonly T[];
+  labels: Record<T, { label: string; description: string }>;
   value: T;
   onChange: (v: T) => void;
   error?: string[];
-  }) {
-  const labels = name === "kind" ? GROUP_KIND_LABELS : GROUP_VISIBILITY_LABELS;
+}) {
   const id = useId();
   return (
     <fieldset className="space-y-1.5">
       <legend className="text-sm font-medium">{legend}</legend>
       <div className="grid gap-2 sm:grid-cols-2">
         {options.map((opt) => {
-          const l = (labels as Record<string, { label: string; description: string }>)[opt];
+          const l = labels[opt];
           const checked = value === opt;
           return (
             <label
@@ -130,7 +131,7 @@ export function GroupForm({ action, defaults = {}, submitLabel, cancelHref }: Pr
         />
       </Field>
 
-      <RadioCards name="kind" legend="Wie trefft ihr euch?" options={GROUP_KINDS} value={kind} onChange={setKind} error={errors.kind} />
+      <RadioCards name="kind" legend="Wie trefft ihr euch?" options={GROUP_KINDS} labels={GROUP_KIND_LABELS} value={kind} onChange={setKind} error={errors.kind} />
 
       <Field label={kind === "LOCAL" ? "Stadt" : "Stadt (optional)"} htmlFor={`${id}-city`} error={errors.city} required={kind === "LOCAL"}>
         <Input
@@ -150,6 +151,7 @@ export function GroupForm({ action, defaults = {}, submitLabel, cancelHref }: Pr
         name="visibility"
         legend="Wie kommt man in die Gruppe?"
         options={GROUP_VISIBILITIES}
+        labels={GROUP_VISIBILITY_LABELS}
         value={visibility}
         onChange={setVisibility}
         error={errors.visibility}

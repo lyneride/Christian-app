@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useId, useState } from "react";
+import { useActionState, useId, useState, type ComponentProps } from "react";
 import { ChevronDown } from "lucide-react";
 import { FormMessage } from "@/components/auth/form-message";
 import { Button, buttonClasses } from "@/components/ui/button";
@@ -38,7 +38,7 @@ export interface PostComposeProps {
 
 const TITLE_REQUIRED: readonly PostKindValue[] = ["TESTIMONY", "QUESTION"];
 
-function SelectWithChevron({ className, ...props }: React.ComponentProps<typeof Select>) {
+function SelectWithChevron({ className, ...props }: ComponentProps<typeof Select>) {
   return (
     <div className="relative">
       <Select className={className} {...props} />
@@ -92,7 +92,7 @@ export function PostCompose({ action, groups, mode, defaults = {}, lockedGroup, 
         />
       </Field>
 
-      <div className={cn("grid gap-4", inline ? "sm:grid-cols-2" : "sm:grid-cols-2")}>
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Art" htmlFor={`${id}-kind`} error={errors.kind} hint={POST_KIND_LABELS[kind].description}>
           <SelectWithChevron
             id={`${id}-kind`}

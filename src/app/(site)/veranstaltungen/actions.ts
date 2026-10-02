@@ -49,7 +49,13 @@ function eventFormValues(formData: FormData): Record<string, string> {
 type ParseResult = { ok: false; error: ActionState } | { ok: true; data: EventInput; values: Record<string, string> };
 
 /** Validates the form and checks group membership. Returns the state to send back on failure. */
-async function parseEventForm(user: CurrentUser, formData: FormData, schema: typeof createEventSchema): Promise<ParseResult> {
+async function parseEventForm(
+  user: CurrentUser,
+  formData: FormData,
+  schema: typeof createEventSchema,
+  /** A group that may stay selected without a membership check (moderators editing a group's event). */
+  keepGroupId: string | null = null,
+): Promise<ParseResult> {
   const values = eventFormValues(formData);
   const parsed = schema.safeParse({
     title: values.title ?? "",
@@ -69,7 +75,7 @@ async function parseEventForm(user: CurrentUser, formData: FormData, schema: typ
   }
 
   const data = parsed.data;
-  if (data.groupId && !(await isActiveGroupMember(user.id, data.groupId))) {
+  if (data.groupId && data.groupId !== keepGroupId && !(await isActiveGroupMember(user.id, data.groupId))) {
     return {
       ok: false,
       error: failure("Bitte prüfe deine Eingaben.", {
@@ -113,11 +119,11 @@ export async function updateEvent(id: string, _prev: ActionState, formData: Form
   const user = await actionUser();
   if (!user) return failure(LOGIN_REQUIRED, { values: eventFormValues(formData) });
 
-  const existing = await prisma.event.findFirst({ where: { id, deletedAt: null }, select: { hostId: true } });
+  const existing = await prisma.event.findFirst({ where: { id, deletedAt: null }, select: { hostId: true, groupId: true } });
   if (!existing) return failure(NOT_FOUND);
   if (existing.hostId !== user.id && !isModerator(user)) return failure("Nur wer eingeladen hat, kann das Treffen bearbeiten.");
 
-  const result = await parseEventForm(user, formData, updateEventSchema);
+  const result = await parseEventForm(user, formData, updateEventSchema, existing.groupId);
   if (!result.ok) return result.error;
 
   try {
