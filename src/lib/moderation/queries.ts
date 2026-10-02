@@ -121,6 +121,14 @@ export async function dashboardStats(): Promise<DashboardStats> {
 
 export const countOpenReports = cache(async (): Promise<number> => prisma.report.count({ where: { status: "OPEN" } }));
 
+/** Number of reports per status (for the filter tabs). */
+export async function countReportsByStatus(): Promise<Record<ReportStatusValue, number>> {
+  const rows = await prisma.report.groupBy({ by: ["status"], _count: { _all: true } });
+  const counts: Record<ReportStatusValue, number> = { OPEN: 0, RESOLVED: 0, DISMISSED: 0 };
+  for (const row of rows) counts[row.status] = row._count._all;
+  return counts;
+}
+
 // ---------------------------------------------------------------------------
 // Reports
 // ---------------------------------------------------------------------------

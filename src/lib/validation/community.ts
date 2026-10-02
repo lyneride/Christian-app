@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { parseReference, verseKey } from "@/lib/bible/reference";
+import { formatReference, parseReference, parseVerseKey, verseKey } from "@/lib/bible/reference";
 
 /**
  * Validation, labels and URL helpers for the community area ("Gemeinschaft":
@@ -86,6 +86,13 @@ export function verseRefToKey(input: string): { key: string } | { error: string 
   if (!ref) return { error: VERSE_REF_INVALID };
   if (!ref.verseStart) return { error: VERSE_REF_NEEDS_VERSE };
   return { key: verseKey(ref.book.number, ref.chapter, ref.verseStart) };
+}
+
+/** Stored key ("45:8:28") back to the form notation ("Römer 8,28"); empty for null/unknown keys. */
+export function verseKeyToInput(key: string | null | undefined): string {
+  if (!key) return "";
+  const parsed = parseVerseKey(key);
+  return parsed ? formatReference({ book: parsed.book, chapter: parsed.chapter, verseStart: parsed.verse }, "de") : "";
 }
 
 export const postTitleSchema = z.string().trim().max(120, "Der Titel darf höchstens 120 Zeichen lang sein.");

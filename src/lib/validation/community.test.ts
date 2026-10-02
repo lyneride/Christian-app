@@ -15,6 +15,7 @@ import {
   postPath,
   postSchema,
   reactionSchema,
+  verseKeyToInput,
   verseRefToKey,
 } from "./community";
 
@@ -48,6 +49,11 @@ describe("verseRefToKey", () => {
   });
   it("keeps the first verse of a range", () => {
     expect(verseRefToKey("Joh 3,16-18")).toEqual({ key: "43:3:16" });
+  });
+  it("formats a stored key back for the form", () => {
+    expect(verseKeyToInput("45:8:28")).toBe("Römer 8,28");
+    expect(verseKeyToInput("99:1:1")).toBe("");
+    expect(verseKeyToInput(null)).toBe("");
   });
   it("returns null for empty input and errors for unknown or chapter-only references", () => {
     expect(verseRefToKey("   ")).toBeNull();
