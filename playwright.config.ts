@@ -14,7 +14,16 @@ export default defineConfig({
     trace: "retain-on-failure",
     locale: "de-DE",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        // The sandbox ships Chromium at a fixed path; locally Playwright's own download is used.
+        launchOptions: process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {},
+      },
+    },
+  ],
   webServer: {
     command: `npm run build && PORT=${PORT} npm run start`,
     url: `http://localhost:${PORT}`,
