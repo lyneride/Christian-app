@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { Locale } from "@/lib/bible/reference";
 import { cn } from "@/lib/utils";
+import { SidePanel } from "./side-panel";
 
 export interface CrossRefItem {
   reference: string;
@@ -34,11 +34,10 @@ interface Loaded {
   error: string | null;
 }
 
-/** Side panel (bottom sheet on mobile) listing cross references of one verse. */
+/** Side panel listing the cross references of one verse (fetched from /api/bibel/querverweise). */
 export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, chapterLabel, locale }: Props) {
   const [picked, setPicked] = useState<number | null>(null);
   const [loaded, setLoaded] = useState<Loaded | null>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
 
   const verse = picked !== null && verses.includes(picked) ? picked : (verses[0] ?? null);
   const key = verse === null ? null : `${book}:${chapter}:${verse}:${t}`;
@@ -62,63 +61,19 @@ export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, 
     return () => controller.abort();
   }, [open, key, verse, book, chapter, t]);
 
-  useEffect(() => {
-    if (open) closeRef.current?.focus();
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
-
-  if (!open) return null;
-
   const sep = locale === "de" ? "," : ":";
 
   return (
-    <>
-      <div className="bg-foreground/20 fixed inset-0 z-40" aria-hidden="true" onClick={onClose} />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="querverweise-titel"
-        className={cn(
-          "border-border bg-surface shadow-soft fixed z-50 flex flex-col",
-          "inset-x-0 bottom-0 max-h-[80vh] rounded-t-2xl border-t",
-          "md:inset-y-0 md:right-0 md:left-auto md:max-h-none md:w-[26rem] md:rounded-none md:border-t-0 md:border-l",
-        )}
-      >
-        <header className="border-border flex items-start justify-between gap-3 border-b px-5 py-4">
-          <div>
-            <h2 id="querverweise-titel" className="text-base font-semibold">
-              Querverweise
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              zu {chapterLabel}
-              {verse !== null ? `${sep}${verse}` : ""}
-            </p>
-          </div>
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={onClose}
-            aria-label="Querverweise schließen"
-            className="hover:bg-surface-muted inline-flex size-9 shrink-0 items-center justify-center rounded-full"
-          >
-            <X className="size-5" aria-hidden="true" />
-          </button>
-        </header>
-
-        {verses.length > 1 ? (
-          <div
-            role="group"
-            aria-label="Vers wählen"
-            className="border-border flex flex-wrap gap-1.5 border-b px-5 py-3"
-          >
+    <SidePanel
+      open={open}
+      onClose={onClose}
+      title="Querverweise"
+      subtitle={`zu ${chapterLabel}${verse !== null ? `${sep}${verse}` : ""}`}
+      closeLabel="Querverweise schließen"
+      busy={loading}
+      toolbar={
+        verses.length > 1 ? (
+          <div role="group" aria-label="Vers wählen" className="flex flex-wrap gap-1.5 border-b border-border px-5 py-3">
             {verses.map((n) => (
               <button
                 key={n}
@@ -134,49 +89,38 @@ export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, 
               </button>
             ))}
           </div>
-        ) : null}
-
-        <div className="flex-1 overflow-y-auto px-5 py-4" aria-live="polite" aria-busy={loading}>
-          {loading ? (
-            <ul className="space-y-4" aria-hidden="true">
-              {[0, 1, 2, 3].map((i) => (
-                <li key={i} className="space-y-2">
-                  <div className="bg-surface-muted h-4 w-32 animate-pulse rounded" />
-                  <div className="bg-surface-muted h-3 w-full animate-pulse rounded" />
-                  <div className="bg-surface-muted h-3 w-5/6 animate-pulse rounded" />
-                </li>
-              ))}
-            </ul>
-          ) : current?.error ? (
-            <p className="text-danger text-sm">{current.error}</p>
-          ) : current?.refs && current.refs.length === 0 ? (
-            <p className="text-muted-foreground text-sm">Zu diesem Vers sind keine Querverweise hinterlegt.</p>
-          ) : (
-            <ol className="space-y-4">
-              {current?.refs?.map((ref) => (
-                <li key={ref.path}>
-                  <Link
-                    href={ref.path}
-                    onClick={onClose}
-                    className="group hover:bg-surface-muted -mx-2 block rounded-lg px-2 py-1.5"
-                  >
-                    <span className="text-primary text-sm font-semibold group-hover:underline">{ref.reference}</span>
-                    <span
-                      className="scripture text-foreground/90 mt-0.5 line-clamp-3 block text-[0.95rem] leading-relaxed"
-                      lang={locale}
-                    >
-                      {ref.text}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          )}
-        </div>
-        <p className="border-border text-muted-foreground border-t px-5 py-2.5 text-xs">
-          Querverweise: OpenBible.info (CC-BY 4.0)
-        </p>
-      </aside>
-    </>
+        ) : null
+      }
+      footer="Querverweise: OpenBible.info (CC-BY 4.0)"
+    >
+      {loading ? (
+        <ul className="space-y-4" aria-hidden="true">
+          {[0, 1, 2, 3].map((i) => (
+            <li key={i} className="space-y-2">
+              <div className="h-4 w-32 animate-pulse rounded bg-surface-muted" />
+              <div className="h-3 w-full animate-pulse rounded bg-surface-muted" />
+              <div className="h-3 w-5/6 animate-pulse rounded bg-surface-muted" />
+            </li>
+          ))}
+        </ul>
+      ) : current?.error ? (
+        <p className="text-sm text-danger">{current.error}</p>
+      ) : current?.refs && current.refs.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Zu diesem Vers sind keine Querverweise hinterlegt.</p>
+      ) : (
+        <ol className="space-y-4">
+          {current?.refs?.map((ref) => (
+            <li key={ref.path}>
+              <Link href={ref.path} onClick={onClose} className="group -mx-2 block rounded-lg px-2 py-1.5 hover:bg-surface-muted">
+                <span className="text-sm font-semibold text-primary group-hover:underline">{ref.reference}</span>
+                <span className="scripture mt-0.5 line-clamp-3 block text-[0.95rem] leading-relaxed text-foreground/90" lang={locale}>
+                  {ref.text}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      )}
+    </SidePanel>
   );
 }

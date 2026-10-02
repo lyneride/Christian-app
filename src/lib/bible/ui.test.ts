@@ -9,6 +9,7 @@ import {
   DEFAULT_READER_SETTINGS,
   excerpt,
   formatCrossReference,
+  formatRangeReference,
   formatSelectionReference,
   formatVerseList,
   groupBooks,
@@ -18,6 +19,7 @@ import {
   parseRecentChapters,
   pushRecentChapter,
   readerSettingsStyle,
+  selectionRange,
   verseParam,
   verseRuns,
 } from "./ui";
@@ -63,6 +65,13 @@ describe("verse selections", () => {
     expect(formatVerseList([16, 18], "en")).toBe("16,18");
     expect(formatVerseList([20, 16, 17])).toBe("16-17.20");
     expect(formatVerseList([])).toBe("");
+  });
+  it("picks the first contiguous run for study actions", () => {
+    expect(selectionRange([])).toBeNull();
+    expect(selectionRange([18, 16, 17])).toEqual({ start: 16, end: 18 });
+    expect(selectionRange([20, 16, 17])).toEqual({ start: 16, end: 17 });
+    expect(formatRangeReference("Johannes", 3, { start: 16, end: 18 })).toBe("Johannes 3,16-18");
+    expect(formatRangeReference("John", 3, { start: 16, end: 16 }, "en")).toBe("John 3:16");
   });
   it("collapses the ?v= param to a single range", () => {
     expect(verseParam([])).toBeNull();

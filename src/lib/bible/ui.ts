@@ -122,6 +122,20 @@ export function verseParam(verses: readonly number[]): string | null {
   return start === end ? String(start) : `${start}-${end}`;
 }
 
+/**
+ * The range a study action (note, memory verse) applies to: the first
+ * contiguous run of the selection, i.e. the whole selection when contiguous.
+ */
+export function selectionRange(verses: readonly number[]): VerseRange | null {
+  return verseRuns(verses)[0] ?? null;
+}
+
+/** "Johannes 3,16-18" / "John 3:16-18" for a single range. */
+export function formatRangeReference(bookName: string, chapter: number, range: VerseRange, locale: Locale = "de"): string {
+  const sep = locale === "de" ? "," : ":";
+  return `${bookName} ${chapter}${sep}${range.start}${range.end > range.start ? `-${range.end}` : ""}`;
+}
+
 /** "16", "16-18", "16.18" (de) / "16,18" (en), "16-17.20" */
 export function formatVerseList(verses: readonly number[], locale: Locale = "de"): string {
   const listSep = locale === "de" ? "." : ",";
