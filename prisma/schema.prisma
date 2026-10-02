@@ -1,7 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Prisma 7 schema – the datasource URL lives in prisma.config.ts.
+// SQLite in development; switch `provider` to "postgresql" and the adapter in src/lib/db.ts for Postgres.
 
 generator client {
   provider = "prisma-client"
@@ -10,4 +8,613 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+}
+
+// ---------------------------------------------------------------------------
+// Accounts & sessions
+// ---------------------------------------------------------------------------
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+model User {
+  id                   String     @id @default(cuid())
+  email                String     @unique
+  emailVerifiedAt      DateTime?
+  passwordHash         String
+  username             String     @unique
+  name                 String
+  bio                  String?
+  avatarUrl            String?
+  location             String?
+  church               String?
+  role                 Role       @default(USER)
+  status               UserStatus @default(ACTIVE)
+  preferredTranslation String     @default("LUT1912")
+  profileVisibility    Visibility @default(MEMBERS)
+  notifyByEmail        Boolean    @default(true)
+  openForPartner       Boolean    @default(false)
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  lastSeenAt           DateTime?
+
+  sessions           Session[]
+  verificationTokens VerificationToken[]
+
+  following           Follow[]                  @relation("following")
+  followers           Follow[]                  @relation("followers")
+  createdGroups       Group[]                   @relation("createdGroups")
+  memberships         GroupMember[]
+  posts               Post[]
+  comments            Comment[]
+  reactions           Reaction[]
+  prayerRequests      PrayerRequest[]
+  prayerSupports      PrayerSupport[]
+  partnershipRequests Partnership[]             @relation("partnershipRequests")
+  partnershipInvites  Partnership[]             @relation("partnershipInvites")
+  hostedEvents        Event[]
+  rsvps               EventRsvp[]
+  readingPlans        ReadingPlan[]
+  planSubscriptions   PlanSubscription[]
+  highlights          Highlight[]
+  notes               Note[]
+  bookmarks           Bookmark[]
+  readingLogs         ReadingLog[]
+  journalEntries      JournalEntry[]
+  memoryVerses        MemoryVerse[]
+  conversations       ConversationParticipant[]
+  messages            Message[]
+  notifications       Notification[]            @relation("notifications")
+  actedNotifications  Notification[]            @relation("actedNotifications")
+  reportsMade         Report[]                  @relation("reportsMade")
+  reportsResolved     Report[]                  @relation("reportsResolved")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  tokenHash    String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  lastActiveAt DateTime @default(now())
+  expiresAt    DateTime
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+enum TokenPurpose {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+  EMAIL_CHANGE
+}
+
+model VerificationToken {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String       @unique
+  purpose   TokenPurpose
+  newEmail  String?
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime     @default(now())
+
+  @@index([userId, purpose])
+}
+
+// ---------------------------------------------------------------------------
+// Feature models (draft; appended to prisma/schema.prisma after the research report)
+// ---------------------------------------------------------------------------
+
+enum Visibility {
+  PUBLIC // visible to everyone, including guests
+  MEMBERS // visible to signed-in members
+  GROUP // visible to members of the group
+  PRIVATE // only the owner
+}
+
+// ---- Social graph ----------------------------------------------------------
+
+model Follow {
+  followerId  String
+  follower    User     @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@id([followerId, followingId])
+  @@index([followingId])
+}
+
+// ---- Groups ----------------------------------------------------------------
+
+enum GroupKind {
+  ONLINE
+  LOCAL
+}
+
+enum GroupRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MembershipStatus {
+  ACTIVE
+  PENDING
+  BANNED
+}
+
+model Group {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  description String
+  kind        GroupKind       @default(ONLINE)
+  city        String?
+  visibility  Visibility      @default(PUBLIC)
+  imageUrl    String?
+  createdById String
+  createdBy   User            @relation("createdGroups", fields: [createdById], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  members     GroupMember[]
+  posts       Post[]
+  prayers     PrayerRequest[]
+  events      Event[]
+
+  @@index([kind, city])
+}
+
+model GroupMember {
+  groupId  String
+  group    Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     GroupRole        @default(MEMBER)
+  status   MembershipStatus @default(ACTIVE)
+  joinedAt DateTime         @default(now())
+
+  @@id([groupId, userId])
+  @@index([userId])
+}
+
+// ---- Posts, comments, reactions -------------------------------------------
+
+enum PostKind {
+  POST // normal post
+  TESTIMONY // Zeugnis
+  QUESTION // Frage
+  IMPULSE // kurzer Impuls (Text eines Mitglieds)
+}
+
+model Post {
+  id         String     @id @default(cuid())
+  kind       PostKind   @default(POST)
+  authorId   String
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  groupId    String?
+  group      Group?     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title      String?
+  body       String
+  verseRef   String? // optional "43:3:16" anchor
+  visibility Visibility @default(MEMBERS)
+  pinned     Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deletedAt  DateTime?
+  comments   Comment[]
+  reactions  Reaction[]
+
+  @@index([createdAt])
+  @@index([authorId])
+  @@index([groupId, createdAt])
+  @@index([kind, createdAt])
+}
+
+model Comment {
+  id              String         @id @default(cuid())
+  authorId        String
+  author          User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId          String?
+  post            Post?          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  prayerRequestId String?
+  prayerRequest   PrayerRequest? @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+  parentId        String?
+  parent          Comment?       @relation("replies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies         Comment[]      @relation("replies")
+  body            String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+
+  @@index([postId, createdAt])
+  @@index([prayerRequestId, createdAt])
+}
+
+enum ReactionKind {
+  AMEN
+  HEART
+  PRAY
+}
+
+model Reaction {
+  postId    String
+  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      ReactionKind @default(AMEN)
+  createdAt DateTime     @default(now())
+
+  @@id([postId, userId])
+}
+
+// ---- Prayer ----------------------------------------------------------------
+
+enum PrayerStatus {
+  OPEN
+  ANSWERED
+  CLOSED
+}
+
+model PrayerRequest {
+  id          String          @id @default(cuid())
+  authorId    String
+  author      User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  groupId     String?
+  group       Group?          @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title       String
+  body        String
+  category    String          @default("allgemein")
+  isAnonymous Boolean         @default(false)
+  visibility  Visibility      @default(MEMBERS)
+  status      PrayerStatus    @default(OPEN)
+  answerNote  String?
+  answeredAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+  supports    PrayerSupport[]
+  comments    Comment[]
+
+  @@index([status, createdAt])
+  @@index([authorId])
+  @@index([groupId, createdAt])
+}
+
+/**
+ * "Ich habe dafür gebetet" – one row per user and request and day.
+ */
+model PrayerSupport {
+  id        String        @id @default(cuid())
+  requestId String
+  request   PrayerRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day       String // "YYYY-MM-DD" (UTC) to allow one support per day
+  createdAt DateTime      @default(now())
+
+  @@unique([requestId, userId, day])
+  @@index([userId, createdAt])
+}
+
+// ---- Prayer partners / mentoring -------------------------------------------
+
+enum PartnershipKind {
+  GEBETSPARTNER
+  MENTORING
+}
+
+enum PartnershipStatus {
+  REQUESTED
+  ACTIVE
+  ENDED
+  DECLINED
+}
+
+model Partnership {
+  id          String            @id @default(cuid())
+  kind        PartnershipKind   @default(GEBETSPARTNER)
+  requesterId String
+  requester   User              @relation("partnershipRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  partnerId   String
+  partner     User              @relation("partnershipInvites", fields: [partnerId], references: [id], onDelete: Cascade)
+  message     String?
+  status      PartnershipStatus @default(REQUESTED)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([requesterId])
+  @@index([partnerId])
+}
+
+// ---- Events ----------------------------------------------------------------
+
+enum RsvpStatus {
+  GOING
+  MAYBE
+  DECLINED
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  hostId      String
+  host        User        @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  groupId     String?
+  group       Group?      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  startsAt    DateTime
+  endsAt      DateTime?
+  isOnline    Boolean     @default(false)
+  onlineUrl   String?
+  location    String?
+  city        String?
+  visibility  Visibility  @default(PUBLIC)
+  capacity    Int?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+  rsvps       EventRsvp[]
+
+  @@index([startsAt])
+  @@index([city, startsAt])
+}
+
+model EventRsvp {
+  eventId   String
+  event     Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    RsvpStatus @default(GOING)
+  createdAt DateTime   @default(now())
+
+  @@id([eventId, userId])
+}
+
+// ---- Reading plans ---------------------------------------------------------
+
+model ReadingPlan {
+  id            String             @id @default(cuid())
+  slug          String             @unique
+  title         String
+  description   String
+  category      String
+  minutesPerDay Int                @default(10)
+  dayCount      Int
+  isSystem      Boolean            @default(true)
+  authorId      String?
+  author        User?              @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt     DateTime           @default(now())
+  days          PlanDay[]
+  subscriptions PlanSubscription[]
+}
+
+model PlanDay {
+  planId   String
+  plan     ReadingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  day      Int
+  readings String // JSON: Reading[]
+
+  @@id([planId, day])
+}
+
+model PlanSubscription {
+  id          String         @id @default(cuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId      String
+  plan        ReadingPlan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  startedAt   DateTime       @default(now())
+  completedAt DateTime?
+  archivedAt  DateTime?
+  progress    PlanProgress[]
+
+  @@unique([userId, planId])
+  @@index([userId])
+}
+
+model PlanProgress {
+  subscriptionId String
+  subscription   PlanSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  day            Int
+  completedAt    DateTime         @default(now())
+
+  @@id([subscriptionId, day])
+}
+
+// ---- Personal Bible study --------------------------------------------------
+
+model Highlight {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verseKey    String // "43:3:16"
+  color       String   @default("yellow")
+  translation String   @default("LUT1912")
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, verseKey])
+  @@index([userId, createdAt])
+}
+
+model Note {
+  id         String     @id @default(cuid())
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verseKey   String // start verse "43:3:16"
+  verseEnd   Int? // optional end verse within the same chapter
+  title      String?
+  body       String
+  visibility Visibility @default(PRIVATE)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([userId, verseKey])
+  @@index([userId, updatedAt])
+}
+
+model Bookmark {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verseKey  String
+  label     String?
+  createdAt DateTime @default(now())
+
+  @@id([userId, verseKey])
+}
+
+/**
+ * Chapters a user has read (progress without streak pressure).
+ */
+model ReadingLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book        Int
+  chapter     Int
+  translation String
+  readAt      DateTime @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, book, chapter])
+}
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String // "YYYY-MM-DD"
+  title     String?
+  body      String
+  gratitude String?
+  prayer    String?
+  verseKey  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, date])
+}
+
+/**
+ * Verse memorisation with a Leitner box system.
+ */
+model MemoryVerse {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verseKey       String
+  verseEnd       Int?
+  translation    String
+  text           String // snapshot of the verse text
+  reference      String // formatted reference, e.g. "Johannes 3,16"
+  box            Int       @default(1) // 1..5
+  nextReviewAt   DateTime  @default(now())
+  lastReviewedAt DateTime?
+  reviewCount    Int       @default(0)
+  correctCount   Int       @default(0)
+  createdAt      DateTime  @default(now())
+
+  @@unique([userId, verseKey, translation])
+  @@index([userId, nextReviewAt])
+}
+
+// ---- Messages --------------------------------------------------------------
+
+model Conversation {
+  id           String                    @id @default(cuid())
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastReadAt     DateTime?
+  joinedAt       DateTime     @default(now())
+
+  @@id([conversationId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  body           String
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+// ---- Notifications & moderation -------------------------------------------
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation("notifications", fields: [userId], references: [id], onDelete: Cascade)
+  actorId   String?
+  actor     User?     @relation("actedNotifications", fields: [actorId], references: [id], onDelete: SetNull)
+  type      String // e.g. "comment", "prayer_support", "group_invite", "partner_request", "message"
+  title     String
+  body      String?
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt, createdAt])
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+model Report {
+  id           String       @id @default(cuid())
+  reporterId   String
+  reporter     User         @relation("reportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType   String // "post" | "comment" | "prayer" | "user" | "group" | "event" | "message"
+  targetId     String
+  reason       String
+  details      String?
+  status       ReportStatus @default(OPEN)
+  resolvedById String?
+  resolvedBy   User?        @relation("reportsResolved", fields: [resolvedById], references: [id], onDelete: SetNull)
+  resolution   String?
+  createdAt    DateTime     @default(now())
+  resolvedAt   DateTime?
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  targetType String?
+  targetId   String?
+  details    String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
 }
