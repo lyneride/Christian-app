@@ -5,6 +5,7 @@ import { ArrowRight, Bell, BookOpen, Compass, HandHeart, MessageCircle, Users } 
 import { requireUser } from "@/lib/auth/dal";
 import { VerseOfTheDay } from "@/components/bible/verse-of-the-day";
 import { TodayReadings } from "@/components/plans/today-readings";
+import { UpcomingEvents } from "@/components/events/upcoming-events";
 import { Alert } from "@/components/ui/alert";
 import { buttonClasses } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -169,6 +170,10 @@ export default async function StartPage(props: PageProps<"/start">) {
         <aside className="space-y-6">
           <Suspense fallback={null}>
             <Inbox userId={user.id} />
+          </Suspense>
+
+          <Suspense fallback={<Skeleton h="h-24" />}>
+            <UpcomingEvents userId={user.id} limit={3} />
           </Suspense>
 
           <section aria-labelledby="schnell" className="rounded-card border border-border bg-surface p-5 shadow-soft">

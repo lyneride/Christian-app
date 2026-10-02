@@ -10,6 +10,8 @@ const schema = z.object({
   SMTP_USER: z.string().optional().default(""),
   SMTP_PASS: z.string().optional().default(""),
   MAIL_FROM: z.string().optional().default("Bleibe <noreply@localhost>"),
+  /** Shared secret for /api/cron/* (Bearer token); unset → cron endpoints refuse */
+  CRON_SECRET: z.string().optional().default(""),
 });
 
 export type Env = z.infer<typeof schema>;

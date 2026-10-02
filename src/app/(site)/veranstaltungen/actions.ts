@@ -165,7 +165,7 @@ export async function deleteEvent(id: string): Promise<ActionState> {
 // Zusagen
 // ---------------------------------------------------------------------------
 
-export class CapacityReachedError extends Error {}
+class CapacityReachedError extends Error {}
 
 /**
  * Sets the viewer's answer (upsert). Respects the capacity for new GOING
@@ -226,8 +226,7 @@ export async function setRsvp(eventId: string, status: RsvpStatus): Promise<Acti
   if (next === "GOING" && previous !== "GOING" && event.hostId !== user.id) {
     try {
       // At most one "ist dabei" per member and event, however often the answer changes.
-      // "event_rsvp" is not part of NotificationType yet (see report); the column is a plain string.
-      const type = "event_rsvp" as NotificationType;
+      const type: NotificationType = "event_rsvp";
       const already = await prisma.notification.findFirst({
         where: { userId: event.hostId, actorId: user.id, type, href: detailPath(eventId) },
         select: { id: true },

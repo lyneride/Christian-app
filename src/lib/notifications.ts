@@ -12,6 +12,8 @@ export type NotificationType =
   | "partner_request"
   | "partner_accepted"
   | "event_reminder"
+  | "event_rsvp"
+  | "follow"
   | "message"
   | "mention"
   | "moderation";

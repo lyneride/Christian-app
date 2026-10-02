@@ -33,6 +33,8 @@ export const NOTIFICATION_TYPES: Record<NotificationType, NotificationTypeInfo> 
   partner_request: { icon: UserPlus, label: "Partneranfrage" },
   partner_accepted: { icon: Handshake, label: "Partnerschaft bestätigt" },
   event_reminder: { icon: CalendarDays, label: "Erinnerung an ein Treffen" },
+  event_rsvp: { icon: CalendarDays, label: "Zusage zu deinem Treffen" },
+  follow: { icon: UserPlus, label: "Neuer Follower" },
   message: { icon: MessageCircle, label: "Neue Nachricht" },
   mention: { icon: AtSign, label: "Erwähnung" },
   moderation: { icon: ShieldAlert, label: "Hinweis der Moderation" },
