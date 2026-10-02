@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { Bell, BookMarked, LogOut, Settings, Shield, UserRound, NotebookPen } from "lucide-react";
+import { Bell, BookMarked, Brain, LogOut, MessageCircle, NotebookPen, Settings, Shield, UserRound, BookOpenCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -34,7 +34,10 @@ export function UserMenuDropdown({ user, trigger }: Props) {
   const items = [
     { href: "/start", label: "Mein Bereich", icon: UserRound },
     { href: `/@${user.username}`, label: "Mein Profil", icon: BookMarked },
+    { href: "/meine-bibel", label: "Meine Bibel", icon: BookOpenCheck },
+    { href: "/merken", label: "Lernverse", icon: Brain },
     { href: "/tagebuch", label: "Tagebuch", icon: NotebookPen },
+    { href: "/nachrichten", label: "Nachrichten", icon: MessageCircle },
     { href: "/benachrichtigungen", label: "Benachrichtigungen", icon: Bell },
     { href: "/einstellungen", label: "Einstellungen", icon: Settings },
     ...(user.role !== "USER" ? [{ href: "/admin", label: "Moderation", icon: Shield }] : []),
