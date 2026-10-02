@@ -22,7 +22,17 @@ interface Props {
  * Drawer on the right (md+) / bottom sheet (mobile). Modal: Escape closes,
  * focus moves to the close button on open and back to the opener on close.
  */
-export function SidePanel({ open, onClose, title, subtitle, toolbar, footer, children, busy, closeLabel = "Schließen" }: Props) {
+export function SidePanel({
+  open,
+  onClose,
+  title,
+  subtitle,
+  toolbar,
+  footer,
+  children,
+  busy,
+  closeLabel = "Schließen",
+}: Props) {
   const titleId = useId();
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -46,30 +56,30 @@ export function SidePanel({ open, onClose, title, subtitle, toolbar, footer, chi
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-foreground/20" aria-hidden="true" onClick={onClose} />
+      <div className="bg-foreground/20 fixed inset-0 z-40" aria-hidden="true" onClick={onClose} />
       <aside
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          "fixed z-50 flex flex-col border-border bg-surface shadow-soft",
+          "border-border bg-surface shadow-soft fixed z-50 flex flex-col",
           "inset-x-0 bottom-0 max-h-[80vh] rounded-t-2xl border-t",
-          "md:inset-y-0 md:right-0 md:left-auto md:w-[26rem] md:max-h-none md:rounded-none md:border-t-0 md:border-l",
+          "md:inset-y-0 md:right-0 md:left-auto md:max-h-none md:w-[26rem] md:rounded-none md:border-t-0 md:border-l",
         )}
       >
-        <header className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
+        <header className="border-border flex items-start justify-between gap-3 border-b px-5 py-4">
           <div>
             <h2 id={titleId} className="text-base font-semibold">
               {title}
             </h2>
-            {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
+            {subtitle ? <p className="text-muted-foreground text-sm">{subtitle}</p> : null}
           </div>
           <button
             ref={closeRef}
             type="button"
             onClick={onClose}
             aria-label={closeLabel}
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full hover:bg-surface-muted"
+            className="hover:bg-surface-muted inline-flex size-9 shrink-0 items-center justify-center rounded-full"
           >
             <X className="size-5" aria-hidden="true" />
           </button>
@@ -78,7 +88,9 @@ export function SidePanel({ open, onClose, title, subtitle, toolbar, footer, chi
         <div className="flex-1 overflow-y-auto px-5 py-4" aria-live="polite" aria-busy={busy}>
           {children}
         </div>
-        {footer ? <div className="border-t border-border px-5 py-2.5 text-xs text-muted-foreground">{footer}</div> : null}
+        {footer ? (
+          <div className="border-border text-muted-foreground border-t px-5 py-2.5 text-xs">{footer}</div>
+        ) : null}
       </aside>
     </>
   );

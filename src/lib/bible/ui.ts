@@ -131,7 +131,12 @@ export function selectionRange(verses: readonly number[]): VerseRange | null {
 }
 
 /** "Johannes 3,16-18" / "John 3:16-18" for a single range. */
-export function formatRangeReference(bookName: string, chapter: number, range: VerseRange, locale: Locale = "de"): string {
+export function formatRangeReference(
+  bookName: string,
+  chapter: number,
+  range: VerseRange,
+  locale: Locale = "de",
+): string {
   const sep = locale === "de" ? "," : ":";
   return `${bookName} ${chapter}${sep}${range.start}${range.end > range.start ? `-${range.end}` : ""}`;
 }

@@ -73,7 +73,11 @@ export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, 
       busy={loading}
       toolbar={
         verses.length > 1 ? (
-          <div role="group" aria-label="Vers wählen" className="flex flex-wrap gap-1.5 border-b border-border px-5 py-3">
+          <div
+            role="group"
+            aria-label="Vers wählen"
+            className="border-border flex flex-wrap gap-1.5 border-b px-5 py-3"
+          >
             {verses.map((n) => (
               <button
                 key={n}
@@ -97,23 +101,30 @@ export function CrossReferencesPanel({ open, onClose, book, chapter, verses, t, 
         <ul className="space-y-4" aria-hidden="true">
           {[0, 1, 2, 3].map((i) => (
             <li key={i} className="space-y-2">
-              <div className="h-4 w-32 animate-pulse rounded bg-surface-muted" />
-              <div className="h-3 w-full animate-pulse rounded bg-surface-muted" />
-              <div className="h-3 w-5/6 animate-pulse rounded bg-surface-muted" />
+              <div className="bg-surface-muted h-4 w-32 animate-pulse rounded" />
+              <div className="bg-surface-muted h-3 w-full animate-pulse rounded" />
+              <div className="bg-surface-muted h-3 w-5/6 animate-pulse rounded" />
             </li>
           ))}
         </ul>
       ) : current?.error ? (
-        <p className="text-sm text-danger">{current.error}</p>
+        <p className="text-danger text-sm">{current.error}</p>
       ) : current?.refs && current.refs.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Zu diesem Vers sind keine Querverweise hinterlegt.</p>
+        <p className="text-muted-foreground text-sm">Zu diesem Vers sind keine Querverweise hinterlegt.</p>
       ) : (
         <ol className="space-y-4">
           {current?.refs?.map((ref) => (
             <li key={ref.path}>
-              <Link href={ref.path} onClick={onClose} className="group -mx-2 block rounded-lg px-2 py-1.5 hover:bg-surface-muted">
-                <span className="text-sm font-semibold text-primary group-hover:underline">{ref.reference}</span>
-                <span className="scripture mt-0.5 line-clamp-3 block text-[0.95rem] leading-relaxed text-foreground/90" lang={locale}>
+              <Link
+                href={ref.path}
+                onClick={onClose}
+                className="group hover:bg-surface-muted -mx-2 block rounded-lg px-2 py-1.5"
+              >
+                <span className="text-primary text-sm font-semibold group-hover:underline">{ref.reference}</span>
+                <span
+                  className="scripture text-foreground/90 mt-0.5 line-clamp-3 block text-[0.95rem] leading-relaxed"
+                  lang={locale}
+                >
                   {ref.text}
                 </span>
               </Link>

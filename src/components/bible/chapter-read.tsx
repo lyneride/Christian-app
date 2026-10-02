@@ -36,12 +36,12 @@ export function ChapterReadButton({ book, chapter, translation, readToday }: Pro
   }
 
   return (
-    <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-card border border-border bg-surface px-5 py-4">
+    <div className="rounded-card border-border bg-surface mt-10 flex flex-wrap items-center justify-between gap-4 border px-5 py-4">
       <div>
         <p className="text-sm font-medium">Kapitel zu Ende gelesen?</p>
-        <p className="text-xs text-muted-foreground">Erscheint in deiner Übersicht unter „Meine Bibel“.</p>
+        <p className="text-muted-foreground text-xs">Erscheint in deiner Übersicht unter „Meine Bibel“.</p>
         {error ? (
-          <p role="alert" className="mt-1 text-xs font-medium text-danger">
+          <p role="alert" className="text-danger mt-1 text-xs font-medium">
             {error}
           </p>
         ) : null}

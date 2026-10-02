@@ -67,7 +67,7 @@ export function NotesPanel({ open, onClose, notes, chapterLabel, locale, draft, 
       subtitle={`zu ${chapterLabel}`}
       closeLabel="Notizen schließen"
       footer={
-        <Link href="/meine-bibel?bereich=notizen" className="inline-flex items-center gap-1 hover:text-foreground">
+        <Link href="/meine-bibel?bereich=notizen" className="hover:text-foreground inline-flex items-center gap-1">
           Alle Notizen in „Meine Bibel“
           <ArrowRight className="size-3.5" aria-hidden="true" />
         </Link>
@@ -90,26 +90,31 @@ export function NotesPanel({ open, onClose, notes, chapterLabel, locale, draft, 
 
       {notes.length === 0 ? (
         draft ? null : (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             In diesem Kapitel hast du noch keine Notiz. Wähle einen Vers aus und tippe auf „Notiz“, um eine anzulegen.
           </p>
         )
       ) : (
-        <section className={cn(draft && "mt-8 border-t border-border pt-6")} aria-label="Notizen in diesem Kapitel">
-          {draft ? <h3 className="mb-3 text-sm font-semibold text-muted-foreground">Bisherige Notizen in diesem Kapitel</h3> : null}
+        <section className={cn(draft && "border-border mt-8 border-t pt-6")} aria-label="Notizen in diesem Kapitel">
+          {draft ? (
+            <h3 className="text-muted-foreground mb-3 text-sm font-semibold">Bisherige Notizen in diesem Kapitel</h3>
+          ) : null}
           <ol className="space-y-2">
             {notes.map((n) => (
               <li key={n.id}>
                 <Link
                   href={`/meine-bibel/notizen/${n.id}`}
                   className={cn(
-                    "block rounded-xl border border-border px-3.5 py-3 transition hover:bg-surface-muted",
-                    focusVerse !== null && focusVerse !== undefined && focusVerse === n.verse && "border-primary/50 bg-primary-soft/40",
+                    "border-border hover:bg-surface-muted block rounded-xl border px-3.5 py-3 transition",
+                    focusVerse !== null &&
+                      focusVerse !== undefined &&
+                      focusVerse === n.verse &&
+                      "border-primary/50 bg-primary-soft/40",
                   )}
                 >
-                  <span className="text-xs font-semibold text-primary">{label(n)}</span>
+                  <span className="text-primary text-xs font-semibold">{label(n)}</span>
                   {n.title ? <span className="mt-0.5 block text-sm font-medium">{n.title}</span> : null}
-                  <span className="mt-0.5 line-clamp-3 block text-sm text-muted-foreground">{n.excerpt}</span>
+                  <span className="text-muted-foreground mt-0.5 line-clamp-3 block text-sm">{n.excerpt}</span>
                 </Link>
               </li>
             ))}

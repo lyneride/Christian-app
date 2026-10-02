@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChapterReadButton } from "@/components/bible/chapter-read";
 import { KeyboardNav } from "@/components/bible/keyboard-nav";
 import { ReaderToolbar, type ChapterTarget } from "@/components/bible/reader-toolbar";
 import { RecordRecentChapter } from "@/components/bible/recent-chapters";
-import { VerseList, type ReaderVerse } from "@/components/bible/verse-list";
+import { VerseList, type ReaderNote, type ReaderStudy, type ReaderVerse } from "@/components/bible/verse-list";
 import { Alert } from "@/components/ui/alert";
 import { buttonClasses } from "@/components/ui/button";
 import { BOOKS, bookSlug, getBookBySlug, getBookByNumber, type BibleBook } from "@/lib/bible/books";
@@ -19,6 +20,9 @@ import {
 } from "@/lib/bible/data";
 import { formatReference, parseVerseRange } from "@/lib/bible/reference";
 import { buildBookUrl, buildReaderUrl, clampVerseRange, excerpt, localeFor, toTranslationOption } from "@/lib/bible/ui";
+import { getCurrentUser } from "@/lib/auth/dal";
+import { prisma } from "@/lib/db";
+import { getChapterAnnotations } from "@/lib/study/queries";
 import { cn } from "@/lib/utils";
 
 type Props = PageProps<"/bibel/[book]/[chapter]">;
@@ -57,6 +61,39 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return { title, description, openGraph: { title, description, type: "article" } };
 }
 
+interface StudyData extends Omit<ReaderStudy, "loginUrl"> {
+  readToday: boolean;
+}
+
+const GUEST: StudyData = { signedIn: false, highlights: {}, bookmarks: [], notes: [], readToday: false };
+
+/** Highlights, notes, bookmarks and today's reading-log entry of the signed-in user. */
+async function loadStudy(userId: string | null, bookNumber: number, chapter: number): Promise<StudyData> {
+  if (!userId) return GUEST;
+  const dayStart = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
+  const [annotations, log] = await Promise.all([
+    getChapterAnnotations(userId, bookNumber, chapter),
+    prisma.readingLog.findFirst({
+      where: { userId, book: bookNumber, chapter, readAt: { gte: dayStart } },
+      select: { id: true },
+    }),
+  ]);
+  const notes: ReaderNote[] = annotations.notes.map((n) => ({
+    id: n.id,
+    verse: n.verse,
+    verseEnd: n.verseEnd,
+    title: n.title,
+    excerpt: excerpt([n.body.replace(/[#*_>`]/g, "")], 140),
+  }));
+  return {
+    signedIn: true,
+    highlights: annotations.highlights,
+    bookmarks: [...annotations.bookmarks],
+    notes,
+    readToday: Boolean(log),
+  };
+}
+
 function chapterTarget(
   target: { book: number; chapter: number } | null,
   locale: "de" | "en",
@@ -82,14 +119,21 @@ export default async function ChapterPage(props: Props) {
   if (!data) notFound();
 
   const pRaw = first(sp.p);
-  const [translations, adjacent, parallelInfo] = await Promise.all([
+  const [translations, adjacent, parallelInfo, user] = await Promise.all([
     listTranslations(),
     getAdjacentChapters(t, book.number, chapter),
     resolveParallel(pRaw, t),
+    getCurrentUser(),
   ]);
-  const parallel = parallelInfo ? await getChapter(parallelInfo.id, book.number, chapter) : null;
+  const [parallel, studyData] = await Promise.all([
+    parallelInfo ? getChapter(parallelInfo.id, book.number, chapter) : null,
+    loadStudy(user?.id ?? null, book.number, chapter),
+  ]);
   const p = parallelInfo?.id ?? null;
   const vRaw = first(sp.v);
+  const currentUrl = buildReaderUrl(book, chapter, { t, p, v: vRaw });
+  const { readToday, ...studyRest } = studyData;
+  const study: ReaderStudy = { ...studyRest, loginUrl: `/anmelden?next=${encodeURIComponent(currentUrl)}` };
 
   const { translation } = data;
   const locale = localeFor(translation.language);
@@ -176,7 +220,18 @@ export default async function ChapterPage(props: Props) {
           }
           verses={verses}
           highlight={highlight}
+          study={study}
         />
+
+        {study.signedIn ? (
+          <ChapterReadButton
+            key={`${slug}-${chapter}`}
+            book={book.number}
+            chapter={chapter}
+            translation={t}
+            readToday={readToday}
+          />
+        ) : null}
 
         <nav aria-label="Kapitelnavigation" className="mt-12 flex items-center justify-between gap-3">
           {prev ? (

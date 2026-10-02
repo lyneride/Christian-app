@@ -93,7 +93,16 @@ function ActionButton({
 }
 
 /** Floating bar at the bottom while verses are selected. */
-export function VerseActionBar({ reference, feedback, onCopy, onCopyLink, onCrossRefs, onClear, study, extraActions }: Props) {
+export function VerseActionBar({
+  reference,
+  feedback,
+  onCopy,
+  onCopyLink,
+  onCrossRefs,
+  onClear,
+  study,
+  extraActions,
+}: Props) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const pickerId = useId();
   const guestHref = study.signedIn ? undefined : study.loginUrl;
@@ -104,11 +113,15 @@ export function VerseActionBar({ reference, feedback, onCopy, onCopyLink, onCros
       aria-label="Aktionen für die ausgewählten Verse"
       className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
     >
-      <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-surface p-2 shadow-soft">
+      <div className="border-border bg-surface shadow-soft mx-auto max-w-3xl rounded-2xl border p-2">
         <div className="flex flex-wrap items-center gap-1">
           <p className="flex flex-wrap items-baseline gap-x-2 px-2 text-sm">
             <span className="font-semibold">{reference}</span>
-            <span role="status" aria-live="polite" className={cn("text-xs", feedback?.tone === "error" ? "text-danger" : "text-success")}>
+            <span
+              role="status"
+              aria-live="polite"
+              className={cn("text-xs", feedback?.tone === "error" ? "text-danger" : "text-success")}
+            >
               {feedback?.text}
             </span>
           </p>
@@ -132,13 +145,19 @@ export function VerseActionBar({ reference, feedback, onCopy, onCopyLink, onCros
               onClick={study.onBookmark}
               disabled={study.pending}
             />
-            <ActionButton icon={Brain} label="Merken" href={guestHref} onClick={study.onMemorize} disabled={study.pending} />
+            <ActionButton
+              icon={Brain}
+              label="Merken"
+              href={guestHref}
+              onClick={study.onMemorize}
+              disabled={study.pending}
+            />
             {extraActions}
             <button
               type="button"
               onClick={onClear}
               aria-label="Auswahl aufheben"
-              className="inline-flex size-9 items-center justify-center rounded-full hover:bg-surface-muted"
+              className="hover:bg-surface-muted inline-flex size-9 items-center justify-center rounded-full"
             >
               <X className="size-4" aria-hidden="true" />
             </button>
@@ -150,7 +169,7 @@ export function VerseActionBar({ reference, feedback, onCopy, onCopyLink, onCros
             id={pickerId}
             role="group"
             aria-label="Farbe für die Markierung"
-            className="mt-1 flex flex-wrap items-center gap-2 border-t border-border px-2 pt-2"
+            className="border-border mt-1 flex flex-wrap items-center gap-2 border-t px-2 pt-2"
           >
             {HIGHLIGHT_COLOR_LIST.map((c) => (
               <button
@@ -164,7 +183,7 @@ export function VerseActionBar({ reference, feedback, onCopy, onCopyLink, onCros
                   setPickerOpen(false);
                 }}
                 className={cn(
-                  "size-8 rounded-full border border-foreground/15 transition hover:scale-110 disabled:opacity-50",
+                  "border-foreground/15 size-8 rounded-full border transition hover:scale-110 disabled:opacity-50",
                   c.className,
                 )}
               />
@@ -176,7 +195,7 @@ export function VerseActionBar({ reference, feedback, onCopy, onCopyLink, onCros
                 study.onHighlight(null);
                 setPickerOpen(false);
               }}
-              className="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-sm hover:bg-surface-muted disabled:opacity-50"
+              className="hover:bg-surface-muted inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-sm disabled:opacity-50"
             >
               <Eraser className="size-4" aria-hidden="true" />
               Entfernen
