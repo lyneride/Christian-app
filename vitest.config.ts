@@ -13,8 +13,8 @@ export default defineConfig({
   test: {
     include: ["src/**/*.test.{ts,tsx}", "tests/unit/**/*.test.{ts,tsx}"],
     exclude: ["tests/e2e/**", "node_modules/**"],
+    // default is node; component tests opt in with `// @vitest-environment jsdom` at the top of the file
     environment: "node",
-    environmentMatchGlobs: [["src/**/*.test.tsx", "jsdom"]],
     setupFiles: ["./src/test/setup.ts"],
     globals: false,
   },
