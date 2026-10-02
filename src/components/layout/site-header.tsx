@@ -1,24 +1,17 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { BookOpen, HandHeart, Users, CalendarDays, Compass } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { UserMenu, UserMenuSkeleton } from "./user-menu";
 import { MobileNav } from "./mobile-nav";
 import { Logo } from "./logo";
 
-export const MAIN_NAV = [
-  { href: "/bibel", label: "Bibel", icon: BookOpen },
-  { href: "/gebet", label: "Gebet", icon: HandHeart },
-  { href: "/gemeinschaft", label: "Gemeinschaft", icon: Users },
-  { href: "/leseplaene", label: "Lesepläne", icon: Compass },
-  { href: "/veranstaltungen", label: "Treffen", icon: CalendarDays },
-] as const;
+import { MAIN_NAV } from "./nav-items";
 
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
-        <MobileNav items={MAIN_NAV} />
+        <MobileNav />
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="Bleibe – Startseite">
           <Logo className="size-7 text-primary" />
           <span className="text-lg">Bleibe</span>

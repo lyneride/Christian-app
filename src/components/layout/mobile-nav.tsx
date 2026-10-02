@@ -3,16 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X, type LucideIcon } from "lucide-react";
+import { BookOpen, CalendarDays, Compass, HandHeart, Menu, Users, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MAIN_NAV, type NavIcon } from "./nav-items";
 
-interface Item {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-}
+const ICONS: Record<NavIcon, LucideIcon> = {
+  bible: BookOpen,
+  prayer: HandHeart,
+  community: Users,
+  plans: Compass,
+  events: CalendarDays,
+};
 
-export function MobileNav({ items }: { items: readonly Item[] }) {
+export function MobileNav() {
+  const items = MAIN_NAV;
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -49,6 +53,7 @@ export function MobileNav({ items }: { items: readonly Item[] }) {
           <nav className="flex flex-col gap-1 px-4 py-2" aria-label="Hauptnavigation">
             {items.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const Icon = ICONS[item.icon];
               return (
                 <Link
                   key={item.href}
@@ -59,7 +64,7 @@ export function MobileNav({ items }: { items: readonly Item[] }) {
                     active ? "bg-primary-soft text-primary" : "hover:bg-surface-muted",
                   )}
                 >
-                  <item.icon className="size-5" aria-hidden="true" />
+                  <Icon className="size-5" aria-hidden="true" />
                   {item.label}
                 </Link>
               );
