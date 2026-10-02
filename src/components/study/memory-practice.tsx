@@ -101,7 +101,9 @@ export function MemoryPractice({ verses }: { verses: PracticeVerse[] }) {
       <Card>
         <CardContent className="space-y-3 text-center">
           <p className="text-lg font-medium">Heute ist nichts dran.</p>
-          <p className="text-muted-foreground text-sm">Deine Verse warten, bis sie wieder fällig sind. Gönn dir die Pause.</p>
+          <p className="text-muted-foreground text-sm">
+            Deine Verse warten, bis sie wieder fällig sind. Gönn dir die Pause.
+          </p>
           <Link href="/merken" className={buttonClasses("outline", "md", "mt-2")}>
             Zurück zur Übersicht
           </Link>
@@ -172,7 +174,10 @@ export function MemoryPractice({ verses }: { verses: PracticeVerse[] }) {
           </div>
 
           <p
-            className={cn("scripture text-foreground/90 wrap-break-word whitespace-pre-wrap", level > 0 && "tracking-wide")}
+            className={cn(
+              "scripture text-foreground/90 wrap-break-word whitespace-pre-wrap",
+              level > 0 && "tracking-wide",
+            )}
             aria-live="polite"
             aria-label={level > 0 ? `Verdeckter Vers, Stufe: ${MASK_LEVEL_LABELS[level]}` : undefined}
           >
@@ -191,7 +196,11 @@ export function MemoryPractice({ verses }: { verses: PracticeVerse[] }) {
 
       <Card>
         <CardContent className="space-y-3">
-          <Field label="Vers aus dem Gedächtnis tippen" htmlFor="typed" hint="Optional. Groß-/Kleinschreibung und Satzzeichen spielen keine Rolle.">
+          <Field
+            label="Vers aus dem Gedächtnis tippen"
+            htmlFor="typed"
+            hint="Optional. Groß-/Kleinschreibung und Satzzeichen spielen keine Rolle."
+          >
             <Textarea
               id="typed"
               value={typed}

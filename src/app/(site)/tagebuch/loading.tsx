@@ -1,6 +1,10 @@
 export default function TagebuchLoading() {
   return (
-    <main className="mx-auto w-full max-w-3xl animate-pulse px-4 py-10 sm:px-6 md:py-14" aria-busy="true" aria-label="Lädt …">
+    <main
+      className="mx-auto w-full max-w-3xl animate-pulse px-4 py-10 sm:px-6 md:py-14"
+      aria-busy="true"
+      aria-label="Lädt …"
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-3">
           <div className="bg-surface-muted h-9 w-44 rounded-lg" />

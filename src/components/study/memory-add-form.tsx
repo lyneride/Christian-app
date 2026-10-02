@@ -24,7 +24,13 @@ export function MemoryAddForm({ translations, defaultTranslation }: MemoryAddFor
     <form action={formAction} className="space-y-4">
       <FormMessage state={state} />
       <div className="grid gap-4 sm:grid-cols-[1fr_14rem_auto] sm:items-end">
-        <Field label="Bibelstelle" htmlFor="reference" hint="Ein Vers oder ein kurzer Abschnitt, z. B. Joh 3,16 oder Psalm 23,1-3." error={errors.reference} required>
+        <Field
+          label="Bibelstelle"
+          htmlFor="reference"
+          hint="Ein Vers oder ein kurzer Abschnitt, z. B. Joh 3,16 oder Psalm 23,1-3."
+          error={errors.reference}
+          required
+        >
           <Input
             id="reference"
             name="reference"

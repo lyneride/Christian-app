@@ -23,7 +23,10 @@ function Section({ title, body }: { title: string; body: string | null }) {
   return (
     <section className="rounded-card border-border bg-surface shadow-soft border p-5">
       <h2 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">{title}</h2>
-      <div className={`mt-2 ${PROSE}`} dangerouslySetInnerHTML={{ __html: renderMarkdown(body, { headings: false }) }} />
+      <div
+        className={`mt-2 ${PROSE}`}
+        dangerouslySetInnerHTML={{ __html: renderMarkdown(body, { headings: false }) }}
+      />
     </section>
   );
 }
@@ -37,13 +40,18 @@ export default async function JournalEntryPage(props: PageProps<"/tagebuch/[id]"
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
-      <Link href="/tagebuch" className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm">
+      <Link
+        href="/tagebuch"
+        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
+      >
         <ChevronLeft className="size-4" aria-hidden="true" />
         Zum Tagebuch
       </Link>
 
       <header className="mt-4">
-        <p className="text-muted-foreground text-sm font-medium tracking-wide uppercase">{formatJournalDate(entry.date)}</p>
+        <p className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
+          {formatJournalDate(entry.date)}
+        </p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">{entry.title || "Eintrag"}</h1>
         {entry.updatedAt.getTime() - entry.createdAt.getTime() > 60_000 ? (
           <p className="text-muted-foreground mt-1 text-xs">Zuletzt bearbeitet {formatRelative(entry.updatedAt)}</p>

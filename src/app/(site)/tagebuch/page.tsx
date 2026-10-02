@@ -24,7 +24,9 @@ const BASE_PATH = "/tagebuch";
 function entryReference(verseKey: string | null): string | null {
   if (!verseKey) return null;
   const parsed = parseVerseKey(verseKey);
-  return parsed ? formatReference({ book: parsed.book, chapter: parsed.chapter, verseStart: parsed.verse }, "de") : null;
+  return parsed
+    ? formatReference({ book: parsed.book, chapter: parsed.chapter, verseStart: parsed.verse }, "de")
+    : null;
 }
 
 function groupByMonth(items: JournalEntryItem[]): { month: string; items: JournalEntryItem[] }[] {
@@ -46,7 +48,9 @@ function EntryCard({ entry }: { entry: JournalEntryItem }) {
         href={`${BASE_PATH}/${entry.id}`}
         className="rounded-card border-border bg-surface shadow-soft hover:border-primary/40 block border p-4 transition-colors sm:p-5"
       >
-        <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">{formatJournalDate(entry.date)}</p>
+        <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+          {formatJournalDate(entry.date)}
+        </p>
         <h3 className="mt-1 text-base font-semibold">{entry.title || "Eintrag"}</h3>
         <p className="text-foreground/90 mt-1 text-sm leading-relaxed">{markdownToText(entry.body, 180)}</p>
         <div className="text-muted-foreground mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
@@ -76,7 +80,10 @@ export default async function TagebuchPage(props: PageProps<"/tagebuch">) {
   const sp = await props.searchParams;
   const month = parseMonth(sp.monat);
   const page = parsePage(sp.seite, 20);
-  const [{ items, total }, months] = await Promise.all([listJournal(user.id, { page, month }), listJournalMonths(user.id)]);
+  const [{ items, total }, months] = await Promise.all([
+    listJournal(user.id, { page, month }),
+    listJournalMonths(user.id),
+  ]);
   const params = { monat: month };
   const hasEntries = months.length > 0;
 
@@ -131,7 +138,9 @@ export default async function TagebuchPage(props: PageProps<"/tagebuch">) {
                       aria-current={month === m.month ? "page" : undefined}
                       className={cn(
                         "inline-flex h-8 items-center gap-2 rounded-full border px-3 text-sm transition-colors",
-                        month === m.month ? "border-primary bg-primary-soft text-primary" : "border-border hover:bg-surface-muted",
+                        month === m.month
+                          ? "border-primary bg-primary-soft text-primary"
+                          : "border-border hover:bg-surface-muted",
                       )}
                     >
                       {monthLabel(m.month)} <span className="text-muted-foreground text-xs">{m.count}</span>
@@ -148,7 +157,10 @@ export default async function TagebuchPage(props: PageProps<"/tagebuch">) {
             <div className="mt-8 space-y-10">
               {groupByMonth(items).map((group) => (
                 <section key={group.month} aria-labelledby={`monat-${group.month}`}>
-                  <h2 id={`monat-${group.month}`} className="text-muted-foreground mb-3 text-sm font-semibold tracking-wide uppercase">
+                  <h2
+                    id={`monat-${group.month}`}
+                    className="text-muted-foreground mb-3 text-sm font-semibold tracking-wide uppercase"
+                  >
                     {monthLabel(group.month)}
                   </h2>
                   <ul className="space-y-3">

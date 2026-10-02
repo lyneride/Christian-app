@@ -34,9 +34,14 @@ export async function VerseSnippet({ verseKey, verseEnd, translation, maxLength 
       {text ? (
         <p className="scripture text-foreground/90 text-base leading-relaxed">{text}</p>
       ) : (
-        <p className="text-muted-foreground text-sm">Dieser Vers ist in {info?.shortName ?? "dieser Übersetzung"} nicht enthalten.</p>
+        <p className="text-muted-foreground text-sm">
+          Dieser Vers ist in {info?.shortName ?? "dieser Übersetzung"} nicht enthalten.
+        </p>
       )}
-      <Link href={referencePath(ref, t)} className="text-primary text-sm font-medium underline-offset-4 hover:underline">
+      <Link
+        href={referencePath(ref, t)}
+        className="text-primary text-sm font-medium underline-offset-4 hover:underline"
+      >
         {label}
         {info ? <span className="text-muted-foreground font-normal"> · {info.shortName}</span> : null}
       </Link>

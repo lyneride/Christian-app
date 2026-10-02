@@ -113,7 +113,11 @@ export const noteSchema = z
   })
   .superRefine((data, ctx) => {
     if (data.verseEnd !== undefined && data.verseEnd < verseOfKey(data.verseKey)) {
-      ctx.addIssue({ code: "custom", path: ["verseEnd"], message: "Der letzte Vers darf nicht vor dem ersten liegen." });
+      ctx.addIssue({
+        code: "custom",
+        path: ["verseEnd"],
+        message: "Der letzte Vers darf nicht vor dem ersten liegen.",
+      });
     }
   });
 export type NoteInput = z.infer<typeof noteSchema>;

@@ -34,7 +34,10 @@ export async function BookmarkList({ userId, translation }: BookmarkListProps) {
   return (
     <ul className="space-y-3">
       {items.map((b) => (
-        <li key={b.verseKey} className="rounded-card border-border bg-surface shadow-soft flex items-start gap-3 border p-4 sm:p-5">
+        <li
+          key={b.verseKey}
+          className="rounded-card border-border bg-surface shadow-soft flex items-start gap-3 border p-4 sm:p-5"
+        >
           <div className="min-w-0 flex-1 space-y-1">
             {b.label ? <p className="text-sm font-semibold">{b.label}</p> : null}
             <VerseSnippet verseKey={b.verseKey} translation={translation} maxLength={220} />

@@ -31,7 +31,18 @@ describe("verseKeySchema", () => {
   });
 
   it("rejects malformed keys and books outside 1–66", () => {
-    for (const bad of ["", "43:3", "43-3-16", "john:3:16", "0:1:1", "67:1:1", "43:0:1", "43:1:0", "123:1:1", "43:1:1000"]) {
+    for (const bad of [
+      "",
+      "43:3",
+      "43-3-16",
+      "john:3:16",
+      "0:1:1",
+      "67:1:1",
+      "43:0:1",
+      "43:1:0",
+      "123:1:1",
+      "43:1:1000",
+    ]) {
       expect(verseKeySchema.safeParse(bad).success).toBe(false);
     }
   });
@@ -60,7 +71,13 @@ describe("setHighlightSchema", () => {
 });
 
 describe("noteSchema", () => {
-  const valid = { verseKey: "43:3:16", verseEnd: "", title: "", body: "  Gott liebt die Welt.  ", visibility: "PRIVATE" };
+  const valid = {
+    verseKey: "43:3:16",
+    verseEnd: "",
+    title: "",
+    body: "  Gott liebt die Welt.  ",
+    visibility: "PRIVATE",
+  };
 
   it("trims, turns empty optional fields into undefined and coerces verseEnd", () => {
     expect(noteSchema.parse(valid)).toEqual({
@@ -70,11 +87,16 @@ describe("noteSchema", () => {
       body: "Gott liebt die Welt.",
       visibility: "PRIVATE",
     });
-    expect(noteSchema.parse({ ...valid, verseEnd: "18", title: " Kernvers " })).toMatchObject({ verseEnd: 18, title: "Kernvers" });
+    expect(noteSchema.parse({ ...valid, verseEnd: "18", title: " Kernvers " })).toMatchObject({
+      verseEnd: 18,
+      title: "Kernvers",
+    });
   });
 
   it("requires a body, caps lengths and only allows PRIVATE or MEMBERS", () => {
-    expect(fieldErrors(noteSchema.safeParse({ ...valid, body: "   " })).body).toEqual(["Bitte schreib etwas in deine Notiz."]);
+    expect(fieldErrors(noteSchema.safeParse({ ...valid, body: "   " })).body).toEqual([
+      "Bitte schreib etwas in deine Notiz.",
+    ]);
     expect(fieldErrors(noteSchema.safeParse({ ...valid, body: "x".repeat(5001) })).body).toBeDefined();
     expect(noteSchema.safeParse({ ...valid, body: "x".repeat(5000) }).success).toBe(true);
     expect(fieldErrors(noteSchema.safeParse({ ...valid, title: "x".repeat(121) })).title).toBeDefined();
@@ -116,7 +138,14 @@ describe("chapterReadSchema", () => {
 });
 
 describe("journalEntrySchema", () => {
-  const valid = { date: "2026-10-02", title: "", body: "Heute war ein guter Tag.", gratitude: "", prayer: "", verseKey: "" };
+  const valid = {
+    date: "2026-10-02",
+    title: "",
+    body: "Heute war ein guter Tag.",
+    gratitude: "",
+    prayer: "",
+    verseKey: "",
+  };
 
   it("accepts a minimal entry and turns empty fields into undefined", () => {
     expect(journalEntrySchema.parse(valid)).toEqual({
@@ -127,7 +156,9 @@ describe("journalEntrySchema", () => {
       prayer: undefined,
       verseKey: undefined,
     });
-    expect(journalEntrySchema.parse({ ...valid, verseKey: "19:23:1", gratitude: "Für Freunde.", prayer: "Danke." })).toMatchObject({
+    expect(
+      journalEntrySchema.parse({ ...valid, verseKey: "19:23:1", gratitude: "Für Freunde.", prayer: "Danke." }),
+    ).toMatchObject({
       verseKey: "19:23:1",
       gratitude: "Für Freunde.",
       prayer: "Danke.",
@@ -145,10 +176,14 @@ describe("journalEntrySchema", () => {
   });
 
   it("enforces lengths and a valid verse key", () => {
-    expect(fieldErrors(journalEntrySchema.safeParse({ ...valid, body: "" })).body).toEqual(["Bitte schreib auf, was dich bewegt."]);
+    expect(fieldErrors(journalEntrySchema.safeParse({ ...valid, body: "" })).body).toEqual([
+      "Bitte schreib auf, was dich bewegt.",
+    ]);
     expect(journalEntrySchema.safeParse({ ...valid, body: "x".repeat(10_000) }).success).toBe(true);
     expect(fieldErrors(journalEntrySchema.safeParse({ ...valid, body: "x".repeat(10_001) })).body).toBeDefined();
-    expect(fieldErrors(journalEntrySchema.safeParse({ ...valid, gratitude: "x".repeat(2001) })).gratitude).toBeDefined();
+    expect(
+      fieldErrors(journalEntrySchema.safeParse({ ...valid, gratitude: "x".repeat(2001) })).gratitude,
+    ).toBeDefined();
     expect(fieldErrors(journalEntrySchema.safeParse({ ...valid, prayer: "x".repeat(2001) })).prayer).toBeDefined();
     expect(fieldErrors(journalEntrySchema.safeParse({ ...valid, title: "x".repeat(121) })).title).toBeDefined();
     expect(fieldErrors(journalEntrySchema.safeParse({ ...valid, verseKey: "Psalm 23" })).verseKey).toBeDefined();
@@ -184,12 +219,18 @@ describe("memoryVerseAddSchema", () => {
 
   it("requires a verse and a known book", () => {
     const msg = "Bitte eine Bibelstelle mit Vers angeben, z. B. Johannes 3,16 oder Psalm 23,1-3.";
-    expect(fieldErrors(memoryVerseAddSchema.safeParse({ reference: "Psalm 23", translation: "LUT1912" })).reference).toEqual([msg]);
-    expect(fieldErrors(memoryVerseAddSchema.safeParse({ reference: "Harry 3,16", translation: "LUT1912" })).reference).toEqual([msg]);
+    expect(
+      fieldErrors(memoryVerseAddSchema.safeParse({ reference: "Psalm 23", translation: "LUT1912" })).reference,
+    ).toEqual([msg]);
+    expect(
+      fieldErrors(memoryVerseAddSchema.safeParse({ reference: "Harry 3,16", translation: "LUT1912" })).reference,
+    ).toEqual([msg]);
     expect(fieldErrors(memoryVerseAddSchema.safeParse({ reference: "", translation: "LUT1912" })).reference).toEqual([
       "Bitte eine Bibelstelle eingeben.",
     ]);
-    expect(fieldErrors(memoryVerseAddSchema.safeParse({ reference: "Joh 3,16", translation: "" })).translation).toBeDefined();
+    expect(
+      fieldErrors(memoryVerseAddSchema.safeParse({ reference: "Joh 3,16", translation: "" })).translation,
+    ).toBeDefined();
   });
 });
 

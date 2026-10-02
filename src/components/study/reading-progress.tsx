@@ -2,8 +2,7 @@ import { NEW_TESTAMENT, OLD_TESTAMENT, type BibleBook } from "@/lib/bible/books"
 import { TESTAMENT_LABELS } from "@/lib/bible/ui";
 import { chaptersSummary, weekSummary } from "@/lib/study/format";
 import type { ReadingStats } from "@/lib/study/queries";
-import { formatRelative } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { cn, formatRelative } from "@/lib/utils";
 
 function BookRow({ book, read }: { book: BibleBook; read: number }) {
   const total = book.chapters;
@@ -21,7 +20,10 @@ function BookRow({ book, read }: { book: BibleBook; read: number }) {
         aria-valuenow={read}
         className="bg-surface-muted h-1.5 flex-1 overflow-hidden rounded-full"
       >
-        <span className={cn("block h-full rounded-full", pct === 100 ? "bg-success" : "bg-primary")} style={{ width: `${pct}%` }} />
+        <span
+          className={cn("block h-full rounded-full", pct === 100 ? "bg-success" : "bg-primary")}
+          style={{ width: `${pct}%` }}
+        />
       </span>
       <span className="text-muted-foreground w-10 shrink-0 text-right tabular-nums">
         {read}/{total}
@@ -34,7 +36,10 @@ function BookRow({ book, read }: { book: BibleBook; read: number }) {
 export function ReadingProgress({ stats, className }: { stats: ReadingStats; className?: string }) {
   const pct = stats.totalChapters > 0 ? Math.round((stats.chaptersRead / stats.totalChapters) * 100) : 0;
   return (
-    <section aria-labelledby="lesefortschritt" className={cn("rounded-card border-border bg-surface shadow-soft border p-5", className)}>
+    <section
+      aria-labelledby="lesefortschritt"
+      className={cn("rounded-card border-border bg-surface shadow-soft border p-5", className)}
+    >
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
         <h2 id="lesefortschritt" className="text-lg font-semibold tracking-tight">
           Gelesen
@@ -72,7 +77,9 @@ export function ReadingProgress({ stats, className }: { stats: ReadingStats; cla
               ] as const
             ).map(([testament, books]) => (
               <div key={testament}>
-                <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">{TESTAMENT_LABELS[testament]}</h3>
+                <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
+                  {TESTAMENT_LABELS[testament]}
+                </h3>
                 <ul className="grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
                   {books.map((book) => (
                     <BookRow key={book.number} book={book} read={stats.byBook[book.number] ?? 0} />

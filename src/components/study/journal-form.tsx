@@ -46,7 +46,12 @@ export function JournalForm({ action, initial, submitLabel = "Eintrag speichern"
             aria-describedby={describedBy("date", false)}
           />
         </Field>
-        <Field label="Titel" htmlFor="title" hint="Optional – ein paar Worte, die den Tag zusammenfassen." error={errors.title}>
+        <Field
+          label="Titel"
+          htmlFor="title"
+          hint="Optional – ein paar Worte, die den Tag zusammenfassen."
+          error={errors.title}
+        >
           <Input
             id="title"
             name="title"
@@ -59,7 +64,13 @@ export function JournalForm({ action, initial, submitLabel = "Eintrag speichern"
         </Field>
       </div>
 
-      <Field label="Was bewegt mich" htmlFor="body" hint="Gedanken, Erlebnisse, Fragen. Markdown ist möglich." error={errors.body} required>
+      <Field
+        label="Was bewegt mich"
+        htmlFor="body"
+        hint="Gedanken, Erlebnisse, Fragen. Markdown ist möglich."
+        error={errors.body}
+        required
+      >
         <Textarea
           id="body"
           name="body"
@@ -98,7 +109,12 @@ export function JournalForm({ action, initial, submitLabel = "Eintrag speichern"
         />
       </Field>
 
-      <Field label="Bibelstelle" htmlFor="verse" hint="Optional, z. B. Psalm 23,1 – wird mit dem Vers angezeigt." error={errors.verse}>
+      <Field
+        label="Bibelstelle"
+        htmlFor="verse"
+        hint="Optional, z. B. Psalm 23,1 – wird mit dem Vers angezeigt."
+        error={errors.verse}
+      >
         <Input
           id="verse"
           name="verse"

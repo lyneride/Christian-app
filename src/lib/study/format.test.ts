@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { chaptersSummary, dateFromString, dueSummary, formatJournalDate, monthLabel, toDateString, weekSummary } from "./format";
+import {
+  chaptersSummary,
+  dateFromString,
+  dueSummary,
+  formatJournalDate,
+  monthLabel,
+  toDateString,
+  weekSummary,
+} from "./format";
 
 describe("study format helpers", () => {
   it("formats journal dates and months in German without timezone shifts", () => {

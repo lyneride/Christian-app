@@ -19,12 +19,17 @@ export default async function EditJournalEntryPage(props: PageProps<"/tagebuch/[
   if (!entry) notFound();
 
   const parsed = entry.verseKey ? parseVerseKey(entry.verseKey) : null;
-  const verse = parsed ? formatReference({ book: parsed.book, chapter: parsed.chapter, verseStart: parsed.verse }, "de") : "";
+  const verse = parsed
+    ? formatReference({ book: parsed.book, chapter: parsed.chapter, verseStart: parsed.verse }, "de")
+    : "";
   const backHref = `/tagebuch/${entry.id}`;
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
-      <Link href={backHref} className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm">
+      <Link
+        href={backHref}
+        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
+      >
         <ChevronLeft className="size-4" aria-hidden="true" />
         Zum Eintrag
       </Link>

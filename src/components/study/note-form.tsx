@@ -28,7 +28,16 @@ export interface NoteFormProps {
   compact?: boolean;
 }
 
-export function NoteForm({ action, verseKey, reference, initial, next, submitLabel = "Notiz speichern", secondaryAction, compact }: NoteFormProps) {
+export function NoteForm({
+  action,
+  verseKey,
+  reference,
+  initial,
+  next,
+  submitLabel = "Notiz speichern",
+  secondaryAction,
+  compact,
+}: NoteFormProps) {
   const [state, formAction, pending] = useActionState(action, initialActionState);
   const errors = state.errors ?? {};
   const values = state.values ?? {};
@@ -75,7 +84,13 @@ export function NoteForm({ action, verseKey, reference, initial, next, submitLab
         </Field>
       </div>
 
-      <Field label="Notiz" htmlFor={id("body")} hint="Markdown ist möglich. Bibelstellen werden automatisch verlinkt." error={errors.body} required>
+      <Field
+        label="Notiz"
+        htmlFor={id("body")}
+        hint="Markdown ist möglich. Bibelstellen werden automatisch verlinkt."
+        error={errors.body}
+        required
+      >
         <Textarea
           id={id("body")}
           name="body"

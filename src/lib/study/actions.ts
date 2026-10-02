@@ -127,7 +127,13 @@ export async function setHighlight(
 
 function noteValues(formData: FormData): Record<string, string> {
   const v = stringValues(formData);
-  return { verseKey: v.verseKey ?? "", verseEnd: v.verseEnd ?? "", title: v.title ?? "", body: v.body ?? "", visibility: v.visibility ?? "PRIVATE" };
+  return {
+    verseKey: v.verseKey ?? "",
+    verseEnd: v.verseEnd ?? "",
+    title: v.title ?? "",
+    body: v.body ?? "",
+    visibility: v.visibility ?? "PRIVATE",
+  };
 }
 
 /** Creates a note on a verse (hidden `verseKey` field, optional `verseEnd`, `title`, `body`, `visibility`). */
@@ -240,7 +246,9 @@ export async function toggleBookmark(verseKey: string, label?: string): Promise<
       bookmarked = false;
     } else {
       try {
-        await prisma.bookmark.create({ data: { userId: user.id, verseKey: parsed.data.verseKey, label: parsed.data.label ?? null } });
+        await prisma.bookmark.create({
+          data: { userId: user.id, verseKey: parsed.data.verseKey, label: parsed.data.label ?? null },
+        });
       } catch (err) {
         if ((err as { code?: string })?.code !== "P2002") throw err;
       }
@@ -332,8 +340,20 @@ function journalValues(formData: FormData): Record<string, string> {
 
 const VERSE_HINT = "Bitte eine Bibelstelle mit Vers angeben, z. B. Psalm 23,1.";
 
+interface JournalData {
+  date: string;
+  title: string | null;
+  body: string;
+  gratitude: string | null;
+  prayer: string | null;
+  verseKey: string | null;
+}
+
+type ParsedJournalForm =
+  { ok: false; error: ActionState } | { ok: true; values: Record<string, string>; data: JournalData };
+
 /** Validates the journal form; the free-text `verse` becomes a verse key. */
-function parseJournalForm(formData: FormData) {
+function parseJournalForm(formData: FormData): ParsedJournalForm {
   const values = journalValues(formData);
   let verseKeyValue = "";
   let verseError: string | null = null;
@@ -347,10 +367,11 @@ function parseJournalForm(formData: FormData) {
   if (!parsed.success || verseError) {
     const errors = parsed.success ? {} : fieldErrors(parsed.error);
     if (verseError) errors.verse = [verseError];
-    return { error: failure(CHECK_INPUT, { errors, values }) };
+    return { ok: false, error: failure(CHECK_INPUT, { errors, values }) };
   }
   const d = parsed.data;
   return {
+    ok: true,
     values,
     data: {
       date: d.date,
@@ -368,11 +389,14 @@ export async function createJournalEntry(_prev: ActionState, formData: FormData)
   if (!user) return failure(LOGIN_REQUIRED, { values: journalValues(formData) });
 
   const result = parseJournalForm(formData);
-  if ("error" in result) return result.error;
+  if (!result.ok) return result.error;
 
   let id: string;
   try {
-    const created = await prisma.journalEntry.create({ data: { ...result.data, userId: user.id }, select: { id: true } });
+    const created = await prisma.journalEntry.create({
+      data: { ...result.data, userId: user.id },
+      select: { id: true },
+    });
     id = created.id;
   } catch (err) {
     console.error("[tagebuch] Eintrag konnte nicht gespeichert werden:", err);
@@ -392,7 +416,7 @@ export async function updateJournalEntry(id: string, _prev: ActionState, formDat
   if (!existing) return failure("Diesen Eintrag gibt es nicht mehr.");
 
   const result = parseJournalForm(formData);
-  if ("error" in result) return result.error;
+  if (!result.ok) return result.error;
 
   try {
     await prisma.journalEntry.update({ where: { id }, data: result.data });
@@ -443,7 +467,10 @@ async function addMemoryVerseFor(user: CurrentUser, reference: string, translati
   const info = await getTranslation(t);
   const verses = await getVerses(t, ref.book, ref.chapter, ref.verseStart, ref.verseEnd ?? ref.verseStart);
   if (verses.length === 0 || !info) {
-    return failure(CHECK_INPUT, { errors: { reference: ["Diese Stelle gibt es in dieser Übersetzung nicht."] }, values });
+    return failure(CHECK_INPUT, {
+      errors: { reference: ["Diese Stelle gibt es in dieser Übersetzung nicht."] },
+      values,
+    });
   }
 
   const key = makeVerseKey(ref.book, ref.chapter, ref.verseStart);
@@ -468,7 +495,8 @@ async function addMemoryVerseFor(user: CurrentUser, reference: string, translati
     });
     id = created.id;
   } catch (err) {
-    if ((err as { code?: string })?.code === "P2002") return failure(ALREADY_LEARNING, { errors: { reference: [ALREADY_LEARNING] }, values });
+    if ((err as { code?: string })?.code === "P2002")
+      return failure(ALREADY_LEARNING, { errors: { reference: [ALREADY_LEARNING] }, values });
     console.error("[merken] Vers konnte nicht gespeichert werden:", err);
     return failure(GENERIC_ERROR, { values });
   }
@@ -528,7 +556,10 @@ export async function reviewMemoryVerse(id: string, result: ReviewResult): Promi
   const parsed = memoryReviewSchema.safeParse({ id, result });
   if (!parsed.success) return failure(CHECK_INPUT, { errors: fieldErrors(parsed.error) });
 
-  const verse = await prisma.memoryVerse.findFirst({ where: { id: parsed.data.id, userId: user.id }, select: { box: true } });
+  const verse = await prisma.memoryVerse.findFirst({
+    where: { id: parsed.data.id, userId: user.id },
+    select: { box: true },
+  });
   if (!verse) return failure("Diesen Vers gibt es in deiner Liste nicht mehr.");
 
   const now = new Date();

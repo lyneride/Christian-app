@@ -66,7 +66,10 @@ export const getChapterAnnotations = cache(
   async (userId: string, book: number, chapter: number): Promise<ChapterAnnotations> => {
     const prefix = chapterPrefix(book, chapter);
     const [highlights, notes, bookmarks] = await Promise.all([
-      prisma.highlight.findMany({ where: { userId, verseKey: { startsWith: prefix } }, select: { verseKey: true, color: true } }),
+      prisma.highlight.findMany({
+        where: { userId, verseKey: { startsWith: prefix } },
+        select: { verseKey: true, color: true },
+      }),
       prisma.note.findMany({ where: { userId, verseKey: { startsWith: prefix } }, select: noteSelect }),
       prisma.bookmark.findMany({ where: { userId, verseKey: { startsWith: prefix } }, select: { verseKey: true } }),
     ]);
@@ -76,7 +79,9 @@ export const getChapterAnnotations = cache(
 
     return {
       highlights: highlightMap,
-      notes: notes.map(toChapterNote).sort((a, b) => a.verse - b.verse || a.updatedAt.getTime() - b.updatedAt.getTime()),
+      notes: notes
+        .map(toChapterNote)
+        .sort((a, b) => a.verse - b.verse || a.updatedAt.getTime() - b.updatedAt.getTime()),
       bookmarks: new Set(bookmarks.map((b) => verseOf(b.verseKey))),
     };
   },
@@ -143,14 +148,23 @@ export interface ListNotesArgs {
   page: Page;
 }
 
-export async function listNotes(userId: string, { q, page }: ListNotesArgs): Promise<{ items: ChapterNote[]; total: number }> {
+export async function listNotes(
+  userId: string,
+  { q, page }: ListNotesArgs,
+): Promise<{ items: ChapterNote[]; total: number }> {
   const term = q?.trim();
   const where: Prisma.NoteWhereInput = {
     userId,
     ...(term ? { OR: [{ title: { contains: term } }, { body: { contains: term } }] } : {}),
   };
   const [rows, total] = await Promise.all([
-    prisma.note.findMany({ where, orderBy: { updatedAt: "desc" }, skip: page.skip, take: page.take, select: noteSelect }),
+    prisma.note.findMany({
+      where,
+      orderBy: { updatedAt: "desc" },
+      skip: page.skip,
+      take: page.take,
+      select: noteSelect,
+    }),
     prisma.note.count({ where }),
   ]);
   return { items: rows.map(toChapterNote), total };
@@ -198,7 +212,11 @@ export interface ReadingStats {
 export async function readingStats(userId: string, now: Date = new Date()): Promise<ReadingStats> {
   const weekAgo = new Date(now.getTime() - 7 * 86_400_000);
   const [all, recent, last] = await Promise.all([
-    prisma.readingLog.findMany({ where: { userId }, distinct: ["book", "chapter"], select: { book: true, chapter: true } }),
+    prisma.readingLog.findMany({
+      where: { userId },
+      distinct: ["book", "chapter"],
+      select: { book: true, chapter: true },
+    }),
     prisma.readingLog.findMany({
       where: { userId, readAt: { gte: weekAgo } },
       distinct: ["book", "chapter"],
@@ -241,7 +259,10 @@ export interface ListJournalArgs {
   month?: string;
 }
 
-export async function listJournal(userId: string, { page, month }: ListJournalArgs): Promise<{ items: JournalEntryItem[]; total: number }> {
+export async function listJournal(
+  userId: string,
+  { page, month }: ListJournalArgs,
+): Promise<{ items: JournalEntryItem[]; total: number }> {
   const where: Prisma.JournalEntryWhereInput = { userId, ...(month ? { date: { startsWith: `${month}-` } } : {}) };
   const [items, total] = await Promise.all([
     prisma.journalEntry.findMany({
@@ -296,7 +317,11 @@ export type MemoryVerseItem = Prisma.MemoryVerseGetPayload<{ select: typeof memo
 
 /** All verses of the user, due ones first, then by next review date. */
 export async function listMemoryVerses(userId: string): Promise<MemoryVerseItem[]> {
-  return prisma.memoryVerse.findMany({ where: { userId }, orderBy: [{ nextReviewAt: "asc" }, { createdAt: "asc" }], select: memorySelect });
+  return prisma.memoryVerse.findMany({
+    where: { userId },
+    orderBy: [{ nextReviewAt: "asc" }, { createdAt: "asc" }],
+    select: memorySelect,
+  });
 }
 
 export async function dueMemoryVerses(userId: string, now: Date = new Date()): Promise<MemoryVerseItem[]> {

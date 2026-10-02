@@ -27,7 +27,12 @@ export interface NoteListProps {
 export function noteReference(note: Pick<ChapterNote, "verseKey" | "verseEnd">, translation?: string) {
   const parsed = parseVerseKey(note.verseKey);
   if (!parsed) return null;
-  const ref = { book: parsed.book, chapter: parsed.chapter, verseStart: parsed.verse, verseEnd: note.verseEnd ?? undefined };
+  const ref = {
+    book: parsed.book,
+    chapter: parsed.chapter,
+    verseStart: parsed.verse,
+    verseEnd: note.verseEnd ?? undefined,
+  };
   return { label: formatReference(ref, "de"), href: referencePath(ref, translation) };
 }
 
@@ -58,7 +63,15 @@ export async function NoteList({ userId, translation, q, page, basePath, params 
         <label htmlFor="notiz-suche" className="sr-only">
           Notizen durchsuchen
         </label>
-        <Input id="notiz-suche" name="q" type="search" placeholder="In Titel und Text suchen" defaultValue={q ?? ""} autoComplete="off" className="flex-1" />
+        <Input
+          id="notiz-suche"
+          name="q"
+          type="search"
+          placeholder="In Titel und Text suchen"
+          defaultValue={q ?? ""}
+          autoComplete="off"
+          className="flex-1"
+        />
         <button type="submit" className={buttonClasses("secondary", "md")}>
           <Search aria-hidden="true" />
           Suchen
@@ -67,7 +80,9 @@ export async function NoteList({ userId, translation, q, page, basePath, params 
 
       {searching ? (
         <p className="text-muted-foreground text-sm" role="status">
-          {total === 0 ? "Keine Notiz passt zu deiner Suche." : `${total} ${total === 1 ? "Notiz" : "Notizen"} gefunden.`}{" "}
+          {total === 0
+            ? "Keine Notiz passt zu deiner Suche."
+            : `${total} ${total === 1 ? "Notiz" : "Notizen"} gefunden.`}{" "}
           <Link href={basePath + "?bereich=notizen"} className="text-primary underline-offset-4 hover:underline">
             Alle anzeigen
           </Link>
@@ -86,7 +101,9 @@ export async function NoteList({ userId, translation, q, page, basePath, params 
                   </Link>
                 ) : null}
                 <span className="text-muted-foreground">{formatRelative(note.updatedAt)}</span>
-                {note.visibility === "MEMBERS" ? <Badge variant="accent">{NOTE_VISIBILITY_LABELS.MEMBERS.label}</Badge> : null}
+                {note.visibility === "MEMBERS" ? (
+                  <Badge variant="accent">{NOTE_VISIBILITY_LABELS.MEMBERS.label}</Badge>
+                ) : null}
               </div>
               {note.title ? <h3 className="mt-2 text-base font-semibold">{note.title}</h3> : null}
               <p className="text-foreground/90 mt-1 text-sm leading-relaxed">{markdownToText(note.body, 220)}</p>

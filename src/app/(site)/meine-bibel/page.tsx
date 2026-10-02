@@ -57,7 +57,8 @@ export default async function MeineBibelPage(props: PageProps<"/meine-bibel">) {
       <header>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Meine Bibel</h1>
         <p className="text-muted-foreground mt-3 max-w-prose text-lg">
-          Deine Markierungen, Notizen und Lesezeichen – und ein Blick darauf, wo du schon gelesen hast. Alles hier siehst nur du.
+          Deine Markierungen, Notizen und Lesezeichen – und ein Blick darauf, wo du schon gelesen hast. Alles hier
+          siehst nur du.
         </p>
       </header>
 
@@ -74,7 +75,9 @@ export default async function MeineBibelPage(props: PageProps<"/meine-bibel">) {
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "-mb-px inline-flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors",
-                    active ? "border-primary text-primary" : "text-muted-foreground hover:text-foreground border-transparent",
+                    active
+                      ? "border-primary text-primary"
+                      : "text-muted-foreground hover:text-foreground border-transparent",
                   )}
                 >
                   <Icon className="size-4" aria-hidden="true" />
@@ -88,7 +91,14 @@ export default async function MeineBibelPage(props: PageProps<"/meine-bibel">) {
 
       <section className="mt-6" aria-live="polite">
         {section === "markierungen" ? (
-          <HighlightList userId={user.id} translation={translation} color={color} page={page} basePath={BASE_PATH} params={params} />
+          <HighlightList
+            userId={user.id}
+            translation={translation}
+            color={color}
+            page={page}
+            basePath={BASE_PATH}
+            params={params}
+          />
         ) : section === "notizen" ? (
           <NoteList userId={user.id} translation={translation} q={q} page={page} basePath={BASE_PATH} params={params} />
         ) : (

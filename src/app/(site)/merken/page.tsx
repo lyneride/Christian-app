@@ -32,6 +32,7 @@ export default async function MerkenPage() {
   ]);
   const due = dueCount(verses, now);
   const shortNames = Object.fromEntries(translations.map((t) => [t.id, t.shortName]));
+  const intervals = `${BOX_INTERVALS_DAYS.slice(0, -1).join(", ")} oder ${BOX_INTERVALS_DAYS[BOX_INTERVALS_DAYS.length - 1]} Tagen`;
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
@@ -44,13 +45,18 @@ export default async function MerkenPage() {
       </header>
 
       {verses.length > 0 ? (
-        <section className="rounded-card bg-primary-soft mt-8 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between" aria-labelledby="faellig">
+        <section
+          className="rounded-card bg-primary-soft mt-8 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between"
+          aria-labelledby="faellig"
+        >
           <div>
             <h2 id="faellig" className="text-primary text-lg font-semibold">
               {dueSummary(due)}
             </h2>
             <p className="text-muted-foreground mt-1 text-sm">
-              {due > 0 ? "Ein paar Minuten reichen. Fang einfach an." : "Deine Verse ruhen, bis sie wieder fällig sind."}
+              {due > 0
+                ? "Ein paar Minuten reichen. Fang einfach an."
+                : "Deine Verse ruhen, bis sie wieder fällig sind."}
             </p>
           </div>
           {due > 0 ? (
@@ -66,7 +72,10 @@ export default async function MerkenPage() {
         </section>
       ) : null}
 
-      <section className="rounded-card border-border bg-surface shadow-soft mt-8 border p-5" aria-labelledby="hinzufuegen">
+      <section
+        className="rounded-card border-border bg-surface shadow-soft mt-8 border p-5"
+        aria-labelledby="hinzufuegen"
+      >
         <h2 id="hinzufuegen" className="text-lg font-semibold tracking-tight">
           Vers hinzufügen
         </h2>
@@ -100,19 +109,29 @@ export default async function MerkenPage() {
               const parsed = parseVerseKey(v.verseKey);
               const href = parsed
                 ? referencePath(
-                    { book: parsed.book, chapter: parsed.chapter, verseStart: parsed.verse, verseEnd: v.verseEnd ?? undefined },
+                    {
+                      book: parsed.book,
+                      chapter: parsed.chapter,
+                      verseStart: parsed.verse,
+                      verseEnd: v.verseEnd ?? undefined,
+                    },
                     v.translation,
                   )
                 : "/bibel";
               const dueNow = isDue(v, now);
               return (
-                <li key={v.id} className="rounded-card border-border bg-surface shadow-soft flex items-start gap-3 border p-4 sm:p-5">
+                <li
+                  key={v.id}
+                  className="rounded-card border-border bg-surface shadow-soft flex items-start gap-3 border p-4 sm:p-5"
+                >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link href={href} className="text-primary font-medium underline-offset-4 hover:underline">
                         {v.reference}
                       </Link>
-                      <span className="text-muted-foreground text-xs">{shortNames[v.translation] ?? v.translation}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {shortNames[v.translation] ?? v.translation}
+                      </span>
                       <Badge variant={v.box >= MAX_BOX ? "success" : "primary"}>{boxLabel(v.box)}</Badge>
                     </div>
                     <p className="scripture text-foreground/90 mt-2 text-base leading-relaxed">{v.text}</p>
@@ -144,9 +163,8 @@ export default async function MerkenPage() {
           So funktioniert es
         </h2>
         <p className="mt-1 max-w-prose">
-          Jeder Vers startet auf Stufe 1. Weißt du ihn beim Üben, steigt er eine Stufe – und kommt erst nach{" "}
-          {BOX_INTERVALS_DAYS.map((d, i) => (i === 0 ? `${d} Tag` : i === BOX_INTERVALS_DAYS.length - 1 ? ` oder ${d} Tagen` : `, ${d}`)).join("")} wieder
-          dran. Weißt du ihn noch nicht, geht er zurück auf Stufe 1 – ganz ohne Wertung.
+          Jeder Vers startet auf Stufe 1. Weißt du ihn beim Üben, steigt er eine Stufe – und kommt erst nach {intervals}{" "}
+          wieder dran. Weißt du ihn noch nicht, geht er zurück auf Stufe 1 – ganz ohne Wertung.
         </p>
       </section>
     </main>

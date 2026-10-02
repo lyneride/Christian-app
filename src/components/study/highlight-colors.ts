@@ -16,7 +16,9 @@ export const HIGHLIGHT_COLORS: Record<HighlightColor, HighlightColorInfo> = {
   orange: { value: "orange", label: "Orange", className: "bg-highlight-orange" },
 };
 
-export const HIGHLIGHT_COLOR_LIST: readonly HighlightColorInfo[] = HIGHLIGHT_COLOR_VALUES.map((c) => HIGHLIGHT_COLORS[c]);
+export const HIGHLIGHT_COLOR_LIST: readonly HighlightColorInfo[] = HIGHLIGHT_COLOR_VALUES.map(
+  (c) => HIGHLIGHT_COLORS[c],
+);
 
 /** Class for a verse background; unknown colours fall back to yellow. */
 export function highlightClass(color: string | null | undefined): string {

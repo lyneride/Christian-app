@@ -26,7 +26,10 @@ export default async function EditNotePage(props: PageProps<"/meine-bibel/notize
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
-      <Link href={LIST_PATH} className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm">
+      <Link
+        href={LIST_PATH}
+        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
+      >
         <ChevronLeft className="size-4" aria-hidden="true" />
         Zu den Notizen
       </Link>

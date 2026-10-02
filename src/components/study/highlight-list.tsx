@@ -30,12 +30,21 @@ async function withText(item: HighlightItem, translation: string) {
   if (!parsed) return null;
   const verse = await getVerse(translation, parsed.book.number, parsed.chapter, parsed.verse);
   const ref = { book: parsed.book, chapter: parsed.chapter, verseStart: parsed.verse };
-  return { item, ref, label: formatReference(ref, "de"), href: referencePath(ref, translation), text: verse?.text.trim() ?? "" };
+  return {
+    item,
+    ref,
+    label: formatReference(ref, "de"),
+    href: referencePath(ref, translation),
+    text: verse?.text.trim() ?? "",
+  };
 }
 
 /** Markierungen: colour filter chips, verses grouped by book, remove button. */
 export async function HighlightList({ userId, translation, color, page, basePath, params }: HighlightListProps) {
-  const [{ items, total }, counts] = await Promise.all([listHighlights(userId, { color, page }), highlightColorCounts(userId)]);
+  const [{ items, total }, counts] = await Promise.all([
+    listHighlights(userId, { color, page }),
+    highlightColorCounts(userId),
+  ]);
   const totalAll = Object.values(counts).reduce((a, b) => a + b, 0);
 
   if (totalAll === 0) {
@@ -83,7 +92,9 @@ export async function HighlightList({ userId, translation, color, page, basePath
               aria-current={color === c.value ? "page" : undefined}
               className={cn(
                 "inline-flex h-8 items-center gap-2 rounded-full border px-3 text-sm transition-colors",
-                color === c.value ? "border-primary bg-primary-soft text-primary" : "border-border hover:bg-surface-muted",
+                color === c.value
+                  ? "border-primary bg-primary-soft text-primary"
+                  : "border-border hover:bg-surface-muted",
               )}
             >
               <span className={cn("size-3 rounded-full border border-black/10", c.className)} aria-hidden="true" />
@@ -98,14 +109,20 @@ export async function HighlightList({ userId, translation, color, page, basePath
       ) : (
         groupsWithText.map(({ book, rows }) => (
           <section key={book?.number ?? rows[0]?.item.verseKey} aria-labelledby={`buch-${book?.number ?? "x"}`}>
-            <h3 id={`buch-${book?.number ?? "x"}`} className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
+            <h3
+              id={`buch-${book?.number ?? "x"}`}
+              className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase"
+            >
               {book?.name.de ?? "Unbekanntes Buch"}
             </h3>
             <ul className="divide-border rounded-card border-border bg-surface shadow-soft divide-y border">
               {rows.map(({ item, label, href, text }) => (
                 <li key={item.id} className="flex items-start gap-3 p-4">
                   <span
-                    className={cn("mt-1.5 size-3 shrink-0 rounded-full border border-black/10", HIGHLIGHT_COLORS[item.color].className)}
+                    className={cn(
+                      "mt-1.5 size-3 shrink-0 rounded-full border border-black/10",
+                      HIGHLIGHT_COLORS[item.color].className,
+                    )}
                     role="img"
                     aria-label={HIGHLIGHT_COLORS[item.color].label}
                   />
@@ -114,7 +131,13 @@ export async function HighlightList({ userId, translation, color, page, basePath
                       {label}
                     </Link>
                     <p className="scripture text-foreground/90 mt-0.5 text-base leading-relaxed">
-                      {text ? truncate(text, 220) : <span className="text-muted-foreground text-sm">Text in dieser Übersetzung nicht verfügbar.</span>}
+                      {text ? (
+                        truncate(text, 220)
+                      ) : (
+                        <span className="text-muted-foreground text-sm">
+                          Text in dieser Übersetzung nicht verfügbar.
+                        </span>
+                      )}
                     </p>
                   </div>
                   <ActionButton
