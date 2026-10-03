@@ -21,7 +21,7 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:setup": "prisma generate && prisma migrate deploy && prisma db seed",
-    "build:vercel": "prisma generate && prisma migrate deploy && prisma db seed && next build"
+    "build:vercel": "node scripts/vercel-build.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
