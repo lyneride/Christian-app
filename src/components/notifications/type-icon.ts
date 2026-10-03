@@ -1,4 +1,5 @@
 import {
+  Lightbulb,
   AtSign,
   Bell,
   CalendarDays,
@@ -38,6 +39,7 @@ export const NOTIFICATION_TYPES: Record<NotificationType, NotificationTypeInfo> 
   friend_request: { icon: UserPlus, label: "Freundschaftsanfrage" },
   friend_accepted: { icon: Handshake, label: "Freundschaft bestätigt" },
   plan_invite: { icon: Users, label: "Einladung zum gemeinsamen Lesen" },
+  plan_post: { icon: Lightbulb, label: "Impuls zum gemeinsamen Lesen" },
   message: { icon: MessageCircle, label: "Neue Nachricht" },
   mention: { icon: AtSign, label: "Erwähnung" },
   moderation: { icon: ShieldAlert, label: "Hinweis der Moderation" },

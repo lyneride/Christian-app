@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BookOpen, CalendarDays, Compass, HandHeart, Menu, Users, X, type LucideIcon } from "lucide-react";
+import { BookOpen, CalendarDays, Compass, HandHeart, Menu, MessagesSquare, Users, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MAIN_NAV, type NavIcon } from "./nav-items";
 
 const ICONS: Record<NavIcon, LucideIcon> = {
   bible: BookOpen,
   prayer: HandHeart,
-  community: Users,
+  community: MessagesSquare,
+  groups: Users,
   plans: Compass,
   events: CalendarDays,
 };

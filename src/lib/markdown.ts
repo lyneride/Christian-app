@@ -22,7 +22,9 @@ const BASE_OPTIONS: sanitizeHtml.IOptions = {
       if (/^https?:\/\//i.test(href)) {
         return { tagName, attribs: { ...attribs, target: "_blank", rel: "noopener noreferrer nofollow ugc" } };
       }
-      const { target: _target, rel: _rel, ...rest } = attribs;
+      const rest = { ...attribs };
+      delete rest.target;
+      delete rest.rel;
       return { tagName, attribs: rest };
     },
   },

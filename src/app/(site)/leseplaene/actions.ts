@@ -34,6 +34,7 @@ function revalidatePlanPages(slug: string) {
   revalidatePath("/leseplaene");
   revalidatePath(`/leseplaene/${slug}`);
   revalidatePath("/leseplaene/meine");
+  revalidatePath("/leseplaene/gemeinsam/[id]", "page");
   revalidatePath("/start");
 }
 

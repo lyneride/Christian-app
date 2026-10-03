@@ -13,7 +13,7 @@ export interface Reading {
   verseEnd?: number;
 }
 
-export type PlanCategory = "ganze-bibel" | "neues-testament" | "altes-testament" | "einstieg" | "thema" | "buch";
+export type PlanCategory = "eigen" | "ganze-bibel" | "neues-testament" | "altes-testament" | "einstieg" | "thema" | "buch";
 
 export interface PlanDefinition {
   slug: string;

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Compass } from "lucide-react";
+import { ArrowRight, Compass, Plus } from "lucide-react";
 import { PlanCard } from "@/components/plans/plan-card";
 import { buttonClasses } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/dal";
@@ -23,7 +23,7 @@ function byProgress(a: MySubscription, b: MySubscription): number {
 export default async function PlansPage() {
   const user = await getCurrentUser();
   const [groups, mine] = await Promise.all([
-    listPlans(),
+    listPlans(user?.id),
     user ? listMySubscriptions(user.id, "active") : Promise.resolve<MySubscription[]>([]),
   ]);
   const own = [...mine].sort(byProgress);
@@ -31,12 +31,17 @@ export default async function PlansPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 md:py-14">
-      <header className="max-w-prose">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Lesepläne</h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Ein Plan hilft dir, dranzubleiben – in deinem Tempo. Kein Tag geht verloren: Der nächste Abschnitt wartet einfach,
-          bis du wieder Zeit hast.
-        </p>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="max-w-prose">
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Lesepläne</h1>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Ein Plan hilft dir, dranzubleiben – in deinem Tempo. Kein Tag geht verloren: Der nächste Abschnitt wartet einfach,
+            bis du wieder Zeit hast.
+          </p>
+        </div>
+        <Link href={user ? "/leseplaene/neu" : "/anmelden?next=%2Fleseplaene%2Fneu"} className={buttonClasses("primary", "lg")}>
+          <Plus aria-hidden="true" /> Eigenen Plan erstellen
+        </Link>
       </header>
 
       {user && own.length > 0 ? (

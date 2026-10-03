@@ -17,6 +17,7 @@ export type { Reading } from "./generate";
 /* ------------------------------------------------------------------ */
 
 export const CATEGORY_ORDER: readonly PlanCategory[] = [
+  "eigen",
   "einstieg",
   "thema",
   "buch",
@@ -32,6 +33,7 @@ export const CATEGORY_LABELS: Record<PlanCategory, string> = {
   einstieg: "Einstieg",
   thema: "Thema",
   buch: "Ein Buch",
+  eigen: "Eigene Pläne",
 };
 
 export function isPlanCategory(value: unknown): value is PlanCategory {

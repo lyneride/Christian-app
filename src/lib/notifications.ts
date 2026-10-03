@@ -17,6 +17,7 @@ export type NotificationType =
   | "friend_request"
   | "friend_accepted"
   | "plan_invite"
+  | "plan_post"
   | "message"
   | "mention"
   | "moderation";

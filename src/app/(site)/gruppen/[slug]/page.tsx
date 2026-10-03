@@ -7,6 +7,7 @@ import { PostCompose } from "@/components/community/post-compose";
 import { PostList } from "@/components/community/post-list";
 import { GroupKindBadge } from "@/components/groups/group-card";
 import { GroupEvents, GroupPrayers, MemberList } from "@/components/groups/group-sections";
+import { GroupReadingPlans } from "@/components/groups/group-plans";
 import { JoinButton } from "@/components/groups/join-button";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -142,6 +143,7 @@ export default async function GroupPage(props: Props) {
               </section>
             ) : null}
 
+            <GroupReadingPlans groupId={group.id} isMember={isActiveMember} />
             <GroupPrayers groupId={group.id} slug={group.slug} viewer={user} isMember={isActiveMember} />
             <GroupEvents groupId={group.id} slug={group.slug} viewer={user} isMember={isActiveMember} />
 

@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Users } from "lucide-react";
+import { Check, Lightbulb, Users } from "lucide-react";
 import { requireUser } from "@/lib/auth/dal";
 import { listFriends } from "@/lib/friends/queries";
-import { canViewPlanGroup, getDayReadings, getPlanGroup, memberProgress, sharedMarksForDay } from "@/lib/plans/shared";
+import { canViewPlanGroup, dayPosts, getDayReadings, getPlanGroup, memberProgress, sharedMarksForDay } from "@/lib/plans/shared";
+import { renderMarkdown } from "@/lib/markdown";
+import { Markdown } from "@/components/community/markdown";
+import { MarkDayButton } from "@/components/plans/mark-day-button";
+import { DayPostForm, DeleteDayPostButton } from "@/components/plans/day-post-form";
 import { readingsLabel, spanPath, mergeReadings } from "@/lib/plans/progress";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -36,11 +40,15 @@ export default async function GemeinsamPage(props: PageProps<"/leseplaene/gemein
   const myDay = me?.currentDay ?? 1;
   const requested = Number(typeof searchParams.tag === "string" ? searchParams.tag : NaN);
   const day = Number.isFinite(requested) && requested >= 1 && requested <= group.plan.dayCount ? requested : (myDay ?? 1);
-  const [readings, marks, friends] = await Promise.all([
+  const [readings, marks, friends, posts] = await Promise.all([
     getDayReadings(group.planId, day),
     me?.status === "ACTIVE" ? sharedMarksForDay(group, day, user.preferredTranslation) : Promise.resolve([]),
     isCreator ? listFriends(user.id) : Promise.resolve([]),
+    dayPosts(group.id, day),
   ]);
+  const readToday = active.filter((m) => m.days.includes(day));
+  const notYet = active.filter((m) => !m.days.includes(day));
+  const canModerate = user.role === "ADMIN" || user.role === "MODERATOR";
   const spans = mergeReadings(readings);
   const colorClass = (c?: string) => (c && c in HIGHLIGHT_COLORS ? HIGHLIGHT_COLORS[c as HighlightColor].className : "bg-highlight-yellow");
 
@@ -164,6 +172,55 @@ export default async function GemeinsamPage(props: PageProps<"/leseplaene/gemein
                 ) : null;
               })}
             </ul>
+            <div className="mt-4 border-t border-border pt-4">
+              <p className="text-sm">
+                <Check className="mr-1 inline size-4 text-success" aria-hidden="true" />
+                <span className="font-medium">Gelesen:</span>{" "}
+                {readToday.length === 0 ? <span className="text-muted-foreground">noch niemand</span> : readToday.map((m) => (m.user.id === user.id ? "du" : m.user.name)).join(", ")}
+              </p>
+              {notYet.length > 0 && readToday.length > 0 ? (
+                <p className="mt-1 text-sm text-muted-foreground">Noch offen: {notYet.map((m) => (m.user.id === user.id ? "du" : m.user.name)).join(", ")}</p>
+              ) : null}
+              {me?.status === "ACTIVE" ? (
+                <div className="mt-3">
+                  <MarkDayButton planId={group.planId} day={day} done={me.days.includes(day)} size="md" />
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="rounded-card border border-border bg-surface p-5 shadow-soft">
+            <h2 className="flex items-center gap-2 font-semibold">
+              <Lightbulb className="size-5 text-accent" aria-hidden="true" /> Was wir mitnehmen – Tag {day}
+            </h2>
+            {posts.length === 0 ? (
+              <p className="mt-2 text-sm text-muted-foreground">Noch nichts geteilt. Schreib als Erste:r, was dir aufgefallen ist.</p>
+            ) : (
+              <ul className="mt-3 divide-y divide-border">
+                {posts.map((p) => (
+                  <li key={p.id} className="flex gap-3 py-3">
+                    <Avatar name={p.user.name} src={p.user.avatarUrl} size="sm" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-2 text-sm">
+                        <p>
+                          <Link href={`/@${p.user.username}`} className="font-medium hover:underline">
+                            {p.user.name}
+                          </Link>{" "}
+                          <span className="text-xs text-muted-foreground">{formatRelative(p.createdAt)}</span>
+                        </p>
+                        {p.user.id === user.id || canModerate ? <DeleteDayPostButton id={p.id} /> : null}
+                      </div>
+                      <Markdown html={renderMarkdown(p.body, { headings: false })} className="mt-1 text-sm" />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {me?.status === "ACTIVE" ? (
+              <div className="mt-4 border-t border-border pt-4">
+                <DayPostForm planGroupId={group.id} day={day} />
+              </div>
+            ) : null}
           </div>
 
           <div className="rounded-card border border-border bg-surface p-5 shadow-soft">

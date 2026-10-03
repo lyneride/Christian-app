@@ -14,6 +14,8 @@ export interface SharedMember {
   status: "ACTIVE" | "PENDING" | "BANNED";
   shareHighlights: boolean;
   completed: number;
+  /** completed day numbers */
+  days: number[];
   currentDay: number | null;
   percent: number;
   lastActivity: Date | null;
@@ -49,6 +51,7 @@ export async function memberProgress(group: PlanGroupDetail): Promise<SharedMemb
       status: m.status,
       shareHighlights: m.shareHighlights,
       completed: days.length,
+      days,
       currentDay: nextOpenDay(days, group.plan.dayCount),
       percent: percent(days.length, group.plan.dayCount),
       lastActivity: last,
@@ -147,4 +150,38 @@ export async function sharedMarksForDay(group: PlanGroupDetail, day: number, tra
 
 export function bookName(book: number): string {
   return getBookByNumber(book)?.name.de ?? `Buch ${book}`;
+}
+
+export interface DayPost {
+  id: string;
+  body: string;
+  createdAt: Date;
+  user: { id: string; name: string; username: string; avatarUrl: string | null };
+}
+
+/** Inputs the members shared for one plan day, oldest first. */
+export async function dayPosts(planGroupId: string, day: number): Promise<DayPost[]> {
+  return prisma.planDayPost.findMany({
+    where: { planGroupId, day },
+    select: { id: true, body: true, createdAt: true, user: { select: memberSelect } },
+    orderBy: { createdAt: "asc" },
+    take: 100,
+  });
+}
+
+/** Shared plans linked to a community group, newest first. */
+export async function listGroupPlanGroups(groupId: string) {
+  return prisma.planGroup.findMany({
+    where: { groupId },
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      plan: { select: { slug: true, title: true, dayCount: true } },
+      createdBy: { select: memberSelect },
+      _count: { select: { members: { where: { status: "ACTIVE" } } } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  });
 }

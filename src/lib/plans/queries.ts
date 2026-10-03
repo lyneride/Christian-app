@@ -43,8 +43,9 @@ export interface PlanGroup {
 }
 
 /** All plans grouped by category in display order; empty categories are left out. */
-export async function listPlans(): Promise<PlanGroup[]> {
+export async function listPlans(viewerId?: string | null): Promise<PlanGroup[]> {
   const plans = await prisma.readingPlan.findMany({
+    where: viewerId ? { OR: [{ isSystem: true }, { authorId: viewerId }, { subscriptions: { some: { userId: viewerId } } }] } : { isSystem: true },
     select: planSummarySelect,
     orderBy: [{ dayCount: "asc" }, { title: "asc" }],
   });

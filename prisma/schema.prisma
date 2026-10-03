@@ -81,6 +81,7 @@ model User {
   friendRequestsReceived Friendship[]              @relation("friendRequestsReceived")
   planGroupsCreated      PlanGroup[]
   planGroupMemberships   PlanGroupMember[]
+  planDayPosts           PlanDayPost[]
 }
 
 model Session {
@@ -472,6 +473,7 @@ model PlanGroup {
   createdAt     DateTime           @default(now())
   members       PlanGroupMember[]
   subscriptions PlanSubscription[]
+  dayPosts      PlanDayPost[]
 
   @@index([planId])
   @@index([groupId])
@@ -497,6 +499,22 @@ model PlanProgress {
   completedAt    DateTime         @default(now())
 
   @@id([subscriptionId, day])
+}
+
+/** "Was nehme ich heute mit?" – short inputs the members of a shared plan share per day. */
+model PlanDayPost {
+  id          String    @id @default(cuid())
+  planGroupId String
+  planGroup   PlanGroup @relation(fields: [planGroupId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day         Int
+  body        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([planGroupId, day])
+  @@index([userId])
 }
 
 // ---- Personal Bible study --------------------------------------------------
