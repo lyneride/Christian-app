@@ -15,7 +15,6 @@ export interface ProfileFormValues {
   bio: string;
   location: string;
   church: string;
-  avatarUrl: string;
   profileVisibility: string;
   /** "on" when checked, "" otherwise (mirrors FormData) */
   openForPartner: string;
@@ -97,20 +96,6 @@ export function ProfileForm({ initial, translations }: Props) {
           <Input id="church" name="church" maxLength={120} defaultValue={v.church} aria-invalid={errors.church ? true : undefined} aria-describedby={describedBy("church")} />
         </Field>
       </div>
-
-      <Field label="Profilbild (Adresse)" htmlFor="avatarUrl" hint="Link zu einem Bild, das mit https:// beginnt. Ohne Bild zeigen wir deine Initialen." error={errors.avatarUrl}>
-        <Input
-          id="avatarUrl"
-          name="avatarUrl"
-          type="url"
-          inputMode="url"
-          placeholder="https://…"
-          maxLength={500}
-          defaultValue={v.avatarUrl}
-          aria-invalid={errors.avatarUrl ? true : undefined}
-          aria-describedby={describedBy("avatarUrl")}
-        />
-      </Field>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Wer darf dein Profil sehen?" htmlFor="profileVisibility" hint="Name und Benutzername sind immer sichtbar." error={errors.profileVisibility}>

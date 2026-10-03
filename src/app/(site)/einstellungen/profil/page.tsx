@@ -6,6 +6,7 @@ import { listTranslations } from "@/lib/bible/data";
 import { prisma } from "@/lib/db";
 import { profilePath } from "@/lib/profile";
 import { ProfileForm } from "./profile-form";
+import { AvatarUpload } from "@/components/settings/avatar-upload";
 
 export const metadata: Metadata = { title: "Profil bearbeiten" };
 
@@ -25,6 +26,9 @@ export default async function ProfilEinstellungenPage() {
       title="Dein Profil"
       description="So sehen dich andere Mitglieder. Alles außer Name und Benutzername ist freiwillig."
     >
+      <div className="mb-6">
+        <AvatarUpload name={user.name} avatarUrl={user.avatarUrl} />
+      </div>
       <p className="mb-5 text-sm text-muted-foreground">
         Dein Profil ist unter{" "}
         <Link href={profilePath(user.username)} className="font-medium text-primary underline-offset-4 hover:underline">
@@ -39,7 +43,6 @@ export default async function ProfilEinstellungenPage() {
           bio: user.bio ?? "",
           location: user.location ?? "",
           church: user.church ?? "",
-          avatarUrl: user.avatarUrl ?? "",
           profileVisibility: settings.profileVisibility,
           openForPartner: settings.openForPartner ? "on" : "",
           preferredTranslation: settings.preferredTranslation,

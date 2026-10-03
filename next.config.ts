@@ -21,6 +21,10 @@ const csp = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  // Bible texts are read from /data at runtime; make sure serverless bundles (Vercel) include them.
+  outputFileTracingIncludes: {
+    "/**/*": ["./data/**/*"],
+  },
   async rewrites() {
     // Pretty profile URLs: /@benutzername → src/app/(site)/profil/[username] (see that folder's README).
     return [{ source: "/@:username", destination: "/profil/:username" }];

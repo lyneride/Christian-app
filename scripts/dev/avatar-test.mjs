@@ -1,0 +1,18 @@
+import { chromium } from "@playwright/test";
+const [,, file, out] = process.argv;
+const base = process.env.BASE_URL || "http://localhost:3000";
+const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM || undefined });
+const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, locale: "de-DE" });
+await page.goto(base + "/anmelden");
+await page.getByLabel("E-Mail-Adresse").fill("mara@bleibe.local");
+await page.getByLabel("Passwort", { exact: true }).fill("demo-passwort-123");
+await page.getByRole("button", { name: "Anmelden" }).click();
+await page.waitForURL(/\/start/);
+await page.goto(base + "/einstellungen/profil");
+await page.locator("#avatar").setInputFiles(file);
+await page.waitForTimeout(3000);
+const status = await page.locator("[role=status]").first().innerText().catch(() => "n/a");
+const img = await page.locator("img[src*='/uploads/avatars/'], img[src*='blob.vercel-storage.com']").count();
+console.log("status:", status, "| avatar imgs:", img);
+await page.screenshot({ path: out });
+await browser.close();

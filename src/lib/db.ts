@@ -1,9 +1,11 @@
 import "server-only";
 import { PrismaClient } from "@/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 function createClient() {
-  const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) throw new Error("DATABASE_URL ist nicht gesetzt (PostgreSQL-Verbindung).");
+  const adapter = new PrismaPg({ connectionString, max: Number(process.env.DATABASE_POOL_MAX ?? 5) });
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
@@ -12,7 +14,7 @@ function createClient() {
 
 const globalForPrisma = globalThis as unknown as { prisma?: ReturnType<typeof createClient> };
 
-/** Prisma client singleton (survives HMR in development). */
+/** Prisma client singleton (survives HMR in development; one pool per serverless instance). */
 export const prisma = globalForPrisma.prisma ?? createClient();
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 

@@ -54,7 +54,6 @@ export async function updateProfile(_prev: ActionState, formData: FormData): Pro
     bio: str(formData, "bio"),
     location: str(formData, "location"),
     church: str(formData, "church"),
-    avatarUrl: str(formData, "avatarUrl"),
     profileVisibility: str(formData, "profileVisibility"),
     openForPartner: formData.get("openForPartner") === "on" ? "on" : "",
     preferredTranslation: str(formData, "preferredTranslation"),

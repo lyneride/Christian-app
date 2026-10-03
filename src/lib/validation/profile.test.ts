@@ -21,7 +21,6 @@ const validProfile = {
   bio: "",
   location: "  ",
   church: "FeG Musterstadt",
-  avatarUrl: "",
   profileVisibility: "MEMBERS",
   openForPartner: true,
   preferredTranslation: "lut1912",
@@ -35,7 +34,6 @@ describe("profileSchema", () => {
       bio: null,
       location: null,
       church: "FeG Musterstadt",
-      avatarUrl: null,
       profileVisibility: "MEMBERS",
       openForPartner: true,
       preferredTranslation: "LUT1912",
@@ -56,7 +54,6 @@ describe("profileSchema", () => {
         username: "a b",
         bio: "x".repeat(501),
         location: "x".repeat(81),
-        avatarUrl: "http://example.org/bild.png",
         preferredTranslation: "",
       }),
     );
@@ -64,7 +61,6 @@ describe("profileSchema", () => {
     expect(errors.username).toEqual(["Nur Buchstaben, Zahlen, Punkt, Unterstrich und Bindestrich."]);
     expect(errors.bio).toEqual(["Höchstens 500 Zeichen."]);
     expect(errors.location).toEqual(["Höchstens 80 Zeichen."]);
-    expect(errors.avatarUrl).toEqual(["Bitte eine vollständige Adresse angeben, die mit https:// beginnt."]);
     expect(errors.preferredTranslation).toEqual(["Bitte eine Übersetzung wählen."]);
   });
 });

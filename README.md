@@ -22,7 +22,7 @@ inspirieren – werbefrei, datensparsam, ohne Abo-Paywall.
 
 - **Next.js 16** (App Router, Server Components, Server Actions, Turbopack) + **React 19** + **TypeScript**
 - **Tailwind CSS v4** mit eigenem Design-System (Light/Dark)
-- **Prisma 7** + **SQLite** (better-sqlite3-Adapter; Postgres über `DATABASE_URL` austauschbar)
+- **Prisma 7** + **PostgreSQL** (pg-Adapter; kostenlos z. B. Neon, Supabase, Prisma Postgres)
 - Eigene Session-Authentifizierung (bcrypt + httpOnly-Cookies), kein Drittanbieter-Tracking
 - Gemeinfreie Bibeltexte als statische Daten (`data/`), siehe [docs/dev/bible-data.md](docs/dev/bible-data.md)
 - Tests: Vitest (Unit) + Playwright (E2E)
@@ -30,11 +30,15 @@ inspirieren – werbefrei, datensparsam, ohne Abo-Paywall.
 ## Entwicklung
 
 ```bash
-cp .env.example .env          # Secrets anpassen
+cp .env.example .env
+# DATABASE_URL in .env auf eine PostgreSQL-Datenbank setzen (lokales Postgres 16 oder kostenlos bei neon.tech)
 npm install
-npm run db:setup              # Prisma-Client generieren, Migrationen anwenden, Seed-Daten einspielen
-npm run dev                   # http://localhost:3000
+npm run db:setup
+npm run dev
 ```
+
+Danach läuft die App unter http://localhost:3000. (Keine Kommentare hinter die Befehle schreiben – zsh übergibt sie
+sonst als Argumente.)
 
 Der Seed legt ein Admin-Konto an (`SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`, Standard `admin@bleibe.local` /
 `admin-passwort-123` – vor dem Produktivbetrieb ändern). Mit `SEED_DEMO=1 npm run db:seed` kommen Demo-Mitglieder
@@ -42,12 +46,15 @@ Der Seed legt ein Admin-Konto an (`SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`, St
 
 Ohne SMTP-Konfiguration werden E-Mails (Bestätigung, Passwort-Reset) in der Server-Konsole ausgegeben.
 
+## Veröffentlichen (kostenlos)
+
+Schritt-für-Schritt-Anleitung für Vercel + Neon + Gmail: [docs/deploy.md](docs/deploy.md).
+
 ## Betrieb
 
 - Produktion: `npm run build && npm start`; Datenbank-Migrationen mit `npm run db:deploy`.
 - Erinnerungen und Aufräumen: stündlich `POST /api/cron/reminders` mit `Authorization: Bearer $CRON_SECRET` aufrufen.
-- Postgres statt SQLite: `provider` in `prisma/schema.prisma` auf `postgresql` setzen und den Adapter in
-  `src/lib/db.ts` austauschen (`@prisma/adapter-pg`).
+- Profilbilder liegen auf Vercel Blob (`BLOB_READ_WRITE_TOKEN`), sonst unter `public/uploads/`.
 - Impressum und Datenschutz enthalten Platzhalter in eckigen Klammern, die vor dem Start ausgefüllt werden müssen.
 
 Weitere Befehle:

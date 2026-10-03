@@ -1,5 +1,5 @@
-// Prisma 7 schema – the datasource URL lives in prisma.config.ts.
-// SQLite in development; switch `provider` to "postgresql" and the adapter in src/lib/db.ts for Postgres.
+// Prisma 7 schema – the datasource URL lives in prisma.config.ts (DATABASE_URL).
+// PostgreSQL (z. B. Neon, Supabase, Prisma Postgres); lokal reicht ein Postgres 16 oder `npx prisma dev`.
 
 generator client {
   provider = "prisma-client"
@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 // ---------------------------------------------------------------------------

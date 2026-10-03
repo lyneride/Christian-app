@@ -20,7 +20,7 @@ function optionalText(max: number) {
 
 export const bioSchema = optionalText(BIO_MAX);
 
-/** Optional avatar URL; only absolute https:// addresses are accepted (no uploads). */
+/** Optional external avatar URL (kept for imports/tests; the UI uses the upload in avatar-actions.ts). */
 export const avatarUrlSchema = z
   .string()
   .trim()
@@ -36,7 +36,6 @@ export const profileSchema = z.object({
   bio: bioSchema,
   location: optionalText(80),
   church: optionalText(120),
-  avatarUrl: avatarUrlSchema,
   profileVisibility: z.enum(PROFILE_VISIBILITIES, { error: "Bitte eine gültige Sichtbarkeit wählen." }),
   openForPartner: z.boolean(),
   preferredTranslation: z

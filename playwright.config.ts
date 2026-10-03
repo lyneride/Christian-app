@@ -29,6 +29,6 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
-    env: { DATABASE_URL: "file:./e2e.db", AUTH_SECRET: "e2e-secret-0123456789abcdef0123456789", APP_URL: `http://localhost:${PORT}` },
+    env: { DATABASE_URL: process.env.E2E_DATABASE_URL ?? process.env.DATABASE_URL ?? "", AUTH_SECRET: "e2e-secret-0123456789abcdef0123456789", APP_URL: `http://localhost:${PORT}` },
   },
 });
