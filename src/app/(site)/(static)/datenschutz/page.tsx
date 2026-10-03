@@ -3,7 +3,6 @@ import { ProsePage } from "@/components/content/prose-page";
 
 export const metadata: Metadata = { title: "Datenschutzerklärung" };
 
-// TODO(Kolja): Verantwortlichen und Hosting-Anbieter eintragen.
 export default function DatenschutzPage() {
   return (
     <ProsePage
@@ -12,7 +11,9 @@ export default function DatenschutzPage() {
       updated="Oktober 2026"
     >
       <h2>1. Verantwortlicher</h2>
-      <p>[Vorname Nachname, Anschrift, E-Mail] – siehe Impressum.</p>
+      <p>
+        Kolja Hylla, Eibenweg 14, 57078 Siegen, E-Mail: lyneride@gmail.com
+      </p>
 
       <h2>2. Grundsätze</h2>
       <ul>
@@ -33,9 +34,13 @@ export default function DatenschutzPage() {
 
       <h2>4. Hosting und Server-Logfiles</h2>
       <p>
-        Die Seite wird bei [Hosting-Anbieter, Ort/Land] betrieben. Beim Aufruf werden technisch bedingt IP-Adresse, Zeitpunkt,
-        aufgerufene Seite, Browser und Betriebssystem in Server-Logfiles verarbeitet (Art. 6 Abs. 1 lit. f DSGVO, sicherer Betrieb).
-        Logfiles werden nach spätestens 14 Tagen gelöscht.
+        Die Seite wird bei Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA betrieben; die Auslieferung erfolgt über
+        Rechenzentren in Frankfurt am Main. Die Datenbank liegt bei Neon Inc., 209 Orange Street, Wilmington, DE 19801, USA, auf
+        Servern in Frankfurt am Main (AWS eu-central-1). Profilbilder werden in Vercel Blob gespeichert. Beim Aufruf werden technisch
+        bedingt IP-Adresse, Zeitpunkt, aufgerufene Seite, Browser und Betriebssystem in Server-Logfiles verarbeitet (Art. 6 Abs. 1
+        lit. f DSGVO, sicherer Betrieb). Logfiles werden nach spätestens 14 Tagen gelöscht. Mit beiden Anbietern bestehen
+        Auftragsverarbeitungsverträge; soweit ein Zugriff aus den USA möglich ist, stützt sich die Übermittlung auf das
+        EU-US Data Privacy Framework und die EU-Standardvertragsklauseln.
       </p>
 
       <h2>5. Registrierung und Konto</h2>
@@ -58,7 +63,9 @@ export default function DatenschutzPage() {
       <h2>7. E-Mails</h2>
       <p>
         Wir senden E-Mails zur Bestätigung deiner Adresse, zum Zurücksetzen des Passworts und – wenn du es in den Einstellungen
-        aktivierst – zu Benachrichtigungen. Newsletter oder Werbemails gibt es nicht.
+        aktivierst – zu Benachrichtigungen. Newsletter oder Werbemails gibt es nicht. Der Versand erfolgt über Google (Gmail), Google
+        Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland; dabei werden deine E-Mail-Adresse und der Inhalt der Mail
+        an Google übermittelt.
       </p>
 
       <h2>8. Lokale Speicherung im Browser</h2>

@@ -3,28 +3,25 @@ import { ProsePage } from "@/components/content/prose-page";
 
 export const metadata: Metadata = { title: "Impressum" };
 
-// TODO(Kolja): Platzhalter in eckigen Klammern durch echte Angaben ersetzen (§ 5 DDG, § 18 MStV).
 export default function ImpressumPage() {
   return (
     <ProsePage title="Impressum">
       <h2>Angaben gemäß § 5 DDG</h2>
       <p>
-        [Vorname Nachname]
+        Kolja Hylla
         <br />
-        [Straße Hausnummer]
+        Eibenweg 14
         <br />
-        [PLZ Ort]
+        57078 Siegen
         <br />
         Deutschland
       </p>
       <h2>Kontakt</h2>
       <p>
-        E-Mail: [kontakt@example.org]
-        <br />
-        Telefon: [optional]
+        E-Mail: lyneride@gmail.com
       </p>
       <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
-      <p>[Vorname Nachname, Anschrift wie oben]</p>
+      <p>Kolja Hylla, Eibenweg 14, 57078 Siegen</p>
       <h2>Haftung für Inhalte von Mitgliedern</h2>
       <p>
         Beiträge, Gebetsanliegen, Kommentare und Gruppeninhalte werden von Mitgliedern erstellt. Wir prüfen Inhalte nicht
