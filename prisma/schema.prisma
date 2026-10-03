@@ -50,33 +50,37 @@ model User {
   sessions           Session[]
   verificationTokens VerificationToken[]
 
-  following           Follow[]                  @relation("following")
-  followers           Follow[]                  @relation("followers")
-  createdGroups       Group[]                   @relation("createdGroups")
-  memberships         GroupMember[]
-  posts               Post[]
-  comments            Comment[]
-  reactions           Reaction[]
-  prayerRequests      PrayerRequest[]
-  prayerSupports      PrayerSupport[]
-  partnershipRequests Partnership[]             @relation("partnershipRequests")
-  partnershipInvites  Partnership[]             @relation("partnershipInvites")
-  hostedEvents        Event[]
-  rsvps               EventRsvp[]
-  readingPlans        ReadingPlan[]
-  planSubscriptions   PlanSubscription[]
-  highlights          Highlight[]
-  notes               Note[]
-  bookmarks           Bookmark[]
-  readingLogs         ReadingLog[]
-  journalEntries      JournalEntry[]
-  memoryVerses        MemoryVerse[]
-  conversations       ConversationParticipant[]
-  messages            Message[]
-  notifications       Notification[]            @relation("notifications")
-  actedNotifications  Notification[]            @relation("actedNotifications")
-  reportsMade         Report[]                  @relation("reportsMade")
-  reportsResolved     Report[]                  @relation("reportsResolved")
+  following              Follow[]                  @relation("following")
+  followers              Follow[]                  @relation("followers")
+  createdGroups          Group[]                   @relation("createdGroups")
+  memberships            GroupMember[]
+  posts                  Post[]
+  comments               Comment[]
+  reactions              Reaction[]
+  prayerRequests         PrayerRequest[]
+  prayerSupports         PrayerSupport[]
+  partnershipRequests    Partnership[]             @relation("partnershipRequests")
+  partnershipInvites     Partnership[]             @relation("partnershipInvites")
+  hostedEvents           Event[]
+  rsvps                  EventRsvp[]
+  readingPlans           ReadingPlan[]
+  planSubscriptions      PlanSubscription[]
+  highlights             Highlight[]
+  notes                  Note[]
+  bookmarks              Bookmark[]
+  readingLogs            ReadingLog[]
+  journalEntries         JournalEntry[]
+  memoryVerses           MemoryVerse[]
+  conversations          ConversationParticipant[]
+  messages               Message[]
+  notifications          Notification[]            @relation("notifications")
+  actedNotifications     Notification[]            @relation("actedNotifications")
+  reportsMade            Report[]                  @relation("reportsMade")
+  reportsResolved        Report[]                  @relation("reportsResolved")
+  friendRequestsSent     Friendship[]              @relation("friendRequestsSent")
+  friendRequestsReceived Friendship[]              @relation("friendRequestsReceived")
+  planGroupsCreated      PlanGroup[]
+  planGroupMemberships   PlanGroupMember[]
 }
 
 model Session {
@@ -137,6 +141,29 @@ model Follow {
   @@index([followingId])
 }
 
+// ---- Friends ----------------------------------------------------------------
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model Friendship {
+  id          String           @id @default(cuid())
+  requesterId String
+  requester   User             @relation("friendRequestsSent", fields: [requesterId], references: [id], onDelete: Cascade)
+  addresseeId String
+  addressee   User             @relation("friendRequestsReceived", fields: [addresseeId], references: [id], onDelete: Cascade)
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  respondedAt DateTime?
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
+  @@index([requesterId, status])
+}
+
 // ---- Groups ----------------------------------------------------------------
 
 enum GroupKind {
@@ -173,6 +200,7 @@ model Group {
   posts       Post[]
   prayers     PrayerRequest[]
   events      Event[]
+  planGroups  PlanGroup[]
 
   @@index([kind, city])
 }
@@ -399,6 +427,7 @@ model ReadingPlan {
   createdAt     DateTime           @default(now())
   days          PlanDay[]
   subscriptions PlanSubscription[]
+  planGroups    PlanGroup[]
 }
 
 model PlanDay {
@@ -419,9 +448,45 @@ model PlanSubscription {
   startedAt   DateTime       @default(now())
   completedAt DateTime?
   archivedAt  DateTime?
+  planGroupId String?
+  planGroup   PlanGroup?     @relation(fields: [planGroupId], references: [id], onDelete: SetNull)
   progress    PlanProgress[]
 
   @@unique([userId, planId])
+  @@index([userId])
+  @@index([planGroupId])
+}
+
+/**
+ * "Gemeinsam lesen": several members read the same plan and see each other's progress.
+ */
+model PlanGroup {
+  id            String             @id @default(cuid())
+  planId        String
+  plan          ReadingPlan        @relation(fields: [planId], references: [id], onDelete: Cascade)
+  name          String
+  createdById   String
+  createdBy     User               @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  groupId       String?
+  group         Group?             @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  createdAt     DateTime           @default(now())
+  members       PlanGroupMember[]
+  subscriptions PlanSubscription[]
+
+  @@index([planId])
+  @@index([groupId])
+}
+
+model PlanGroupMember {
+  planGroupId     String
+  planGroup       PlanGroup        @relation(fields: [planGroupId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status          MembershipStatus @default(ACTIVE)
+  shareHighlights Boolean          @default(true)
+  joinedAt        DateTime         @default(now())
+
+  @@id([planGroupId, userId])
   @@index([userId])
 }
 

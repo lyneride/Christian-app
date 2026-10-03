@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const SESSION_COOKIE = "bleibe_session";
 
 /** Route prefixes that require a signed-in user (optimistic check; pages re-verify via the DAL). */
-const PROTECTED_PREFIXES = ["/start", "/profil/bearbeiten", "/einstellungen", "/tagebuch", "/merken", "/nachrichten", "/admin", "/benachrichtigungen"];
+const PROTECTED_PREFIXES = ["/start", "/profil/bearbeiten", "/einstellungen", "/tagebuch", "/merken", "/nachrichten", "/admin", "/benachrichtigungen", "/freunde", "/meine-bibel", "/leseplaene/meine", "/leseplaene/gemeinsam"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

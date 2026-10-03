@@ -10,12 +10,14 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { requireUser } from "@/lib/auth/dal";
 import { planStatus } from "@/lib/plans/progress";
 import { listMySubscriptions } from "@/lib/plans/queries";
+import { listMyPlanGroups } from "@/lib/plans/shared";
+import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = { title: "Meine Lesepläne" };
 
 export default async function MyPlansPage() {
   const user = await requireUser("/leseplaene/meine");
-  const all = await listMySubscriptions(user.id, "all");
+  const [all, shared] = await Promise.all([listMySubscriptions(user.id, "all"), listMyPlanGroups(user.id)]);
   const active = all.filter((s) => planStatus(s) === "active");
   const finished = all.filter((s) => planStatus(s) === "finished");
   const archived = all.filter((s) => planStatus(s) === "archived");
@@ -30,6 +32,39 @@ export default async function MyPlansPage() {
       <p className="mt-3 max-w-prose text-lg text-muted-foreground">
         Hier siehst du, was als Nächstes dran ist. Lies, wenn es passt – der Plan wartet.
       </p>
+
+      <section aria-labelledby="gemeinsam" className="mt-10">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="gemeinsam" className="text-2xl font-semibold tracking-tight">
+            Gemeinsam lesen
+          </h2>
+          <Link href="/freunde" className="text-sm text-primary underline-offset-4 hover:underline">
+            Freunde verwalten
+          </Link>
+        </div>
+        {shared.length === 0 ? (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Starte einen Plan zusammen mit Freunden oder einer Gruppe – auf jeder Planseite über „Gemeinsam lesen“. Ihr seht dann
+            gegenseitig Fortschritt, Markierungen und geteilte Notizen.
+          </p>
+        ) : (
+          <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+            {shared.map((g) => (
+              <li key={g.id} className="rounded-card border border-border bg-surface p-4 shadow-soft">
+                <div className="flex items-start justify-between gap-2">
+                  <Link href={`/leseplaene/gemeinsam/${g.id}`} className="font-medium hover:underline">
+                    {g.name}
+                  </Link>
+                  {g.status === "PENDING" ? <Badge variant="accent">Einladung</Badge> : null}
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {g.plan.title} · {g.memberCount} {g.memberCount === 1 ? "Person" : "Personen"} · von {g.createdBy.name}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section aria-labelledby="heute-dran" className="mt-10">
         <h2 id="heute-dran" className="text-2xl font-semibold tracking-tight">

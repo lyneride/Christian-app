@@ -1,3 +1,4 @@
+import { getFriendState } from "@/lib/friends/queries";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/dal";
@@ -46,7 +47,14 @@ export default async function ProfilPage(props: PageProps<"/profil/[username]">)
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
-      <ProfileHeader user={user} stats={stats} isOwner={isOwner} signedIn={viewer !== null} following={following} />
+      <ProfileHeader
+        user={user}
+        stats={stats}
+        isOwner={isOwner}
+        signedIn={viewer !== null}
+        following={following}
+        friendState={viewer && !isOwner ? await getFriendState(viewer.id, user.id) : null}
+      />
 
       <div className="mt-8 grid gap-8 lg:grid-cols-2">
         <section aria-labelledby="profil-beitraege" className="space-y-4">

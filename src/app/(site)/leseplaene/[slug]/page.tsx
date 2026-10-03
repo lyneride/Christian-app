@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowDown, ArrowLeft, CalendarDays, Clock, LibraryBig, PartyPopper } from "lucide-react";
+import { ArrowDown, ArrowLeft, CalendarDays, Clock, LibraryBig, PartyPopper, Users } from "lucide-react";
 import { DayList, dayAnchor } from "@/components/plans/day-list";
 import { MarkDayButton } from "@/components/plans/mark-day-button";
 import { ArchiveButton, ResetButton, SubscribeButton } from "@/components/plans/plan-buttons";
@@ -55,6 +55,11 @@ export default async function PlanPage(props: Props) {
       <header className="mt-5">
         <Badge variant="outline">{categoryLabel(plan.category)}</Badge>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{plan.title}</h1>
+        <p className="mt-2">
+          <Link href={`/leseplaene/gemeinsam/neu?plan=${plan.slug}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline">
+            <Users className="size-4" aria-hidden="true" /> Mit Freunden oder einer Gruppe gemeinsam lesen
+          </Link>
+        </p>
         <p className="mt-3 max-w-prose text-lg text-muted-foreground">{plan.description}</p>
 
         <dl className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">

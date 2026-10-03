@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { CalendarDays, Church, HandHeart, MapPin, MessageCircle, Pencil, UserPlus } from "lucide-react";
 import { FollowButton } from "@/components/profile/follow-button";
+import { FriendButton } from "@/components/friends/friend-button";
+import type { FriendState } from "@/lib/friends/queries";
 import { MarkdownBody } from "@/components/profile/markdown-body";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -17,9 +19,10 @@ interface Props {
   isOwner: boolean;
   signedIn: boolean;
   following: boolean;
+  friendState?: FriendState | null;
 }
 
-export function ProfileHeader({ user, stats, isOwner, signedIn, following }: Props) {
+export function ProfileHeader({ user, stats, isOwner, signedIn, following, friendState }: Props) {
   const next = encodeURIComponent(profilePath(user.username));
   const counts = [
     { label: "Öffentliche Beiträge", value: stats.posts },
@@ -84,6 +87,7 @@ export function ProfileHeader({ user, stats, isOwner, signedIn, following }: Pro
                 </ButtonLink>
               ) : signedIn ? (
                 <>
+                  {friendState ? <FriendButton username={user.username} state={friendState} /> : null}
                   <FollowButton username={user.username} following={following} />
                   <ButtonLink href={`/nachrichten/neu?an=${encodeURIComponent(user.username)}`} variant="outline">
                     <MessageCircle aria-hidden="true" />

@@ -14,6 +14,9 @@ export type NotificationType =
   | "event_reminder"
   | "event_rsvp"
   | "follow"
+  | "friend_request"
+  | "friend_accepted"
+  | "plan_invite"
   | "message"
   | "mention"
   | "moderation";
