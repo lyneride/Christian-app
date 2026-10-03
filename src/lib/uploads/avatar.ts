@@ -54,6 +54,12 @@ export async function storeAvatar(userId: string, file: File): Promise<string> {
     }
   }
 
+  if (process.env.VERCEL) {
+    throw new AvatarError(
+      "Der Bildspeicher ist nicht verbunden. In Vercel unter Storage einen Blob-Store mit dem Projekt verbinden und danach neu deployen.",
+    );
+  }
+
   const dir = path.join(process.cwd(), "public", "uploads", "avatars");
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, path.basename(name)), webp);
