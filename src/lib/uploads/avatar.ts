@@ -4,7 +4,7 @@ import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 /**
- * Profile picture storage. On Vercel (BLOB_READ_WRITE_TOKEN set) images go to
+ * Profile picture storage. On Vercel (Blob store connected) images go to
  * Vercel Blob (public URL); otherwise they are written to public/uploads/avatars
  * and served by Next.js from /uploads/avatars/… (fine for a single server).
  * Every image is re-encoded to a 256×256 WebP, which also strips metadata.
@@ -37,8 +37,17 @@ export function blobToken(): string | undefined {
   return entry?.[1];
 }
 
+/**
+ * True when a Vercel Blob store is connected: either via a classic read-write token or via the
+ * newer OIDC setup, where Vercel only provides BLOB_STORE_ID and the SDK signs requests with
+ * the function's VERCEL_OIDC_TOKEN.
+ */
+export function blobConfigured(): boolean {
+  return Boolean(blobToken() || process.env.BLOB_STORE_ID);
+}
+
 function usesBlob(): boolean {
-  return Boolean(blobToken());
+  return blobConfigured();
 }
 
 export async function storeAvatar(userId: string, file: File): Promise<string> {
