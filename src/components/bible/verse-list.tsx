@@ -24,6 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CrossReferencesPanel } from "./cross-references-panel";
 import { NotesPanel, type NoteDraft, type ReaderNote } from "./notes-panel";
+import { SendVersePanel } from "./send-verse-panel";
 import { useReaderSettings } from "./reader-settings";
 import { VerseActionBar, type ActionFeedback } from "./verse-action-bar";
 
@@ -71,7 +72,7 @@ export interface VerseListProps {
 
 const GUEST_STUDY: ReaderStudy = { signedIn: false, loginUrl: "/anmelden", highlights: {}, bookmarks: [], notes: [] };
 
-type Panel = "none" | "crossrefs" | "notes";
+type Panel = "none" | "crossrefs" | "notes" | "send";
 
 async function writeClipboard(text: string): Promise<boolean> {
   try {
@@ -374,6 +375,7 @@ export function VerseList({
               onNote: openNoteForm,
               onBookmark: doBookmark,
               onMemorize: doMemorize,
+              onSend: () => setPanel("send"),
             }}
             extraActions={extraActions}
           />
@@ -390,6 +392,21 @@ export function VerseList({
         chapterLabel={chapterLabel}
         locale={locale}
       />
+      {(() => {
+        const range = selectionRange(selected);
+        return range ? (
+          <SendVersePanel
+            open={panel === "send"}
+            onClose={closePanel}
+            reference={formatRangeReference(bookName, chapter, range, locale)}
+            book={bookNumber}
+            chapter={chapter}
+            verseStart={range.start}
+            verseEnd={range.end > range.start ? range.end : undefined}
+            translation={translation.id}
+          />
+        ) : null;
+      })()}
       <NotesPanel
         open={panel === "notes"}
         onClose={closePanel}

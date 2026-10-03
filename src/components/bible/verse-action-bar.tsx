@@ -13,6 +13,7 @@ import {
   Link2,
   NotebookPen,
   X,
+  Send,
   type LucideIcon,
 } from "lucide-react";
 import { HIGHLIGHT_COLOR_LIST, type HighlightColor } from "@/lib/study/reader-api";
@@ -34,6 +35,8 @@ export interface StudyActionHandlers {
   onNote: () => void;
   onBookmark: () => void;
   onMemorize: () => void;
+  /** send the selection to a friend as a direct message */
+  onSend: () => void;
 }
 
 interface Props {
@@ -152,6 +155,7 @@ export function VerseActionBar({
               onClick={study.onMemorize}
               disabled={study.pending}
             />
+            <ActionButton icon={Send} label="Senden" href={guestHref} onClick={study.onSend} disabled={study.pending} />
             {extraActions}
             <button
               type="button"

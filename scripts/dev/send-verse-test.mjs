@@ -1,0 +1,30 @@
+import { chromium } from "@playwright/test";
+const base = process.env.BASE_URL || "http://localhost:3000";
+const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM || undefined });
+async function login(email) {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: "de-DE" });
+  const page = await ctx.newPage();
+  await page.goto(base + "/anmelden");
+  await page.getByLabel("E-Mail-Adresse").fill(email);
+  await page.getByLabel("Passwort", { exact: true }).fill("demo-passwort-123");
+  await page.getByRole("button", { name: "Anmelden" }).click();
+  await page.waitForURL(/\/start/);
+  return page;
+}
+const mara = await login("mara@bleibe.local");
+await mara.goto(base + "/bibel/john/3");
+await mara.locator("#v16 [role=button], #v16").first().click();
+await mara.getByRole("button", { name: "Senden" }).click();
+await mara.getByRole("radio", { name: /Jonas/ }).click();
+await mara.getByLabel(/Ein paar Worte/).fill("Für dich heute.");
+await mara.getByRole("button", { name: "Senden", exact: true }).last().click();
+await mara.waitForTimeout(2500);
+console.log("status:", await mara.locator("[role=status]").last().innerText().catch(() => "n/a"));
+await mara.screenshot({ path: process.argv[2] });
+const jonas = await login("jonas@bleibe.local");
+await jonas.goto(base + "/nachrichten");
+await jonas.locator("a[href^='/nachrichten/']").first().click();
+await jonas.waitForTimeout(1500);
+const txt = await jonas.locator("main").innerText();
+console.log("jonas sees verse:", txt.includes("Also hat Gott die Welt geliebt"), "| link:", txt.includes("/bibel/john/3?v=16"));
+await browser.close();
