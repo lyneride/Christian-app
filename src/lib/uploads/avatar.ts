@@ -43,8 +43,14 @@ export async function storeAvatar(userId: string, file: File): Promise<string> {
 
   if (usesBlob()) {
     const { put } = await import("@vercel/blob");
-    const blob = await put(name, webp, { access: "public", contentType: "image/webp", addRandomSuffix: false });
-    return blob.url;
+    // Public stores give a CDN URL; private stores (the default for new stores) are served through /api/avatar/<file>.
+    try {
+      const blob = await put(name, webp, { access: "public", contentType: "image/webp", addRandomSuffix: false });
+      return blob.url;
+    } catch {
+      await put(name, webp, { access: "private", contentType: "image/webp", addRandomSuffix: false });
+      return `/api/avatar/${path.basename(name)}`;
+    }
   }
 
   const dir = path.join(process.cwd(), "public", "uploads", "avatars");
@@ -59,7 +65,10 @@ export async function deleteAvatar(url: string | null | undefined): Promise<void
   try {
     if (url.startsWith("/uploads/")) {
       await unlink(path.join(process.cwd(), "public", url.replace(/^\//, "")));
-    } else if (usesBlob() && /\.public\.blob\.vercel-storage\.com\//.test(url)) {
+    } else if (usesBlob() && url.startsWith("/api/avatar/")) {
+      const { del } = await import("@vercel/blob");
+      await del(`avatars/${path.basename(url)}`);
+    } else if (usesBlob() && /\.blob\.vercel-storage\.com\//.test(url)) {
       const { del } = await import("@vercel/blob");
       await del(url);
     }
