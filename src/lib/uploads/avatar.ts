@@ -2,7 +2,6 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
-import sharp from "sharp";
 
 /**
  * Profile picture storage. On Vercel (BLOB_READ_WRITE_TOKEN set) images go to
@@ -19,6 +18,8 @@ export class AvatarError extends Error {}
 
 async function toWebp(input: Buffer): Promise<Buffer> {
   try {
+    // loaded lazily so a missing native binary only affects uploads, never page rendering
+    const sharp = (await import("sharp")).default;
     return await sharp(input, { failOn: "none", animated: false })
       .rotate()
       .resize(SIZE, SIZE, { fit: "cover", position: "attention" })
