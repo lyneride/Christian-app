@@ -21,6 +21,10 @@ const csp = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  // Profile picture uploads go through a Server Action; allow up to 6 MB (the app itself limits images to 5 MB).
+  experimental: {
+    serverActions: { bodySizeLimit: "6mb" },
+  },
   // Bible texts are read from /data at runtime; make sure serverless bundles (Vercel) include them.
   outputFileTracingIncludes: {
     "/**/*": ["./data/**/*"],
