@@ -4,6 +4,22 @@ Alles in dieser Anleitung ist im kostenlosen Tarif nutzbar, ohne Kreditkarte. Er
 erreichbare Instanz unter `https://<name>.vercel.app` mit Datenbank, E-Mail-Versand, Profilbildern und täglichen
 Erinnerungen.
 
+## Kurzweg ohne Terminal (geht komplett am Handy)
+
+Der Vercel-Build führt Migrationen und Seed automatisch aus (`npm run build:vercel`). Du brauchst also nur Browser-Konten:
+
+1. **neon.tech** → mit GitHub anmelden → „New project“ (Region Frankfurt) → „Connection string“ kopieren (Haken „Pooled“).
+2. **vercel.com** → mit GitHub anmelden → „Add New → Project“ → `Christian-app` importieren.
+   Unter „Settings → Git → Production Branch“ den Branch `claude/christian-community-website-ewj4xr` wählen
+   (oder vorher auf GitHub einen Pull Request nach `main` mergen).
+3. Vor dem Deploy unter „Environment Variables“ eintragen:
+   `DATABASE_URL` (Neon), `AUTH_SECRET` (irgendein langer zufälliger Satz, mindestens 32 Zeichen),
+   `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `SEED_ADMIN_USERNAME`, `SEED_ADMIN_NAME` (dein Admin-Konto),
+   `CRON_SECRET` (noch ein langer zufälliger Satz), `APP_URL` (zunächst `https://christian-app.vercel.app`, nach dem
+   ersten Deploy auf die echte Adresse korrigieren), optional die `SMTP_*`-Werte aus Abschnitt 2.
+4. „Deploy“. Nach 3–4 Minuten ist die Seite live; mit deinem Admin-Konto anmelden.
+5. Profilbilder: Projekt → „Storage“ → „Create → Blob“ → „Connect“, dann einmal „Redeploy“.
+
 ## 0. Voraussetzungen
 
 - GitHub-Konto mit dem Repository `lyneride/Christian-app` (Branch `claude/christian-community-website-ewj4xr`

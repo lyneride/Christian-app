@@ -20,7 +20,8 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "db:setup": "prisma generate && prisma migrate deploy && prisma db seed"
+    "db:setup": "prisma generate && prisma migrate deploy && prisma db seed",
+    "build:vercel": "prisma generate && prisma migrate deploy && prisma db seed && next build"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
