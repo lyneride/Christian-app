@@ -9,6 +9,7 @@ import { GroupKindBadge } from "@/components/groups/group-card";
 import { GroupEvents, GroupPrayers, MemberList } from "@/components/groups/group-sections";
 import { GroupReadingPlans } from "@/components/groups/group-plans";
 import { JoinButton } from "@/components/groups/join-button";
+import { GroupChatButton } from "@/components/groups/group-chat-button";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import { getCurrentUser, isModerator } from "@/lib/auth/dal";
 import { resolveTranslationId } from "@/lib/bible/data";
 import { listPosts } from "@/lib/community/queries";
 import { getGroupBySlug } from "@/lib/groups/queries";
+import { groupChatUnread } from "@/lib/messages/group-chat";
 import { markdownToText, renderMarkdown } from "@/lib/markdown";
 import { parsePage } from "@/lib/pagination";
 import { pluralize } from "@/lib/utils";
@@ -45,13 +47,17 @@ export default async function GroupPage(props: Props) {
   const { group, membership, memberCount, pendingCount, isActiveMember, canManage, canViewContent } = detail;
   const path = groupPath(group.slug);
   const page = parsePage(sp.seite, 15);
-  const [translation, posts] = canViewContent
-    ? await Promise.all([resolveTranslationId(user?.preferredTranslation), listPosts({ viewer: user, groupId: group.id, page })])
-    : [null, null];
+  const [translation, posts, chatUnread] = canViewContent
+    ? await Promise.all([
+        resolveTranslationId(user?.preferredTranslation),
+        listPosts({ viewer: user, groupId: group.id, page }),
+        user && isActiveMember ? groupChatUnread(group.id, user.id) : Promise.resolve(0),
+      ])
+    : [null, null, 0];
   const canPin = canManage || isModerator(user);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <Link href="/gruppen" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" aria-hidden="true" /> Alle Gruppen
       </Link>
@@ -72,13 +78,14 @@ export default async function GroupPage(props: Props) {
               <Users className="size-3" aria-hidden="true" /> {pluralize(memberCount, "Mitglied", "Mitglieder")}
             </Badge>
           </div>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{group.name}</h1>
+          <h1 className="mt-3 text-[30px] leading-tight sm:text-4xl">{group.name}</h1>
           <Markdown html={renderMarkdown(group.description)} className="mt-4 max-w-prose" />
           <div className="mt-6 flex flex-wrap items-center gap-3">
+            {user && isActiveMember ? <GroupChatButton groupId={group.id} unread={chatUnread} /> : null}
             <JoinButton
               groupId={group.id}
               membership={membership}
-              visibility={group.visibility}
+              visibility={group.visibility === "FRIENDS" ? "MEMBERS" : group.visibility}
               signedIn={user !== null}
               loginHref={`/anmelden?next=${encodeURIComponent(path)}`}
             />

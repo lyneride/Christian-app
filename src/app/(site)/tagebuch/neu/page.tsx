@@ -13,7 +13,7 @@ export default async function NewJournalEntryPage() {
   await requireUser("/tagebuch/neu");
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <Link
         href="/tagebuch"
         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
@@ -21,7 +21,7 @@ export default async function NewJournalEntryPage() {
         <ChevronLeft className="size-4" aria-hidden="true" />
         Zum Tagebuch
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Neuer Eintrag</h1>
+      <h1 className="mt-4 text-[30px] leading-tight sm:text-4xl">Neuer Eintrag</h1>
       <p className="text-muted-foreground mt-2 max-w-prose">
         Nimm dir einen Moment. Es muss nicht vollständig sein – ein paar ehrliche Sätze genügen.
       </p>

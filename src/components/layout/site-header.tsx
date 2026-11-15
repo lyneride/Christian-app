@@ -1,35 +1,36 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { UserMenu, UserMenuSkeleton } from "./user-menu";
 import { NotificationBell, NotificationBellSkeleton } from "@/components/notifications/bell";
-import { MobileNav } from "./mobile-nav";
+import { HelpButton } from "@/components/tour/help-button";
+import { getCurrentUser } from "@/lib/auth/dal";
+import { UserMenu, UserMenuSkeleton } from "./user-menu";
 import { Logo } from "./logo";
 
-import { MAIN_NAV } from "./nav-items";
+async function Help() {
+  const user = await getCurrentUser();
+  return <HelpButton signedIn={Boolean(user)} />;
+}
 
+/**
+ * Top bar. Phone: logo, „?“ and the bell – the areas live in the bottom bar.
+ * Computer: the side navigation carries the logo; here sit help, theme, bell and the user menu.
+ */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
-        <MobileNav />
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="Bleibe – Startseite">
-          <Logo className="size-7 text-primary" />
-          <span className="text-lg">Bleibe</span>
+    <header className="sticky top-0 z-30 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+      <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-1.5 md:hidden" aria-label="Bleibe – Startseite">
+          <Logo className="size-9" />
+          <span className="font-display text-[22px] font-black tracking-tight">Bleibe</span>
         </Link>
-        <nav aria-label="Hauptnavigation" className="ml-4 hidden items-center gap-1 md:flex">
-          {MAIN_NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-surface-muted hover:text-foreground"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="ml-auto flex items-center gap-1">
-          <ThemeToggle />
+        <div className="ml-auto flex items-center gap-2">
+          <Suspense fallback={<div className="size-11" aria-hidden="true" />}>
+            <Help />
+          </Suspense>
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
           <Suspense fallback={<NotificationBellSkeleton />}>
             <NotificationBell />
           </Suspense>

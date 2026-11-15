@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PenLine, Sparkles, Users } from "lucide-react";
+import { PenLine, Plus } from "lucide-react";
+import { Rebi } from "@/components/rebi/rebi";
 import { PostCompose } from "@/components/community/post-compose";
 import { FeedTabs } from "@/components/community/feed-tabs";
 import { PostList } from "@/components/community/post-list";
@@ -24,7 +25,7 @@ const EMPTY: Record<FeedTab, { title: string; description: string }> = {
   fragen: { title: "Noch keine Fragen", description: "Du hast eine? Stell sie ruhig – hier fragt niemand zu viel." },
   zeugnisse: { title: "Noch keine Zeugnisse", description: "Was hat Gott in deinem Leben getan? Andere freuen sich, davon zu lesen." },
   impulse: { title: "Noch keine Impulse", description: "Ein kurzer Gedanke zum Mitnehmen – vielleicht von dir?" },
-  gefolgt: { title: "Noch nichts von Menschen, denen du folgst", description: "Folge Mitgliedern über ihr Profil, dann erscheinen ihre Beiträge hier." },
+  freunde: { title: "Noch nichts von deinen Freunden", description: "Füge Freunde hinzu – dann erscheinen ihre Beiträge hier." },
   meine: { title: "Du hast noch nichts geteilt", description: "Dein erster Beitrag wartet oben im Feld." },
 };
 
@@ -41,36 +42,34 @@ export default async function CommunityPage(props: PageProps<"/gemeinschaft">) {
   const empty = EMPTY[tab];
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
+      <header className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Gemeinschaft</h1>
-          <p className="mt-2 max-w-prose text-muted-foreground">Was dich bewegt, hat hier Platz: Gedanken, Fragen, Zeugnisse und kurze Impulse.</p>
+          <h1 className="text-[30px] leading-tight sm:text-4xl">Gemeinschaft</h1>
+          <p className="mt-1.5 max-w-prose text-[15px] text-muted-foreground sm:text-base">Gedanken, Fragen, Zeugnisse und kurze Impulse – hier hat alles Platz.</p>
         </div>
-        <nav aria-label="Weitere Bereiche" className="flex flex-wrap gap-2">
-          <Link href="/zeugnisse" className={buttonClasses("outline", "sm")}>
-            <Sparkles aria-hidden="true" /> Zeugnisse
-          </Link>
-          <Link href="/gruppen" className={buttonClasses("outline", "sm")}>
-            <Users aria-hidden="true" /> Gruppen
-          </Link>
-        </nav>
+        <Rebi pose="wave" size={88} className="-my-2" priority />
       </header>
 
-      <section aria-label="Etwas teilen" className="mt-8 rounded-card border border-border bg-surface p-5 shadow-soft sm:p-6">
+      <section aria-label="Etwas teilen" className="mt-5">
         {user ? (
-          <>
+          <details className="group rounded-card bg-surface shadow-soft open:p-5 sm:open:p-6" data-tour="post-compose">
+            <summary
+              className={`${buttonClasses("primary", "md", "w-full")} cursor-pointer list-none group-open:mb-4 group-open:hidden [&::-webkit-details-marker]:hidden`}
+            >
+              <Plus aria-hidden="true" /> Beitrag schreiben
+            </summary>
             <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="text-base font-semibold">Etwas teilen</h2>
-              <Link href="/gemeinschaft/neu" className="text-sm text-primary hover:underline">
-                <PenLine className="mr-1 inline size-4" aria-hidden="true" />
+              <h2 className="text-lg">Etwas teilen</h2>
+              <Link href="/gemeinschaft/neu" className="inline-flex items-center gap-1 font-display text-sm font-extrabold text-primary hover:underline">
+                <PenLine className="size-4" aria-hidden="true" />
                 Ausführlich schreiben
               </Link>
             </div>
             <PostCompose action={createPost} mode="inline" groups={groups} />
-          </>
+          </details>
         ) : (
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-card bg-surface p-5 shadow-soft">
             <p className="text-sm text-muted-foreground">Melde dich an, um selbst zu schreiben, zu reagieren und zu kommentieren.</p>
             <div className="flex gap-2">
               <Link href="/anmelden?next=%2Fgemeinschaft" className={buttonClasses("primary", "sm")}>
@@ -84,7 +83,7 @@ export default async function CommunityPage(props: PageProps<"/gemeinschaft">) {
         )}
       </section>
 
-      <div className="mt-8">
+      <div className="mt-6">
         <FeedTabs active={tab} signedIn={user !== null} />
       </div>
 

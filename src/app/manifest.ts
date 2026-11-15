@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Werbefreier Ort für Christen: Bibel lesen, füreinander beten, Gemeinschaft finden.",
     start_url: "/start",
     display: "standalone",
-    background_color: "#faf7f2",
-    theme_color: "#27416f",
+    background_color: "#fff8ee",
+    theme_color: "#6c47f5",
     lang: "de",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },

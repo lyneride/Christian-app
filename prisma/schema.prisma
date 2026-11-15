@@ -43,6 +43,8 @@ model User {
   profileVisibility    Visibility @default(MEMBERS)
   notifyByEmail        Boolean    @default(true)
   openForPartner       Boolean    @default(false)
+  /// Secret for the personal invite link /einladung/<code> (null until first use; can be renewed).
+  inviteCode           String?    @unique
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
   lastSeenAt           DateTime?
@@ -125,6 +127,7 @@ model VerificationToken {
 enum Visibility {
   PUBLIC // visible to everyone, including guests
   MEMBERS // visible to signed-in members
+  FRIENDS // visible to the author's friends
   GROUP // visible to members of the group
   PRIVATE // only the owner
 }
@@ -185,23 +188,25 @@ enum MembershipStatus {
 }
 
 model Group {
-  id          String          @id @default(cuid())
-  slug        String          @unique
-  name        String
-  description String
-  kind        GroupKind       @default(ONLINE)
-  city        String?
-  visibility  Visibility      @default(PUBLIC)
-  imageUrl    String?
-  createdById String
-  createdBy   User            @relation("createdGroups", fields: [createdById], references: [id])
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  members     GroupMember[]
-  posts       Post[]
-  prayers     PrayerRequest[]
-  events      Event[]
-  planGroups  PlanGroup[]
+  id           String          @id @default(cuid())
+  slug         String          @unique
+  name         String
+  description  String
+  kind         GroupKind       @default(ONLINE)
+  city         String?
+  visibility   Visibility      @default(PUBLIC)
+  imageUrl     String?
+  createdById  String
+  createdBy    User            @relation("createdGroups", fields: [createdById], references: [id])
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  members      GroupMember[]
+  posts        Post[]
+  prayers      PrayerRequest[]
+  events       Event[]
+  planGroups   PlanGroup[]
+  /// The group's own chat (created on first use).
+  conversation Conversation?
 
   @@index([kind, city])
 }
@@ -501,7 +506,9 @@ model PlanProgress {
   @@id([subscriptionId, day])
 }
 
-/** "Was nehme ich heute mit?" – short inputs the members of a shared plan share per day. */
+/**
+ * "Was nehme ich heute mit?" – short inputs the members of a shared plan share per day.
+ */
 model PlanDayPost {
   id          String    @id @default(cuid())
   planGroupId String
@@ -615,8 +622,17 @@ model MemoryVerse {
 
 // ---- Messages --------------------------------------------------------------
 
+/**
+ * Direct chat (two people, isGroup = false), group chat between friends (isGroup = true, title)
+ * or the chat of a Bleibe group (groupId set; participants follow the group's active members).
+ */
 model Conversation {
   id           String                    @id @default(cuid())
+  title        String?
+  isGroup      Boolean                   @default(false)
+  groupId      String?                   @unique
+  group        Group?                    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdById  String?
   createdAt    DateTime                  @default(now())
   updatedAt    DateTime                  @updatedAt
   participants ConversationParticipant[]

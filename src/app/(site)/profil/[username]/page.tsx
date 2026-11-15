@@ -7,7 +7,7 @@ import { usernameSchema } from "@/lib/validation/auth";
 import { PostList } from "./post-list";
 import { ProfileHeader } from "./profile-header";
 import { ProfileLimited } from "./profile-limited";
-import { getProfilePosts, getProfileStats, getProfileUser, isFollowing } from "./queries";
+import { getProfilePosts, getProfileStats, getProfileUser } from "./queries";
 
 /**
  * Public member profile. Reached as `/@benutzername` through the rewrite in
@@ -39,10 +39,9 @@ export default async function ProfilPage(props: PageProps<"/profil/[username]">)
     return <ProfileLimited user={user} signedIn={viewer !== null} />;
   }
 
-  const [stats, content, following] = await Promise.all([
+  const [stats, content] = await Promise.all([
     getProfileStats(user.id, viewerInfo, isOwner),
     getProfilePosts(user.id, viewerInfo),
-    viewer && !isOwner ? isFollowing(viewer.id, user.id) : Promise.resolve(false),
   ]);
 
   return (
@@ -52,7 +51,6 @@ export default async function ProfilPage(props: PageProps<"/profil/[username]">)
         stats={stats}
         isOwner={isOwner}
         signedIn={viewer !== null}
-        following={following}
         friendState={viewer && !isOwner ? await getFriendState(viewer.id, user.id) : null}
       />
 

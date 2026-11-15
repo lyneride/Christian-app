@@ -9,6 +9,7 @@ import { failure, fieldErrors, stringValues, success, type ActionState } from "@
 import { notify, notifyMany } from "@/lib/notifications";
 import { slugify } from "@/lib/utils";
 import { getMembership, listLeaderIds } from "@/lib/groups/queries";
+import { syncGroupChatMembersSafe } from "@/lib/messages/group-chat";
 import { canActOn, canChangeRole, canManageGroup, isOwner } from "@/lib/groups/roles";
 import {
   changeRoleSchema,
@@ -174,6 +175,7 @@ export async function joinGroup(groupId: string): Promise<ActionState> {
     return failure(GENERIC_ERROR);
   }
 
+  if (status === "ACTIVE") await syncGroupChatMembersSafe(group.id);
   revalidateGroup(group.slug);
   return success(status === "ACTIVE" ? "Willkommen in der Gruppe!" : "Deine Anfrage ist bei der Leitung angekommen.", {
     data: { status },
@@ -201,6 +203,7 @@ export async function leaveGroup(groupId: string): Promise<ActionState> {
     return failure(GENERIC_ERROR);
   }
 
+  await syncGroupChatMembersSafe(group.id);
   revalidateGroup(group.slug);
   return success(membership.status === "PENDING" ? "Deine Anfrage ist zurückgezogen." : "Du hast die Gruppe verlassen.", {
     data: { status: null },
@@ -265,6 +268,7 @@ export async function approveMember(groupId: string, userId: string): Promise<Ac
     return failure(GENERIC_ERROR);
   }
 
+  await syncGroupChatMembersSafe(ctx.group.id);
   revalidateGroup(ctx.group.slug);
   return success(`${ctx.target.user.name} ist jetzt dabei.`);
 }
@@ -297,6 +301,7 @@ export async function removeMember(groupId: string, userId: string): Promise<Act
     return failure(GENERIC_ERROR);
   }
 
+  await syncGroupChatMembersSafe(ctx.group.id);
   revalidateGroup(ctx.group.slug);
   return success(`${ctx.target.user.name} wurde aus der Gruppe entfernt.`);
 }
@@ -316,6 +321,7 @@ export async function banMember(groupId: string, userId: string): Promise<Action
     return failure(GENERIC_ERROR);
   }
 
+  await syncGroupChatMembersSafe(ctx.group.id);
   revalidateGroup(ctx.group.slug);
   return success(`${ctx.target.user.name} ist jetzt gesperrt.`);
 }

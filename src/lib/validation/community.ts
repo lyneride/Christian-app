@@ -31,7 +31,7 @@ export function parseKindParam(value: string | string[] | undefined): PostKindVa
 }
 
 /** Posts can never be PRIVATE: a private post would have nobody to read it. */
-export const POST_VISIBILITIES = ["PUBLIC", "MEMBERS", "GROUP"] as const;
+export const POST_VISIBILITIES = ["PUBLIC", "MEMBERS", "FRIENDS", "GROUP"] as const;
 export type PostVisibility = (typeof POST_VISIBILITIES)[number];
 
 export const REACTION_KINDS = ["AMEN", "HEART", "PRAY"] as const;
@@ -47,7 +47,7 @@ export function isReactionKind(value: unknown): value is ReactionKindValue {
   return typeof value === "string" && (REACTION_KINDS as readonly string[]).includes(value);
 }
 
-export const FEED_TABS = ["alle", "fragen", "zeugnisse", "impulse", "gefolgt", "meine"] as const;
+export const FEED_TABS = ["alle", "fragen", "zeugnisse", "impulse", "freunde", "meine"] as const;
 export type FeedTab = (typeof FEED_TABS)[number];
 
 export const FEED_TAB_LABELS: Record<FeedTab, string> = {
@@ -55,12 +55,12 @@ export const FEED_TAB_LABELS: Record<FeedTab, string> = {
   fragen: "Fragen",
   zeugnisse: "Zeugnisse",
   impulse: "Impulse",
-  gefolgt: "Gefolgt",
+  freunde: "Von Freunden",
   meine: "Meine",
 };
 
 /** Tabs that only make sense for a signed-in viewer. */
-export const MEMBER_ONLY_TABS: readonly FeedTab[] = ["gefolgt", "meine"];
+export const MEMBER_ONLY_TABS: readonly FeedTab[] = ["freunde", "meine"];
 
 /** Parses `?tab=` and falls back to "alle" for unknown values or member-only tabs without a viewer. */
 export function parseFeedTab(value: string | string[] | undefined, signedIn: boolean): FeedTab {

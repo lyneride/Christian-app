@@ -9,11 +9,14 @@ import { getBookByNumber } from "@/lib/bible/books";
 import { getTranslation, getVerses } from "@/lib/bible/data";
 import { formatReference, referencePath } from "@/lib/bible/reference";
 import { areFriends } from "@/lib/friends/queries";
-import { notify } from "@/lib/notifications";
-import { findOrCreateDirectConversation } from "./queries";
+import { deliverMessage } from "./deliver";
+import { findOrCreateDirectConversation, isParticipant } from "./queries";
 
 const schema = z.object({
-  toUserId: z.string().min(5).max(64),
+  /** Either a friend (1:1 chat) … */
+  toUserId: z.string().min(5).max(64).optional(),
+  /** … or an existing chat the sender is part of (e.g. a group chat). */
+  conversationId: z.string().min(5).max(64).optional(),
   book: z.number().int().min(1).max(66),
   chapter: z.number().int().min(1).max(150),
   verseStart: z.number().int().min(1).max(200),
@@ -24,18 +27,23 @@ const schema = z.object({
 
 export type SendVerseInput = z.infer<typeof schema>;
 
-/** Sends a Bible passage (with text and link) as a direct message to a friend. */
+/** Sends a Bible passage (with text and link) to a friend or into one of the sender's chats. */
 export async function sendVerseToFriend(input: SendVerseInput): Promise<ActionState> {
   try {
     const user = await getUserOrThrow();
     const parsed = schema.safeParse(input);
     if (!parsed.success) return failure("Ungültige Angaben.");
-    const { toUserId, book: bookNumber, chapter, verseStart, translation, note } = parsed.data;
+    const { toUserId, conversationId: chatId, book: bookNumber, chapter, verseStart, translation, note } = parsed.data;
     const verseEnd = parsed.data.verseEnd && parsed.data.verseEnd > verseStart ? parsed.data.verseEnd : undefined;
-    if (toUserId === user.id) return failure("Du kannst dir selbst keinen Vers schicken.");
-    if (!(await areFriends(user.id, toUserId))) return failure("Verse kannst du nur an Freunde schicken.");
-    const recipient = await prisma.user.findUnique({ where: { id: toUserId }, select: { id: true, status: true } });
-    if (!recipient || recipient.status !== "ACTIVE") return failure("Dieses Mitglied gibt es nicht mehr.");
+    if (!toUserId === !chatId) return failure("Ungültige Angaben.");
+    if (toUserId) {
+      if (toUserId === user.id) return failure("Du kannst dir selbst keinen Vers schicken.");
+      if (!(await areFriends(user.id, toUserId))) return failure("Verse kannst du nur an Freunde schicken.");
+      const recipient = await prisma.user.findUnique({ where: { id: toUserId }, select: { id: true, status: true } });
+      if (!recipient || recipient.status !== "ACTIVE") return failure("Dieses Mitglied gibt es nicht mehr.");
+    } else if (!(await isParticipant(chatId as string, user.id))) {
+      return failure("Diesen Chat gibt es nicht oder du bist nicht dabei.");
+    }
 
     const book = getBookByNumber(bookNumber);
     const tr = await getTranslation(translation);
@@ -49,18 +57,12 @@ export async function sendVerseToFriend(input: SendVerseInput): Promise<ActionSt
       .filter(Boolean)
       .join("\n\n");
 
-    const conversationId = await findOrCreateDirectConversation(user.id, toUserId);
-    const now = new Date();
-    await prisma.$transaction([
-      prisma.message.create({ data: { conversationId, senderId: user.id, body } }),
-      prisma.conversation.update({ where: { id: conversationId }, data: { updatedAt: now } }),
-      prisma.conversationParticipant.updateMany({ where: { conversationId, userId: user.id }, data: { lastReadAt: now } }),
-    ]);
+    const conversationId = toUserId ? await findOrCreateDirectConversation(user.id, toUserId) : (chatId as string);
+    await deliverMessage(conversationId, user, body, {
+      notifyTitle: `${user.name} hat dir einen Vers geschickt`,
+      notifyBody: reference,
+    });
     const href = `/nachrichten/${conversationId}`;
-    const unread = await prisma.notification.count({ where: { userId: toUserId, type: "message", href, readAt: null } });
-    if (unread === 0) {
-      await notify({ userId: toUserId, actorId: user.id, type: "message", title: `${user.name} hat dir einen Vers geschickt`, body: reference, href });
-    }
     revalidatePath("/nachrichten");
     revalidatePath(href);
     return success(`Gesendet: ${reference}`, { data: { href } });

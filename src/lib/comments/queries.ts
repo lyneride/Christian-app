@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/db";
+import { areFriends } from "@/lib/friends/queries";
 import { canView, type Viewer } from "@/lib/visibility";
 import { authorSelect, canViewPrayerRequest, isActiveGroupMember, type Author } from "@/lib/prayer/queries";
 import { targetPath, type CommentTarget } from "./target";
@@ -92,7 +93,8 @@ export async function resolveCommentTarget(target: CommentTarget, viewer: Viewer
     post.visibility === "GROUP" && post.groupId && post.authorId !== viewer.id
       ? await isActiveGroupMember(viewer.id, post.groupId)
       : false;
-  if (!canView(post, viewer, member)) return null;
+  const friend = post.visibility === "FRIENDS" && post.authorId !== viewer.id ? await areFriends(viewer.id, post.authorId) : false;
+  if (!canView(post, viewer, member, friend)) return null;
   return {
     kind: "post",
     id: post.id,

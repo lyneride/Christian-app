@@ -2,7 +2,7 @@
 
 import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
-import { Check, HandHeart } from "lucide-react";
+import { Check, Heart } from "lucide-react";
 import { togglePrayed } from "@/app/(site)/gebet/actions";
 import { buttonClasses, type ButtonSize } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,9 +31,10 @@ export function PrayButton({ requestId, prayed, signedIn, nextPath, size = "sm",
     return (
       <Link
         href={`/anmelden?next=${encodeURIComponent(nextPath)}`}
-        className={buttonClasses("outline", size, className)}
+        data-tour="prayer-pray"
+        className={buttonClasses("ghost", size, cn("bg-area-gebet-soft hover:bg-area-gebet-soft", className))}
       >
-        <HandHeart aria-hidden="true" />
+        <Heart aria-hidden="true" className="text-area-gebet" />
         Ich bete mit
       </Link>
     );
@@ -55,13 +56,14 @@ export function PrayButton({ requestId, prayed, signedIn, nextPath, size = "sm",
         onClick={toggle}
         aria-pressed={optimistic}
         aria-busy={pending || undefined}
+        data-tour="prayer-pray"
         className={cn(
-          buttonClasses(optimistic ? "secondary" : "outline", size),
-          optimistic && "text-success",
+          buttonClasses("ghost", size),
+          optimistic ? "bg-area-gebet text-[#2b2340] hover:bg-area-gebet" : "bg-area-gebet-soft text-foreground hover:bg-area-gebet-soft",
           className,
         )}
       >
-        {optimistic ? <Check aria-hidden="true" /> : <HandHeart aria-hidden="true" />}
+        {optimistic ? <Check aria-hidden="true" /> : <Heart aria-hidden="true" className="text-area-gebet" />}
         {optimistic ? "Heute gebetet" : "Ich bete mit"}
       </button>
       {error ? (

@@ -51,7 +51,7 @@ export function MessageForm({ conversationId }: { conversationId: string }) {
           {message}
         </p>
       ) : (
-        <p id="message-form-hint" className="text-[11px] text-muted-foreground">
+        <p id="message-form-hint" className="hidden text-[11px] text-muted-foreground sm:block">
           Strg + Enter sendet die Nachricht.
         </p>
       )}

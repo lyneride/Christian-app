@@ -10,7 +10,7 @@ export default function GlobalError({ error, retry }: { error: Error & { digest?
         </p>
         <button
           onClick={() => retry()}
-          style={{ marginTop: "2rem", padding: "0.6rem 1.2rem", borderRadius: "999px", background: "#27416f", color: "#fff", border: 0 }}
+          style={{ marginTop: "2rem", padding: "0.6rem 1.2rem", borderRadius: "999px", background: "#6c47f5", color: "#fff", border: 0 }}
         >
           Noch einmal versuchen
         </button>

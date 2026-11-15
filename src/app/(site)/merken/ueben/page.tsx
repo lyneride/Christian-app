@@ -30,7 +30,7 @@ export default async function PracticePage(props: PageProps<"/merken/ueben">) {
   }));
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-2xl px-4 py-5 sm:px-6 sm:py-8">
       <Link
         href="/merken"
         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
@@ -38,7 +38,7 @@ export default async function PracticePage(props: PageProps<"/merken/ueben">) {
         <ChevronLeft className="size-4" aria-hidden="true" />
         Zur Lernliste
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Üben</h1>
+      <h1 className="mt-4 text-[30px] leading-tight sm:text-4xl">Üben</h1>
       <p className="text-muted-foreground mt-2 max-w-prose">
         Sprich den Vers leise vor dich hin, deck ihn Schritt für Schritt auf und sei ehrlich mit dir – beides ist in
         Ordnung.

@@ -25,11 +25,10 @@ export default async function TestimoniesPage(props: PageProps<"/zeugnisse">) {
   const shareHref = user ? "/gemeinschaft/neu?art=zeugnis" : "/anmelden?next=%2Fgemeinschaft%2Fneu%3Fart%3Dzeugnis";
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-4xl px-4 py-5 sm:px-6 sm:py-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold tracking-wider text-accent uppercase">Gemeinschaft</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">Zeugnisse</h1>
+          <h1 className="text-[30px] leading-tight sm:text-4xl">Zeugnisse</h1>
           <p className="mt-2 max-w-prose text-muted-foreground">Was Gott im Leben von Menschen getan hat – ehrlich erzählt, ohne Hochglanz.</p>
         </div>
         <Link href={shareHref} className={buttonClasses("accent")}>
@@ -55,7 +54,7 @@ export default async function TestimoniesPage(props: PageProps<"/zeugnisse">) {
             const verse = verseKeyToInput(post.verseRef);
             return (
               <li key={post.id} className="relative flex flex-col rounded-card border border-border bg-surface p-6 shadow-soft transition hover:border-accent/50">
-                <h2 className="font-serif text-2xl leading-snug font-semibold tracking-tight">
+                <h2 className="text-2xl leading-snug font-semibold tracking-tight">
                   <Link href={postPath(post.id)} className="after:absolute after:inset-0 hover:underline">
                     {post.title ?? "Zeugnis"}
                   </Link>

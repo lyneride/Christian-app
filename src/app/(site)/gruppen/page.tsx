@@ -28,10 +28,10 @@ export default async function GroupsPage(props: PageProps<"/gruppen">) {
   const createHref = user ? "/gruppen/neu" : "/anmelden?next=%2Fgruppen%2Fneu";
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Gruppen</h1>
+          <h1 className="text-[30px] leading-tight sm:text-4xl">Gruppen</h1>
           <p className="mt-2 max-w-prose text-muted-foreground">Glaube wächst in Gemeinschaft. Finde einen Hauskreis, eine Gebetsgruppe oder einen Themenkreis – online oder bei dir vor Ort.</p>
         </div>
         <Link href={createHref} className={buttonClasses("primary")}>

@@ -19,8 +19,9 @@ export interface VisibleContent {
 /**
  * @param viewer      the signed-in user or null for guests
  * @param isGroupMember whether the viewer is an active member of content.groupId
+ * @param isFriend    whether the viewer is a friend of the author (for FRIENDS content)
  */
-export function canView(content: VisibleContent, viewer: Viewer | null, isGroupMember = false): boolean {
+export function canView(content: VisibleContent, viewer: Viewer | null, isGroupMember = false, isFriend = false): boolean {
   if (viewer && (viewer.role === "ADMIN" || viewer.role === "MODERATOR")) return true;
   if (viewer && content.authorId && content.authorId === viewer.id) return true;
   switch (content.visibility) {
@@ -28,6 +29,8 @@ export function canView(content: VisibleContent, viewer: Viewer | null, isGroupM
       return true;
     case "MEMBERS":
       return viewer !== null;
+    case "FRIENDS":
+      return viewer !== null && isFriend;
     case "GROUP":
       return viewer !== null && isGroupMember;
     case "PRIVATE":
@@ -37,14 +40,18 @@ export function canView(content: VisibleContent, viewer: Viewer | null, isGroupM
   }
 }
 
-/** Prisma `where` fragment selecting content the viewer may see (group membership passed as ids). */
-export function visibilityWhere(viewer: Viewer | null, memberGroupIds: string[] = []) {
+/**
+ * Prisma `where` fragment selecting content the viewer may see
+ * (group membership and friendships passed as ids).
+ */
+export function visibilityWhere(viewer: Viewer | null, memberGroupIds: string[] = [], friendIds: string[] = []) {
   if (!viewer) return { visibility: "PUBLIC" as const };
   if (viewer.role === "ADMIN" || viewer.role === "MODERATOR") return {};
   return {
     OR: [
       { visibility: "PUBLIC" as const },
       { visibility: "MEMBERS" as const },
+      { visibility: "FRIENDS" as const, authorId: { in: friendIds } },
       { visibility: "GROUP" as const, groupId: { in: memberGroupIds } },
       { authorId: viewer.id },
     ],
@@ -54,6 +61,7 @@ export function visibilityWhere(viewer: Viewer | null, memberGroupIds: string[] 
 export const VISIBILITY_LABELS: Record<Visibility, { label: string; hint: string }> = {
   PUBLIC: { label: "Öffentlich", hint: "Für alle sichtbar, auch ohne Konto." },
   MEMBERS: { label: "Nur Mitglieder", hint: "Nur für angemeldete Mitglieder sichtbar." },
+  FRIENDS: { label: "Nur Freunde", hint: "Nur deine Freunde sehen das." },
   GROUP: { label: "Nur Gruppe", hint: "Nur für Mitglieder der ausgewählten Gruppe sichtbar." },
   PRIVATE: { label: "Privat", hint: "Nur für dich sichtbar." },
 };

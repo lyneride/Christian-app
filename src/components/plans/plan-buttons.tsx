@@ -32,7 +32,7 @@ function ActionButton({ run, variant = "primary", size = "md", confirmText, clas
   }
 
   return (
-    <span className={cn("inline-flex flex-col items-start gap-1.5", className)}>
+    <span className={cn("inline-flex flex-col items-stretch gap-1.5 sm:items-start", className)}>
       <Button type="button" variant={variant} size={size} loading={pending} onClick={onClick}>
         {children}
       </Button>

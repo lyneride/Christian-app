@@ -40,7 +40,7 @@ export default async function AnliegenPage(props: PageProps<"/gebet/[id]">) {
   const target = { prayerRequestId: request.id } as const;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <Link
         href="/gebet"
         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"

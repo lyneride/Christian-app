@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { getPreferredTranslation, readerContext, todaysReadings } from "@/lib/plans/queries";
 import { cn } from "@/lib/utils";
 import { MarkDayButton } from "./mark-day-button";
@@ -33,8 +32,7 @@ export async function TodayReadings({ userId, translation, fallback = null, clas
     <ul className={cn("grid gap-3", className)}>
       {items.map((item) => (
         <li key={item.subscriptionId}>
-          <Card>
-            <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4">
+          <div className="flex flex-col gap-3 rounded-2xl bg-area-bibel-soft/70 p-4 sm:flex-row sm:items-center sm:gap-4">
               <div className="min-w-0 flex-1 space-y-1.5">
                 <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
                   <BookOpen className="size-3.5" aria-hidden="true" />
@@ -50,8 +48,7 @@ export async function TodayReadings({ userId, translation, fallback = null, clas
                 <ProgressBar value={item.completedCount} max={item.plan.dayCount} label={`Fortschritt: ${item.plan.title}`} size="sm" className="max-w-xs" />
               </div>
               <MarkDayButton planId={item.plan.id} day={item.day} done={false} size="md" className="shrink-0" />
-            </CardContent>
-          </Card>
+          </div>
         </li>
       ))}
     </ul>

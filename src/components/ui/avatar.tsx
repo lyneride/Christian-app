@@ -1,6 +1,7 @@
 import { cn, initials } from "@/lib/utils";
 
-const PALETTE = ["bg-primary-soft text-primary", "bg-accent-soft text-accent-foreground", "bg-success-soft text-success", "bg-warning-soft text-warning", "bg-danger-soft text-danger"];
+// Soft area colours with ink text: friendly and always readable.
+const PALETTE = ["bg-area-heute-soft", "bg-area-bibel-soft", "bg-area-gebet-soft", "bg-area-gemeinschaft-soft", "bg-area-ich-soft"];
 
 function colorFor(seed: string) {
   let h = 0;
@@ -25,7 +26,7 @@ export function Avatar({ name, src, size = "md", className }: AvatarProps) {
   return (
     <span
       aria-hidden="true"
-      className={cn("inline-flex shrink-0 items-center justify-center rounded-full font-semibold uppercase select-none", sizes[size], colorFor(name), className)}
+      className={cn("inline-flex shrink-0 items-center justify-center rounded-full font-display font-black text-foreground uppercase select-none", sizes[size], colorFor(name), className)}
     >
       {initials(name) || "?"}
     </span>

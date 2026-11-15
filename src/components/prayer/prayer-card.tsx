@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MessageCircle, Users } from "lucide-react";
+import { MessageCircle, Users, Heart } from "lucide-react";
 import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { markdownToText } from "@/lib/markdown";
@@ -46,14 +46,19 @@ export function PrayerCard({ item, viewer }: { item: PrayerRequestListItem; view
               <Users aria-hidden="true" className="size-3" /> Nur Gruppe
             </Badge>
           ) : null}
+          {item.visibility === "FRIENDS" ? (
+            <Badge variant="outline">
+              <Heart aria-hidden="true" className="size-3" /> Nur Freunde
+            </Badge>
+          ) : null}
         </div>
 
-        <h2 className="text-lg font-semibold tracking-tight">
+        <h2 className="text-lg leading-snug">
           <Link href={href} className="hover:underline">
             {item.title}
           </Link>
         </h2>
-        <p className="text-muted-foreground text-sm">{markdownToText(item.body, 180)}</p>
+        <p className="text-[15px] text-muted-foreground">{markdownToText(item.body, 180)}</p>
 
         <AuthorLine
           author={item.author}

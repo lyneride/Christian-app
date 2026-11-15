@@ -5,10 +5,12 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getUserOrThrow, UnauthorizedError, type CurrentUser } from "@/lib/auth/dal";
 import { failure, fieldErrors, stringValues, success, type ActionState } from "@/lib/action-state";
-import { notify } from "@/lib/notifications";
-import { messagePreview } from "@/lib/messages/format";
+import { deliverMessage } from "@/lib/messages/deliver";
+import { ensureGroupChat } from "@/lib/messages/group-chat";
 import { findOrCreateDirectConversation, findRecipientByUsername, isParticipant } from "@/lib/messages/queries";
-import { conversationIdSchema, sendMessageSchema, startConversationSchema } from "@/lib/validation/messages";
+import { friendIds } from "@/lib/friends/queries";
+import { isActiveGroupMember } from "@/lib/prayer/queries";
+import { conversationIdSchema, sendMessageSchema, startConversationSchema, startGroupChatSchema } from "@/lib/validation/messages";
 
 /**
  * Server actions for direct messages. Signature `(prevState, formData)` for
@@ -35,47 +37,6 @@ function conversationPath(id: string) {
 function revalidateConversation(id: string) {
   revalidatePath("/nachrichten");
   revalidatePath(conversationPath(id));
-}
-
-/**
- * Stores a message, marks it as read for the sender, bumps the conversation and
- * notifies the other participants – unless they already have an unread
- * notification for this conversation (no notification spam per message).
- */
-async function deliverMessage(conversationId: string, sender: CurrentUser, body: string) {
-  const now = new Date();
-  const conversation = await prisma.conversation.update({
-    where: { id: conversationId },
-    data: {
-      updatedAt: now,
-      messages: { create: { senderId: sender.id, body, createdAt: now } },
-      participants: {
-        update: {
-          where: { conversationId_userId: { conversationId, userId: sender.id } },
-          data: { lastReadAt: now },
-        },
-      },
-    },
-    select: { participants: { select: { userId: true } } },
-  });
-
-  const href = conversationPath(conversationId);
-  for (const participant of conversation.participants) {
-    if (participant.userId === sender.id) continue;
-    const pending = await prisma.notification.findFirst({
-      where: { userId: participant.userId, type: "message", href, readAt: null },
-      select: { id: true },
-    });
-    if (pending) continue;
-    await notify({
-      userId: participant.userId,
-      type: "message",
-      title: `Neue Nachricht von ${sender.name}`,
-      body: messagePreview(body),
-      href,
-      actorId: sender.id,
-    });
-  }
 }
 
 /** Starts (or continues) a 1:1 conversation with the member behind `username` and sends the first message. */
@@ -159,4 +120,99 @@ export async function markConversationRead(conversationId: string): Promise<void
   });
 
   revalidateConversation(conversationId);
+}
+
+/**
+ * Starts a chat with several friends: title, the chosen friends (only accepted
+ * friends of the creator can be added) and a first message.
+ */
+export async function startGroupChat(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const values = stringValues(formData);
+  const user = await actionUser();
+  if (!user) return failure(LOGIN_REQUIRED, { values });
+
+  const parsed = startGroupChatSchema.safeParse({
+    title: values.title ?? "",
+    memberIds: formData.getAll("memberIds").filter((v): v is string => typeof v === "string"),
+    body: values.body ?? "",
+  });
+  if (!parsed.success) return failure("Bitte prüfe deine Eingaben.", { errors: fieldErrors(parsed.error), values });
+
+  const friends = new Set(await friendIds(user.id));
+  const memberIds = parsed.data.memberIds.filter((id) => id !== user.id && friends.has(id));
+  if (memberIds.length === 0) {
+    return failure("Bitte prüfe deine Eingaben.", { errors: { memberIds: ["Wähle mindestens einen Freund aus."] }, values });
+  }
+
+  let conversationId: string;
+  try {
+    const created = await prisma.conversation.create({
+      data: {
+        isGroup: true,
+        title: parsed.data.title,
+        createdById: user.id,
+        participants: { create: [user.id, ...memberIds].map((userId) => ({ userId })) },
+      },
+      select: { id: true },
+    });
+    conversationId = created.id;
+    await deliverMessage(conversationId, user, parsed.data.body);
+  } catch (err) {
+    console.error("[nachrichten] Gruppenchat konnte nicht gestartet werden:", err);
+    return failure(GENERIC_ERROR, { values });
+  }
+
+  revalidateConversation(conversationId);
+  redirect(conversationPath(conversationId));
+}
+
+/** Opens the chat of a Bleibe group (creating it on first use). Only for active members. */
+export async function openGroupChat(groupId: string): Promise<ActionState> {
+  const user = await actionUser();
+  if (!user) return failure(LOGIN_REQUIRED);
+  if (!conversationIdSchema.safeParse(groupId).success) return failure("Diese Gruppe gibt es nicht.");
+  if (!(await isActiveGroupMember(user.id, groupId))) return failure("Den Gruppenchat sehen nur Mitglieder der Gruppe.");
+
+  let conversationId: string;
+  try {
+    conversationId = await ensureGroupChat(groupId, user.id);
+  } catch (err) {
+    console.error("[nachrichten] Gruppenchat konnte nicht geöffnet werden:", err);
+    return failure(GENERIC_ERROR);
+  }
+  redirect(conversationPath(conversationId));
+}
+
+/**
+ * Leaves a chat among friends. Chats of a Bleibe group are left by leaving the
+ * group. When the last person leaves, the chat is deleted.
+ */
+export async function leaveConversation(conversationId: string): Promise<ActionState> {
+  const user = await actionUser();
+  if (!user) return failure(LOGIN_REQUIRED);
+  if (!conversationIdSchema.safeParse(conversationId).success) return failure(NOT_PARTICIPANT);
+
+  const conversation = await prisma.conversation.findFirst({
+    where: { id: conversationId, participants: { some: { userId: user.id } } },
+    select: { isGroup: true, groupId: true },
+  });
+  if (!conversation) return failure(NOT_PARTICIPANT);
+  if (!conversation.isGroup) return failure("Aus einem Gespräch zu zweit kannst du nicht austreten.");
+  if (conversation.groupId) return failure("Diesen Chat verlässt du, indem du die Gruppe verlässt.");
+
+  try {
+    await prisma.conversationParticipant.delete({ where: { conversationId_userId: { conversationId, userId: user.id } } });
+    const left = await prisma.conversationParticipant.count({ where: { conversationId } });
+    if (left === 0) await prisma.conversation.delete({ where: { id: conversationId } });
+    await prisma.notification.updateMany({
+      where: { userId: user.id, type: "message", href: conversationPath(conversationId), readAt: null },
+      data: { readAt: new Date() },
+    });
+  } catch (err) {
+    console.error("[nachrichten] Chat konnte nicht verlassen werden:", err);
+    return failure(GENERIC_ERROR);
+  }
+
+  revalidatePath("/nachrichten");
+  redirect("/nachrichten");
 }

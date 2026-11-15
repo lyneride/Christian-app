@@ -35,10 +35,10 @@ export default async function MerkenPage() {
   const intervals = `${BOX_INTERVALS_DAYS.slice(0, -1).join(", ")} oder ${BOX_INTERVALS_DAYS[BOX_INTERVALS_DAYS.length - 1]} Tagen`;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <header>
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Merken</h1>
-        <p className="text-muted-foreground mt-3 max-w-prose text-lg">
+        <h1 className="text-[30px] leading-tight sm:text-4xl">Merken</h1>
+        <p className="mt-1.5 max-w-prose text-[15px] text-muted-foreground sm:text-base">
           Verse, die du auswendig lernen möchtest – ohne Druck, in deinem Tempo. Gewusste Verse kommen seltener dran,
           schwierige öfter.
         </p>

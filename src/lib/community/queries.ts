@@ -5,6 +5,7 @@ import type { ReactionKind } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/db";
 import type { Page } from "@/lib/pagination";
 import { canView, visibilityWhere, type Viewer } from "@/lib/visibility";
+import { areFriends, friendIds } from "@/lib/friends/queries";
 import { getVerse, getTranslation } from "@/lib/bible/data";
 import { formatReference, parseVerseKey, referencePath } from "@/lib/bible/reference";
 import { getMemberGroupIds, isActiveMember, memberUserSelect } from "@/lib/groups/queries";
@@ -86,8 +87,8 @@ export interface ListPostsArgs {
  * group, pinned posts come first.
  */
 export async function listPosts({ viewer, tab = "alle", groupId, page }: ListPostsArgs): Promise<{ items: PostListItem[]; total: number }> {
-  const memberGroupIds = viewer ? await getMemberGroupIds(viewer.id) : [];
-  const where: Prisma.PostWhereInput = { deletedAt: null, ...visibilityWhere(viewer, memberGroupIds) };
+  const [memberGroupIds, friends] = viewer ? await Promise.all([getMemberGroupIds(viewer.id), friendIds(viewer.id)]) : [[], []];
+  const where: Prisma.PostWhereInput = { deletedAt: null, ...visibilityWhere(viewer, memberGroupIds, friends) };
   if (groupId) where.groupId = groupId;
 
   switch (tab) {
@@ -100,9 +101,9 @@ export async function listPosts({ viewer, tab = "alle", groupId, page }: ListPos
     case "impulse":
       where.kind = "IMPULSE";
       break;
-    case "gefolgt":
+    case "freunde":
       if (!viewer) return { items: [], total: 0 };
-      where.author = { followers: { some: { followerId: viewer.id } } };
+      where.authorId = { in: friends };
       break;
     case "meine":
       if (!viewer) return { items: [], total: 0 };
@@ -140,7 +141,8 @@ export async function canViewPost(
 ): Promise<boolean> {
   const needsMembership = post.visibility === "GROUP" && !!viewer && !!post.groupId && viewer.id !== post.authorId;
   const member = needsMembership ? await isActiveMember(post.groupId as string, viewer.id) : false;
-  return canView(post, viewer, member);
+  const friend = post.visibility === "FRIENDS" && !!viewer && viewer.id !== post.authorId ? await areFriends(viewer.id, post.authorId) : false;
+  return canView(post, viewer, member, friend);
 }
 
 /**

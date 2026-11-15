@@ -20,6 +20,7 @@ const csp = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  devIndicators: false,
   reactStrictMode: true,
   // Profile picture uploads go through a Server Action; allow up to 6 MB (the app itself limits images to 5 MB).
   experimental: {

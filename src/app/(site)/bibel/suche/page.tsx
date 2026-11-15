@@ -65,8 +65,8 @@ export default async function SearchPage(props: Props) {
   const pageUrl = (n: number) => buildSearchUrl({ q, t, bereich, seite: n });
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Bibelsuche</h1>
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
+      <h1 className="text-[30px] leading-tight sm:text-4xl">Bibelsuche</h1>
       <p className="text-muted-foreground mt-2">Durchsuche den vollständigen Text einer Übersetzung.</p>
 
       <Form action="/bibel/suche" role="search" className="mt-8 space-y-3">

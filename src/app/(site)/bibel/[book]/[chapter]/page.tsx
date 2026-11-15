@@ -179,7 +179,7 @@ export default async function ChapterPage(props: Props) {
             {translation.name}
             {parallel ? ` · ${parallel.translation.name}` : null}
           </p>
-          <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight sm:text-4xl">{heading}</h1>
+          <h1 className="mt-2 text-[30px] leading-tight sm:text-4xl">{heading}</h1>
           {highlight ? (
             <p className="text-muted-foreground mt-2 text-sm">
               Hervorgehoben: Vers{" "}

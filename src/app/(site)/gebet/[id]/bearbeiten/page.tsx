@@ -30,7 +30,7 @@ export default async function AnliegenBearbeitenPage(props: PageProps<"/gebet/[i
         Zurück zum Anliegen
       </Link>
       <header className="mt-4 mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Anliegen bearbeiten</h1>
+        <h1 className="text-[30px] leading-tight sm:text-4xl">Anliegen bearbeiten</h1>
         <p className="text-muted-foreground mt-2">Du kannst Text, Kategorie und Sichtbarkeit jederzeit anpassen.</p>
       </header>
       <PrayerForm

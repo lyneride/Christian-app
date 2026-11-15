@@ -20,11 +20,11 @@ export default async function NeuGemeinsamPage(props: PageProps<"/leseplaene/gem
   ]);
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6">
+    <main className="mx-auto w-full max-w-2xl px-4 py-5 sm:px-6 sm:py-8">
       <Link href={`/leseplaene/${plan.slug}`} className="text-sm text-muted-foreground hover:text-primary">
         ← {plan.title}
       </Link>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight">Gemeinsam lesen</h1>
+      <h1 className="mt-3 text-[30px] leading-tight sm:text-4xl">Gemeinsam lesen</h1>
       <p className="mt-2 text-muted-foreground">
         Lade Freunde oder eine Gruppe ein. Jede Person liest in ihrem Tempo – und ihr seht, wo die anderen gerade sind, was sie
         markieren und welche Notizen sie teilen.

@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Lora, Nunito, Nunito_Sans } from "next/font/google";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
 import "./globals.css";
 
-const sans = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-sans", display: "swap" });
+const display = Nunito({ subsets: ["latin", "latin-ext"], variable: "--font-display", display: "swap" });
+const sans = Nunito_Sans({ subsets: ["latin", "latin-ext"], variable: "--font-sans", display: "swap" });
 const serif = Lora({ subsets: ["latin", "latin-ext"], variable: "--font-serif", display: "swap" });
 
 export const metadata: Metadata = {
@@ -19,8 +20,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf7f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#12161d" },
+    { media: "(prefers-color-scheme: light)", color: "#fff8ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#17131f" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -29,7 +30,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="de" className={`${sans.variable} ${serif.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="de" className={`${display.variable} ${sans.variable} ${serif.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>

@@ -7,6 +7,7 @@ import { TranslationSelect } from "@/components/bible/translation-select";
 import { VerseOfTheDay } from "@/components/bible/verse-of-the-day";
 import { buttonClasses } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Rebi } from "@/components/rebi/rebi";
 import { DEFAULT_TRANSLATION, listTranslations, resolveTranslationId } from "@/lib/bible/data";
 import { toTranslationOption } from "@/lib/bible/ui";
 
@@ -29,15 +30,20 @@ export default async function BiblePage(props: PageProps<"/bibel">) {
   const shortNames = Object.fromEntries(translations.map((x) => [x.id, x.shortName]));
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <section className="grid gap-8 md:grid-cols-[1.1fr_1fr] md:items-start md:gap-12">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Die Bibel</h1>
-          <p className="text-muted-foreground mt-4 max-w-prose text-lg">
-            Lies in Ruhe, vergleiche Übersetzungen und entdecke Querverweise. Ohne Werbung, ohne Ablenkung.
-          </p>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h1 className="text-[30px] leading-tight sm:text-4xl">Die Bibel</h1>
+              <p className="mt-1.5 max-w-prose text-[15px] text-muted-foreground sm:text-base">
+                Lies in Ruhe, vergleiche Übersetzungen und entdecke Querverweise. Ohne Werbung, ohne Ablenkung.
+              </p>
+            </div>
+            <Rebi pose="read" size={96} className="-my-2" priority />
+          </div>
 
-          <Form action="/bibel/suche" className="mt-8 flex flex-col gap-2 sm:flex-row" role="search">
+          <Form action="/bibel/suche" className="mt-5 flex flex-col gap-2 sm:flex-row" role="search" data-tour="bible-search">
             <label htmlFor="bibel-suche" className="sr-only">
               Bibel durchsuchen
             </label>
@@ -56,7 +62,7 @@ export default async function BiblePage(props: PageProps<"/bibel">) {
             </button>
           </Form>
 
-          <div className="mt-6 flex flex-wrap items-end gap-4">
+          <div className="mt-5 flex flex-wrap items-end gap-4" data-tour="bible-translation">
             <TranslationSelect
               id="bibel-uebersetzung"
               label="Übersetzung"
@@ -76,9 +82,11 @@ export default async function BiblePage(props: PageProps<"/bibel">) {
         <VerseOfTheDay translationId={t} tParam={tParam} />
       </section>
 
-      <RecentChapters translations={shortNames} className="mt-12" />
+      <RecentChapters translations={shortNames} className="mt-8" />
 
-      <BookGrid language={translation.language} tParam={tParam} className="mt-14" />
+      <div data-tour="bible-books" className="mt-8">
+        <BookGrid language={translation.language} tParam={tParam} />
+      </div>
     </main>
   );
 }

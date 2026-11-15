@@ -25,7 +25,7 @@ export default async function EditJournalEntryPage(props: PageProps<"/tagebuch/[
   const backHref = `/tagebuch/${entry.id}`;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <Link
         href={backHref}
         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
@@ -33,7 +33,7 @@ export default async function EditJournalEntryPage(props: PageProps<"/tagebuch/[
         <ChevronLeft className="size-4" aria-hidden="true" />
         Zum Eintrag
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Eintrag bearbeiten</h1>
+      <h1 className="mt-4 text-[30px] leading-tight sm:text-4xl">Eintrag bearbeiten</h1>
       <p className="text-muted-foreground mt-2">{formatJournalDate(entry.date)}</p>
 
       <div className="mt-8">

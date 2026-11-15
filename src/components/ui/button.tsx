@@ -7,23 +7,27 @@ export type ButtonVariant = "primary" | "secondary" | "accent" | "ghost" | "outl
 export type ButtonSize = "sm" | "md" | "lg" | "icon";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap transition-colors select-none disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:shrink-0";
+  "inline-flex items-center justify-center gap-2 rounded-full font-display font-extrabold whitespace-nowrap transition select-none disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:shrink-0";
 
+// Primary and accent buttons sit on a small "step" (bottom shadow) and press down when tapped.
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm",
+  primary:
+    "bg-primary text-primary-foreground shadow-[0_4px_0_var(--primary-press)] hover:bg-primary-hover active:translate-y-[3px] active:shadow-[0_1px_0_var(--primary-press)]",
   secondary: "bg-surface-muted text-foreground hover:bg-border",
-  accent: "bg-accent text-accent-foreground hover:bg-accent-hover shadow-sm",
+  accent:
+    "bg-accent text-accent-foreground shadow-[0_4px_0_#d98f00] hover:bg-accent-hover active:translate-y-[3px] active:shadow-[0_1px_0_#d98f00]",
   ghost: "text-foreground hover:bg-surface-muted",
-  outline: "border border-border bg-surface text-foreground hover:bg-surface-muted",
+  outline:
+    "border-2 border-border bg-surface text-foreground shadow-[0_3px_0_var(--border)] hover:bg-surface-muted active:translate-y-[2px] active:shadow-none",
   danger: "bg-danger text-white hover:opacity-90",
   link: "text-primary underline-offset-4 hover:underline rounded-none px-0 h-auto",
 };
 
 const sizes: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-sm [&_svg]:size-4",
-  md: "h-10 px-4 text-sm [&_svg]:size-4",
-  lg: "h-12 px-6 text-base [&_svg]:size-5",
-  icon: "size-10 [&_svg]:size-5",
+  sm: "h-10 px-4 text-sm [&_svg]:size-4",
+  md: "h-12 px-5 text-[15px] [&_svg]:size-5",
+  lg: "h-14 px-7 text-base [&_svg]:size-5",
+  icon: "size-11 [&_svg]:size-5",
 };
 
 export function buttonClasses(variant: ButtonVariant = "primary", size: ButtonSize = "md", className?: string) {

@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const fieldBase =
-  "w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-base text-foreground placeholder:text-muted-foreground/70 shadow-xs transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring disabled:opacity-60 aria-invalid:border-danger aria-invalid:outline-danger md:text-sm";
+  "w-full rounded-2xl border-2 border-border bg-surface px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/80 transition focus-visible:border-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 disabled:opacity-60 aria-invalid:border-danger";
 
 export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input className={cn(fieldBase, className)} {...props} />;
@@ -45,7 +45,7 @@ export function Field({ label, htmlFor, hint, error, required, children, classNa
   const errors = Array.isArray(error) ? error : error ? [error] : [];
   return (
     <div className={cn("space-y-1.5", className)}>
-      <label htmlFor={htmlFor} className="block text-sm font-medium text-foreground">
+      <label htmlFor={htmlFor} className="block font-display text-sm font-extrabold text-foreground">
         {label}
         {required ? <span className="ml-0.5 text-danger" aria-hidden="true">*</span> : null}
       </label>

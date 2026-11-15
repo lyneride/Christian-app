@@ -53,14 +53,14 @@ export default async function GemeinsamPage(props: PageProps<"/leseplaene/gemein
   const colorClass = (c?: string) => (c && c in HIGHLIGHT_COLORS ? HIGHLIGHT_COLORS[c as HighlightColor].className : "bg-highlight-yellow");
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6">
+    <main className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-8">
       <Link href="/leseplaene/meine" className="text-sm text-muted-foreground hover:text-primary">
         ← Meine Lesepläne
       </Link>
       <header className="mt-3 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold tracking-wider text-accent uppercase">Gemeinsam lesen</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">{group.name}</h1>
+          <p className="text-sm font-extrabold text-muted-foreground">Gemeinsam lesen</p>
+          <h1 className="mt-1 text-[30px] leading-tight sm:text-4xl">{group.name}</h1>
           <p className="mt-2 text-muted-foreground">
             <Link href={`/leseplaene/${group.plan.slug}`} className="text-primary hover:underline">
               {group.plan.title}

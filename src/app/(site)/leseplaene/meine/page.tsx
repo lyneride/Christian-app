@@ -23,12 +23,12 @@ export default async function MyPlansPage() {
   const archived = all.filter((s) => planStatus(s) === "archived");
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-4xl px-4 py-5 sm:px-6 sm:py-8">
       <Link href="/leseplaene" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary">
         <ArrowLeft className="size-4" aria-hidden="true" />
         Alle Lesepläne
       </Link>
-      <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Deine Lesepläne</h1>
+      <h1 className="mt-5 text-[30px] leading-tight sm:text-4xl">Deine Lesepläne</h1>
       <p className="mt-3 max-w-prose text-lg text-muted-foreground">
         Hier siehst du, was als Nächstes dran ist. Lies, wenn es passt – der Plan wartet.
       </p>

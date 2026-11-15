@@ -35,7 +35,7 @@ export function isPrayerCategory(value: unknown): value is PrayerCategory {
 }
 
 /** Visibilities a prayer request may have (no PRIVATE: a private request would have nobody to pray). */
-export const PRAYER_VISIBILITIES = ["PUBLIC", "MEMBERS", "GROUP"] as const;
+export const PRAYER_VISIBILITIES = ["PUBLIC", "MEMBERS", "FRIENDS", "GROUP"] as const;
 export type PrayerVisibility = (typeof PRAYER_VISIBILITIES)[number];
 
 export const PRAYER_FILTERS = ["alle", "offen", "erhoert", "meine", "gebetet"] as const;

@@ -30,7 +30,7 @@ export default async function PasswortZuruecksetzenPage(props: PageProps<"/passw
     return (
       <div className="space-y-6">
         <div className="space-y-1">
-          <h1 className="font-serif text-2xl font-semibold tracking-tight">Link ungültig oder abgelaufen</h1>
+          <h1 className="text-[26px] leading-tight font-black">Link ungültig oder abgelaufen</h1>
           <p className="text-muted-foreground text-sm">
             Dieser Link zum Zurücksetzen funktioniert nicht mehr. Links sind eine Stunde gültig und können nur einmal
             verwendet werden.
@@ -49,7 +49,7 @@ export default async function PasswortZuruecksetzenPage(props: PageProps<"/passw
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h1 className="font-serif text-2xl font-semibold tracking-tight">Neues Passwort festlegen</h1>
+        <h1 className="text-[26px] leading-tight font-black">Neues Passwort festlegen</h1>
         <p className="text-muted-foreground text-sm">
           Wähle ein neues Passwort. Danach bist du auf allen anderen Geräten abgemeldet.
         </p>

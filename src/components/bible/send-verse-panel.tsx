@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
-import { Send } from "lucide-react";
+import { Send, Users } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
@@ -16,6 +16,15 @@ interface Friend {
   avatarUrl: string | null;
 }
 
+interface Chat {
+  id: string;
+  title: string;
+  members: number;
+}
+
+/** "f:<userId>" for a friend, "c:<conversationId>" for a group chat. */
+type Target = `f:${string}` | `c:${string}`;
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -27,10 +36,11 @@ interface Props {
   translation: string;
 }
 
-/** "Vers an Freund senden": picks a friend and sends the passage as a direct message. */
+/** "Vers senden": picks a friend or a group chat and sends the passage there. */
 export function SendVersePanel({ open, onClose, reference, book, chapter, verseStart, verseEnd, translation }: Props) {
   const [friends, setFriends] = useState<Friend[] | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [selected, setSelected] = useState<Target | null>(null);
   const [note, setNote] = useState("");
   const [result, setResult] = useState<{ ok: boolean; message: string; href?: string } | null>(null);
   const [pending, start] = useTransition();
@@ -39,9 +49,11 @@ export function SendVersePanel({ open, onClose, reference, book, chapter, verseS
     if (!open || friends !== null) return;
     let cancelled = false;
     fetch("/api/freunde")
-      .then((r) => (r.ok ? r.json() : { friends: [] }))
-      .then((data: { friends?: Friend[] }) => {
-        if (!cancelled) setFriends(data.friends ?? []);
+      .then((r) => (r.ok ? r.json() : { friends: [], chats: [] }))
+      .then((data: { friends?: Friend[]; chats?: Chat[] }) => {
+        if (cancelled) return;
+        setFriends(data.friends ?? []);
+        setChats(data.chats ?? []);
       })
       .catch(() => {
         if (!cancelled) setFriends([]);
@@ -54,16 +66,18 @@ export function SendVersePanel({ open, onClose, reference, book, chapter, verseS
   function send() {
     if (!selected) return;
     start(async () => {
-      const res = await sendVerseToFriend({ toUserId: selected, book, chapter, verseStart, verseEnd, translation, note: note || undefined });
+      const id = selected.slice(2);
+      const target = selected.startsWith("c:") ? { conversationId: id } : { toUserId: id };
+      const res = await sendVerseToFriend({ ...target, book, chapter, verseStart, verseEnd, translation, note: note || undefined });
       setResult({ ok: Boolean(res.ok), message: res.message ?? "", href: typeof res.data?.href === "string" ? (res.data.href as string) : undefined });
     });
   }
 
   return (
-    <SidePanel open={open} onClose={onClose} title="An Freund senden" subtitle={reference}>
+    <SidePanel open={open} onClose={onClose} title="Vers senden" subtitle={reference}>
       {friends === null ? (
         <p className="text-sm text-muted-foreground">Freunde werden geladen …</p>
-      ) : friends.length === 0 ? (
+      ) : friends.length === 0 && chats.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           Du hast noch keine Freunde hier.{" "}
           <Link href="/freunde" className="text-primary underline-offset-4 hover:underline">
@@ -72,23 +86,42 @@ export function SendVersePanel({ open, onClose, reference, book, chapter, verseS
         </p>
       ) : (
         <div className="space-y-4">
-          <ul className="space-y-1" role="radiogroup" aria-label="Freund auswählen">
-            {friends.map((f) => (
-              <li key={f.id}>
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={selected === f.id}
-                  onClick={() => setSelected(f.id)}
-                  className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm ${selected === f.id ? "border-primary bg-primary-soft" : "border-border hover:bg-surface-muted"}`}
-                >
-                  <Avatar name={f.name} src={f.avatarUrl} size="xs" />
-                  <span className="truncate">{f.name}</span>
-                  <span className="truncate text-xs text-muted-foreground">@{f.username}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <div role="radiogroup" aria-label="Empfänger auswählen" className="space-y-4">
+            {chats.length > 0 ? (
+              <div>
+                <p className="mb-1.5 text-xs font-extrabold text-muted-foreground">Gruppenchats</p>
+                <ul className="space-y-1">
+                  {chats.map((c) => (
+                    <li key={c.id}>
+                      <TargetButton active={selected === `c:${c.id}`} onSelect={() => setSelected(`c:${c.id}`)}>
+                        <span aria-hidden="true" className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-area-gemeinschaft-soft text-area-gemeinschaft">
+                          <Users className="size-3.5" />
+                        </span>
+                        <span className="truncate font-semibold">{c.title}</span>
+                        <span className="shrink-0 text-xs text-muted-foreground">{c.members} Personen</span>
+                      </TargetButton>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {friends.length > 0 ? (
+              <div>
+                {chats.length > 0 ? <p className="mb-1.5 text-xs font-extrabold text-muted-foreground">Freunde</p> : null}
+                <ul className="space-y-1">
+                  {friends.map((f) => (
+                    <li key={f.id}>
+                      <TargetButton active={selected === `f:${f.id}`} onSelect={() => setSelected(`f:${f.id}`)}>
+                        <Avatar name={f.name} src={f.avatarUrl} size="xs" />
+                        <span className="truncate font-semibold">{f.name}</span>
+                        <span className="truncate text-xs text-muted-foreground">@{f.username}</span>
+                      </TargetButton>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
           <div>
             <label htmlFor="send-verse-note" className="text-sm font-medium">
               Ein paar Worte dazu (optional)
@@ -114,5 +147,19 @@ export function SendVersePanel({ open, onClose, reference, book, chapter, verseS
         </div>
       )}
     </SidePanel>
+  );
+}
+
+function TargetButton({ active, onSelect, children }: { active: boolean; onSelect: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={active}
+      onClick={onSelect}
+      className={`flex min-h-11 w-full items-center gap-2 rounded-2xl border-2 px-3 py-2 text-left text-sm transition ${active ? "border-primary bg-primary-soft" : "border-border hover:bg-surface-muted"}`}
+    >
+      {children}
+    </button>
   );
 }

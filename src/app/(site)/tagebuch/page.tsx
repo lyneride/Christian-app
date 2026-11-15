@@ -88,11 +88,11 @@ export default async function TagebuchPage(props: PageProps<"/tagebuch">) {
   const hasEntries = months.length > 0;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Tagebuch</h1>
-          <p className="text-muted-foreground mt-3 max-w-prose text-lg">
+          <h1 className="text-[30px] leading-tight sm:text-4xl">Tagebuch</h1>
+          <p className="mt-1.5 max-w-prose text-[15px] text-muted-foreground sm:text-base">
             Dein Platz zum Nachdenken, Danken und Beten. Nur du siehst diese Einträge.
           </p>
         </div>

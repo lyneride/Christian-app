@@ -18,9 +18,20 @@ export interface LastMessage {
   createdAt: Date;
 }
 
+/** The Bleibe group a group chat belongs to (null for chats among friends). */
+export interface ChatGroup {
+  id: string;
+  slug: string;
+  name: string;
+}
+
 export interface ConversationSummary {
   id: string;
   updatedAt: Date;
+  isGroup: boolean;
+  /** Display title: the group name, the chat title or null for 1:1 chats. */
+  title: string | null;
+  group: ChatGroup | null;
   /** Everyone in the conversation except the viewer (empty if the other account was deleted). */
   others: Participant[];
   lastMessage: LastMessage | null;
@@ -31,6 +42,10 @@ export interface ConversationDetail {
   id: string;
   createdAt: Date;
   updatedAt: Date;
+  isGroup: boolean;
+  title: string | null;
+  group: ChatGroup | null;
+  createdById: string | null;
   participants: { user: Participant; lastReadAt: Date | null }[];
   others: Participant[];
   /** The viewer's own participant row. */
@@ -47,6 +62,19 @@ export interface MessageItem {
 
 export const MESSAGE_PAGE_SIZE = 50;
 
+const chatGroupSelect = { id: true, slug: true, name: true } as const;
+
+/**
+ * Chats the user may see: they take part and, for a group's chat, are still an
+ * active member (guards against a membership change whose chat sync failed).
+ */
+function visibleChatsWhere(userId: string): Prisma.ConversationWhereInput {
+  return {
+    participants: { some: { userId } },
+    OR: [{ groupId: null }, { group: { members: { some: { userId, status: "ACTIVE" } } } }],
+  };
+}
+
 /** Where-clause for messages the viewer has not read yet (from other senders, newer than lastReadAt). */
 function unreadWhere(conversationId: string, userId: string, lastReadAt: Date | null): Prisma.MessageWhereInput {
   return {
@@ -59,11 +87,14 @@ function unreadWhere(conversationId: string, userId: string, lastReadAt: Date | 
 /** All conversations of the viewer, newest activity first, with preview and unread count. */
 export async function listConversations(userId: string): Promise<ConversationSummary[]> {
   const rows = await prisma.conversation.findMany({
-    where: { participants: { some: { userId } } },
+    where: visibleChatsWhere(userId),
     orderBy: { updatedAt: "desc" },
     select: {
       id: true,
       updatedAt: true,
+      isGroup: true,
+      title: true,
+      group: { select: chatGroupSelect },
       participants: { select: { userId: true, lastReadAt: true, user: { select: participantSelect } } },
       messages: {
         orderBy: { createdAt: "desc" },
@@ -88,6 +119,9 @@ export async function listConversations(userId: string): Promise<ConversationSum
       return {
         id: row.id,
         updatedAt: row.updatedAt,
+        isGroup: row.isGroup,
+        title: row.group?.name ?? row.title,
+        group: row.group,
         others: row.participants.filter((p) => p.userId !== userId).map((p) => p.user),
         lastMessage,
         unreadCount,
@@ -99,11 +133,15 @@ export async function listConversations(userId: string): Promise<ConversationSum
 /** A single conversation, or null when it does not exist or the viewer is not a participant. */
 export const getConversation = cache(async (id: string, userId: string): Promise<ConversationDetail | null> => {
   const row = await prisma.conversation.findFirst({
-    where: { id, participants: { some: { userId } } },
+    where: { id, ...visibleChatsWhere(userId) },
     select: {
       id: true,
       createdAt: true,
       updatedAt: true,
+      isGroup: true,
+      title: true,
+      createdById: true,
+      group: { select: chatGroupSelect },
       participants: { select: { userId: true, lastReadAt: true, user: { select: participantSelect } } },
     },
   });
@@ -114,6 +152,10 @@ export const getConversation = cache(async (id: string, userId: string): Promise
     id: row.id,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    isGroup: row.isGroup,
+    title: row.group?.name ?? row.title,
+    group: row.group,
+    createdById: row.createdById,
     participants: row.participants.map((p) => ({ user: p.user, lastReadAt: p.lastReadAt })),
     others: row.participants.filter((p) => p.userId !== userId).map((p) => p.user),
     me: { lastReadAt: me.lastReadAt },
@@ -121,10 +163,7 @@ export const getConversation = cache(async (id: string, userId: string): Promise
 });
 
 export async function isParticipant(conversationId: string, userId: string): Promise<boolean> {
-  const row = await prisma.conversationParticipant.findUnique({
-    where: { conversationId_userId: { conversationId, userId } },
-    select: { userId: true },
-  });
+  const row = await prisma.conversation.findFirst({ where: { id: conversationId, ...visibleChatsWhere(userId) }, select: { id: true } });
   return row !== null;
 }
 
@@ -154,6 +193,7 @@ export async function findOrCreateDirectConversation(userAId: string, userBId: s
   if (userAId === userBId) throw new Error("Eine Unterhaltung braucht zwei verschiedene Personen.");
   const existing = await prisma.conversation.findFirst({
     where: {
+      isGroup: false,
       AND: [
         { participants: { some: { userId: userAId } } },
         { participants: { some: { userId: userBId } } },

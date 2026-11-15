@@ -25,11 +25,11 @@ export default async function NeuerLeseplanPage(props: PageProps<"/leseplaene/ne
   const preset = groups.find((g) => g.id === presetGroup);
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <Link href={preset ? `/gruppen` : "/leseplaene"} className="text-sm text-muted-foreground hover:text-primary">
         ← {preset ? "Gruppen" : "Alle Lesepläne"}
       </Link>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Leseplan erstellen</h1>
+      <h1 className="mt-3 text-[30px] leading-tight sm:text-4xl">Leseplan erstellen</h1>
       <p className="mt-2 max-w-prose text-muted-foreground">
         Sag einfach, was ihr lesen wollt und in wie vielen Tagen. Bleibe verteilt die Kapitel gleichmäßig. Allein, mit Freunden
         oder mit deiner Gruppe{preset ? ` „${preset.name}“` : ""}.

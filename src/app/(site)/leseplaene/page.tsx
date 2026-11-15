@@ -30,11 +30,11 @@ export default async function PlansPage() {
   const subscribedIds = new Set(own.map((s) => s.planId));
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-prose">
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Lesepläne</h1>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <h1 className="text-[30px] leading-tight sm:text-4xl">Lesepläne</h1>
+          <p className="mt-1.5 text-[15px] text-muted-foreground sm:text-base">
             Ein Plan hilft dir, dranzubleiben – in deinem Tempo. Kein Tag geht verloren: Der nächste Abschnitt wartet einfach,
             bis du wieder Zeit hast.
           </p>

@@ -4,6 +4,7 @@ import { HandHeart, Plus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { pageHref, parsePage } from "@/lib/pagination";
 import { listPrayerRequests } from "@/lib/prayer/queries";
+import { Rebi } from "@/components/rebi/rebi";
 import { cn } from "@/lib/utils";
 import {
   CATEGORY_LABELS,
@@ -78,19 +79,23 @@ export default async function GebetPage(props: PageProps<"/gebet">) {
   const empty = emptyCopy(filter, category, viewer !== null);
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Gebet</h1>
-          <p className="text-muted-foreground mt-2">Teile, was dich bewegt – andere beten mit.</p>
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
+      <header>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-[30px] leading-tight sm:text-4xl">Gebet</h1>
+            <p className="mt-1.5 text-[15px] text-muted-foreground sm:text-base">Teile, was dich bewegt – andere beten mit.</p>
+          </div>
+          <Rebi pose="heart" size={88} className="-my-2" priority />
         </div>
-        <Link href={newHref} className={buttonClasses("primary", "md", "shrink-0")}>
+        <Link href={newHref} className={buttonClasses("primary", "md", "mt-4 w-full sm:w-auto")} data-tour="prayer-new">
           <Plus aria-hidden="true" />
           Anliegen teilen
         </Link>
       </header>
 
-      <nav aria-label="Filter" className="bg-surface-muted mt-6 flex w-fit max-w-full flex-wrap gap-1 rounded-full p-1">
+      <div data-tour="prayer-filter" className="mt-5">
+      <nav aria-label="Filter" className="scrollbar-none flex w-full gap-1 overflow-x-auto rounded-full bg-surface-muted p-1 sm:w-fit">
         {filters.map((f) => {
           const active = f === filter;
           return (
@@ -99,8 +104,8 @@ export default async function GebetPage(props: PageProps<"/gebet">) {
               href={pageHref("/gebet", { ...params, filter: f === "alle" ? undefined : f }, 1)}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
-                active ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                "shrink-0 rounded-full px-4 py-2 font-display text-sm font-black transition-colors",
+                active ? "bg-surface text-foreground shadow-soft" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {FILTER_LABELS[f]}
@@ -109,7 +114,7 @@ export default async function GebetPage(props: PageProps<"/gebet">) {
         })}
       </nav>
 
-      <nav className="mt-3 flex flex-wrap gap-2" aria-label="Kategorien">
+      <nav className="scrollbar-none -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0" aria-label="Kategorien">
         <CategoryChip href={pageHref("/gebet", { ...params, kategorie: undefined }, 1)} active={!category}>
           Alle Kategorien
         </CategoryChip>
@@ -119,10 +124,12 @@ export default async function GebetPage(props: PageProps<"/gebet">) {
           </CategoryChip>
         ))}
       </nav>
+      </div>
 
       {items.length === 0 ? (
         <EmptyState
           className="mt-8"
+          pose="heart"
           icon={<HandHeart />}
           title={empty.title}
           description={empty.description}
@@ -153,10 +160,8 @@ function CategoryChip({ href, active, children }: { href: string; active: boolea
       href={href}
       aria-current={active ? "true" : undefined}
       className={cn(
-        "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-        active
-          ? "border-primary bg-primary-soft text-primary"
-          : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground",
+        "inline-flex h-9 shrink-0 items-center rounded-full border-2 px-3.5 text-[13px] font-bold whitespace-nowrap transition-colors",
+        active ? "border-foreground bg-foreground text-background" : "border-border bg-surface text-foreground hover:border-foreground/30",
       )}
     >
       {children}

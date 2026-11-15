@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { CalendarDays, Church, HandHeart, MapPin, MessageCircle, Pencil, UserPlus } from "lucide-react";
-import { FollowButton } from "@/components/profile/follow-button";
 import { FriendButton } from "@/components/friends/friend-button";
 import type { FriendState } from "@/lib/friends/queries";
 import { MarkdownBody } from "@/components/profile/markdown-body";
@@ -18,18 +17,16 @@ interface Props {
   stats: ProfileStats;
   isOwner: boolean;
   signedIn: boolean;
-  following: boolean;
   friendState?: FriendState | null;
 }
 
-export function ProfileHeader({ user, stats, isOwner, signedIn, following, friendState }: Props) {
+export function ProfileHeader({ user, stats, isOwner, signedIn, friendState }: Props) {
   const next = encodeURIComponent(profilePath(user.username));
   const counts = [
     { label: "Öffentliche Beiträge", value: stats.posts },
     { label: "Gebetsanliegen", value: stats.prayers },
     { label: "Gruppen", value: stats.groups },
-    { label: "Follower", value: stats.followers },
-    { label: "Folgt", value: stats.following },
+    { label: "Freunde", value: stats.friends },
   ];
 
   return (
@@ -39,7 +36,7 @@ export function ProfileHeader({ user, stats, isOwner, signedIn, following, frien
           <Avatar name={user.name} src={user.avatarUrl} size="xl" className="mx-auto sm:mx-0" />
           <div className="min-w-0 flex-1 space-y-4 text-center sm:text-left">
             <div>
-              <h1 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">{user.name}</h1>
+              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{user.name}</h1>
               <p className="text-muted-foreground">@{user.username}</p>
             </div>
 
@@ -88,7 +85,6 @@ export function ProfileHeader({ user, stats, isOwner, signedIn, following, frien
               ) : signedIn ? (
                 <>
                   {friendState ? <FriendButton username={user.username} state={friendState} /> : null}
-                  <FollowButton username={user.username} following={following} />
                   <ButtonLink href={`/nachrichten/neu?an=${encodeURIComponent(user.username)}`} variant="outline">
                     <MessageCircle aria-hidden="true" />
                     Nachricht
@@ -97,14 +93,14 @@ export function ProfileHeader({ user, stats, isOwner, signedIn, following, frien
               ) : (
                 <ButtonLink href={`/anmelden?next=${next}`}>
                   <UserPlus aria-hidden="true" />
-                  Folgen
+                  Als Freund hinzufügen
                 </ButtonLink>
               )}
             </div>
           </div>
         </div>
 
-        <dl className="mt-6 grid grid-cols-2 gap-3 border-t border-border pt-5 sm:grid-cols-5">
+        <dl className="mt-6 grid grid-cols-2 gap-3 border-t border-border pt-5 sm:grid-cols-4">
           {counts.map((c) => (
             <div key={c.label} className="text-center sm:text-left">
               <dd className="text-xl font-semibold tabular-nums">{c.value}</dd>

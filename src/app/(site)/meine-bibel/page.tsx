@@ -53,10 +53,10 @@ export default async function MeineBibelPage(props: PageProps<"/meine-bibel">) {
   };
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-8">
       <header>
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Meine Bibel</h1>
-        <p className="text-muted-foreground mt-3 max-w-prose text-lg">
+        <h1 className="text-[30px] leading-tight sm:text-4xl">Meine Bibel</h1>
+        <p className="mt-1.5 max-w-prose text-[15px] text-muted-foreground sm:text-base">
           Deine Markierungen, Notizen und Lesezeichen – und ein Blick darauf, wo du schon gelesen hast. Alles hier
           siehst nur du.
         </p>

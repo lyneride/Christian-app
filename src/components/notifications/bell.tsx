@@ -6,7 +6,7 @@ import { totalUnreadMessages, unreadMessageNotifications } from "@/lib/messages/
 
 /** Placeholder for the header's Suspense boundary. */
 export function NotificationBellSkeleton() {
-  return <div className="size-9 animate-pulse rounded-full bg-surface-muted" aria-hidden="true" />;
+  return <div className="size-11 animate-pulse rounded-full bg-surface-muted" aria-hidden="true" />;
 }
 
 /**
@@ -29,15 +29,16 @@ export async function NotificationBell() {
   return (
     <Link
       href="/benachrichtigungen"
+      data-tour="bell"
       aria-label={label}
       title={label}
-      className="relative inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-surface-muted hover:text-foreground"
+      className="relative inline-flex size-11 items-center justify-center rounded-full bg-surface text-foreground shadow-soft transition hover:bg-surface-muted"
     >
-      <Bell className="size-5" aria-hidden="true" />
+      <Bell className="size-[21px]" aria-hidden="true" />
       {total > 0 ? (
         <span
           aria-hidden="true"
-          className="absolute -top-0.5 -right-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] leading-none font-semibold text-primary-foreground ring-2 ring-background"
+          className="absolute -top-1 -right-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-area-gebet px-1 font-display text-[11px] leading-none font-black text-[#2b2340] ring-2 ring-background"
         >
           {total > 9 ? "9+" : total}
         </span>

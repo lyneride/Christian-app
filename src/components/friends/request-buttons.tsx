@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { Check, X } from "lucide-react";
+import { Check, UserMinus, UserPlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { acceptFriendRequest, declineFriendRequest, removeFriendship, sendFriendRequest } from "@/lib/friends/actions";
 
@@ -28,18 +28,21 @@ export function CancelRequestButton({ id }: { id: string }) {
   );
 }
 
-export function RemoveFriendButton({ id }: { id: string }) {
+export function RemoveFriendButton({ id, name }: { id: string; name?: string }) {
   const [pending, start] = useTransition();
   return (
     <Button
-      size="sm"
+      size="icon"
       variant="ghost"
       loading={pending}
+      aria-label={name ? `Freundschaft mit ${name} beenden` : "Freundschaft beenden"}
+      title="Freundschaft beenden"
+      className="text-muted-foreground"
       onClick={() => {
         if (confirm("Freundschaft beenden?")) start(async () => void (await removeFriendship(id)));
       }}
     >
-      Entfernen
+      {pending ? null : <UserMinus aria-hidden="true" />}
     </Button>
   );
 }
@@ -48,6 +51,7 @@ export function AddFriendButton({ username }: { username: string }) {
   const [pending, start] = useTransition();
   return (
     <Button size="sm" variant="outline" loading={pending} onClick={() => start(async () => void (await sendFriendRequest(username)))}>
+      {pending ? null : <UserPlus aria-hidden="true" />}
       Hinzufügen
     </Button>
   );

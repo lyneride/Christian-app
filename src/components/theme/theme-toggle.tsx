@@ -50,8 +50,36 @@ export function useTheme(): Theme {
   return useSyncExternalStore(subscribe, readTheme, () => "system");
 }
 
-export function ThemeToggle({ className }: { className?: string }) {
+const OPTIONS: { value: Theme; label: string; Icon: typeof Sun }[] = [
+  { value: "light", label: "Hell", Icon: Sun },
+  { value: "dark", label: "Dunkel", Icon: Moon },
+  { value: "system", label: "Wie Gerät", Icon: SunMoon },
+];
+
+export function ThemeToggle({ className, showLabel }: { className?: string; showLabel?: boolean }) {
   const theme = useTheme();
+  if (showLabel) {
+    return (
+      <div role="radiogroup" aria-label="Darstellung" className={cn("inline-flex gap-1 rounded-full bg-surface-muted p-1", className)}>
+        {OPTIONS.map(({ value, label, Icon: OptIcon }) => (
+          <button
+            key={value}
+            type="button"
+            role="radio"
+            aria-checked={theme === value}
+            onClick={() => setTheme(value)}
+            className={cn(
+              "inline-flex h-10 items-center gap-1.5 rounded-full px-3.5 font-display text-sm font-extrabold transition",
+              theme === value ? "bg-surface text-foreground shadow-soft" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <OptIcon className="size-4" aria-hidden="true" />
+            {label}
+          </button>
+        ))}
+      </div>
+    );
+  }
   const next: Theme = theme === "system" ? "light" : theme === "light" ? "dark" : "system";
   const label = theme === "system" ? "Design: wie System" : theme === "light" ? "Design: Hell" : "Design: Dunkel";
   const Icon = theme === "system" ? SunMoon : theme === "light" ? Sun : Moon;
@@ -63,11 +91,11 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label={`${label} – umschalten`}
       title={label}
       className={cn(
-        "inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-surface-muted hover:text-foreground",
+        "inline-flex size-11 items-center justify-center rounded-full bg-surface text-foreground shadow-soft transition hover:bg-surface-muted",
         className,
       )}
     >
-      <Icon className="size-[18px]" aria-hidden="true" />
+      <Icon className="size-5" aria-hidden="true" />
     </button>
   );
 }

@@ -11,7 +11,7 @@ import { PasswordInput } from "@/components/auth/password-input";
 
 const PASSWORD_HINT = "Mindestens 8 Zeichen, nicht nur Ziffern.";
 
-export function RegisterForm() {
+export function RegisterForm({ invite }: { invite?: string }) {
   const [state, formAction, pending] = useActionState(register, undefined);
   const [password, setPassword] = useState("");
   const errors = state?.errors ?? {};
@@ -23,6 +23,7 @@ export function RegisterForm() {
   return (
     <form action={formAction} className="space-y-5">
       <FormMessage state={state} />
+      {invite ? <input type="hidden" name="invite" value={invite} /> : null}
 
       <Field label="Name" htmlFor="name" hint="So wirst du anderen angezeigt." error={errors.name}>
         <Input

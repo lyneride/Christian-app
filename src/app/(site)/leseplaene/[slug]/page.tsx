@@ -44,9 +44,10 @@ export default async function PlanPage(props: Props) {
   const finish = sub && status === "active" ? estimatedFinish(completed, plan.dayCount, { lastCompletedAt: sub.lastCompletedAt }) : null;
   const interactive = status === "active" || status === "finished";
   const nextPath = `/leseplaene/${plan.slug}`;
+  const togetherPath = `/leseplaene/gemeinsam/neu?plan=${plan.slug}`;
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-4xl px-4 py-5 sm:px-6 sm:py-8">
       <Link href="/leseplaene" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary">
         <ArrowLeft className="size-4" aria-hidden="true" />
         Alle Lesepläne
@@ -54,12 +55,7 @@ export default async function PlanPage(props: Props) {
 
       <header className="mt-5">
         <Badge variant="outline">{categoryLabel(plan.category)}</Badge>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{plan.title}</h1>
-        <p className="mt-2">
-          <Link href={`/leseplaene/gemeinsam/neu?plan=${plan.slug}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline">
-            <Users className="size-4" aria-hidden="true" /> Mit Freunden oder einer Gruppe gemeinsam lesen
-          </Link>
-        </p>
+        <h1 className="mt-3 text-[30px] leading-tight sm:text-4xl">{plan.title}</h1>
         <p className="mt-3 max-w-prose text-lg text-muted-foreground">{plan.description}</p>
 
         <dl className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
@@ -80,19 +76,11 @@ export default async function PlanPage(props: Props) {
           </div>
         </dl>
 
-        <div className="mt-6 flex flex-wrap items-start gap-3">
+        <div className="mt-6 grid gap-3 sm:flex sm:flex-wrap sm:items-start">
           {!user ? (
-            <>
-              <Link href={`/anmelden?next=${encodeURIComponent(nextPath)}`} className={buttonClasses("primary", "lg")}>
-                Anmelden und Plan starten
-              </Link>
-              <p className="self-center text-sm text-muted-foreground">
-                Noch kein Konto?{" "}
-                <Link href="/registrieren" className="text-primary underline-offset-4 hover:underline">
-                  Jetzt registrieren
-                </Link>
-              </p>
-            </>
+            <Link href={`/anmelden?next=${encodeURIComponent(nextPath)}`} className={buttonClasses("primary", "lg")}>
+              Anmelden und Plan starten
+            </Link>
           ) : !sub ? (
             <SubscribeButton planId={plan.id} />
           ) : status === "archived" ? (
@@ -103,7 +91,22 @@ export default async function PlanPage(props: Props) {
               <ResetButton planId={plan.id} />
             </>
           )}
+          <Link
+            href={user ? togetherPath : `/anmelden?next=${encodeURIComponent(togetherPath)}`}
+            className={buttonClasses("outline", "lg")}
+            data-tour="plan-together"
+          >
+            <Users aria-hidden="true" /> Gemeinsam lesen
+          </Link>
         </div>
+        {!user ? (
+          <p className="mt-3 text-sm text-muted-foreground">
+            Noch kein Konto?{" "}
+            <Link href="/registrieren" className="font-semibold text-primary underline-offset-4 hover:underline">
+              Jetzt registrieren
+            </Link>
+          </p>
+        ) : null}
       </header>
 
       {sub && status === "archived" ? (

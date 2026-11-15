@@ -48,7 +48,7 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
   const html = renderMarkdown(event.description);
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <nav aria-label="Zurück" className="mb-6 text-sm">
         <Link
           href="/veranstaltungen"
@@ -80,7 +80,7 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
               ) : null}
               <ViewerStatusBadge status={event.viewerStatus} />
             </div>
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{event.title}</h1>
+            <h1 className="text-[30px] leading-tight sm:text-4xl">{event.title}</h1>
             <p className="text-muted-foreground flex items-center gap-2">
               <Clock aria-hidden="true" className="size-4 shrink-0" />
               <time dateTime={event.startsAt.toISOString()}>{formatEventDate(event.startsAt, event.endsAt)}</time>

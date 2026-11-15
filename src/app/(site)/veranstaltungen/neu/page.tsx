@@ -18,8 +18,8 @@ export default async function NewEventPage(props: PageProps<"/veranstaltungen/ne
   const preselected = slug ? groups.find((g) => g.slug === slug) : undefined;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Treffen planen</h1>
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
+      <h1 className="text-[30px] leading-tight sm:text-4xl">Treffen planen</h1>
       <p className="text-muted-foreground mt-3 max-w-prose">
         Ein Bibelabend, ein Gebetstreffen, ein Spaziergang – lade andere ein. Du kannst alles später noch ändern.
       </p>

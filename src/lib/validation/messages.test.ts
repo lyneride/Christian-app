@@ -7,6 +7,8 @@ import {
   recipientUsernameSchema,
   sendMessageSchema,
   startConversationSchema,
+  startGroupChatSchema,
+  GROUP_CHAT_MAX_MEMBERS,
 } from "./messages";
 
 function fieldErrors(result: z.ZodSafeParseResult<unknown>) {
@@ -75,5 +77,24 @@ describe("sendMessageSchema / conversationIdSchema", () => {
     expect(conversationIdSchema.safeParse("").success).toBe(false);
     expect(conversationIdSchema.safeParse("c".repeat(65)).success).toBe(false);
     expect(conversationIdSchema.safeParse("clx123").success).toBe(true);
+  });
+});
+
+describe("startGroupChatSchema", () => {
+  it("accepts a title, friends and a first message and removes duplicate ids", () => {
+    const parsed = startGroupChatSchema.parse({ title: "  Hauskreis  ", memberIds: ["a1", "b2", "a1"], body: "Hallo!" });
+    expect(parsed).toEqual({ title: "Hauskreis", memberIds: ["a1", "b2"], body: "Hallo!" });
+  });
+
+  it("needs a name and at least one person", () => {
+    const errors = fieldErrors(startGroupChatSchema.safeParse({ title: "x", memberIds: [], body: "Hallo" }));
+    expect(errors.title?.[0]).toMatch(/mindestens 2 Zeichen/);
+    expect(errors.memberIds?.[0]).toBe("Wähle mindestens einen Freund aus.");
+  });
+
+  it("caps the number of people", () => {
+    const ids = Array.from({ length: GROUP_CHAT_MAX_MEMBERS + 1 }, (_, i) => `u${i}`);
+    const errors = fieldErrors(startGroupChatSchema.safeParse({ title: "Groß", memberIds: ids, body: "Hallo" }));
+    expect(errors.memberIds?.[0]).toMatch(/Höchstens/);
   });
 });

@@ -51,7 +51,7 @@ export default async function BookPage(props: Props) {
   const nextBook = getBookByNumber(book.number + 1);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <nav aria-label="Brotkrumen" className="text-muted-foreground text-sm">
         <Link href="/bibel" className="hover:text-foreground">
           Bibel
@@ -64,7 +64,7 @@ export default async function BookPage(props: Props) {
 
       <header className="mt-4 flex flex-wrap items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{book.name[locale]}</h1>
+          <h1 className="text-[30px] leading-tight sm:text-4xl">{book.name[locale]}</h1>
           <p className="text-muted-foreground mt-2">
             {locale === "en" ? book.name.de : book.name.en}
             {" · "}

@@ -53,10 +53,12 @@ export function MemberRow({ groupId, member, actor, isSelf, manage = false }: Pr
         {banned ? <Badge variant="danger">Gesperrt</Badge> : null}
         {isSelf ? <span className="text-xs text-muted-foreground">(du)</span> : null}
       </div>
-      <span className="text-xs text-muted-foreground">
-        {pendingRequest ? "angefragt am " : "dabei seit "}
-        <time dateTime={member.joinedAt.toISOString()}>{formatDate(member.joinedAt, "d. MMM yyyy")}</time>
-      </span>
+      {manage ? (
+        <span className="text-xs text-muted-foreground">
+          {pendingRequest ? "angefragt am " : "dabei seit "}
+          <time dateTime={member.joinedAt.toISOString()}>{formatDate(member.joinedAt, "d. MMM yyyy")}</time>
+        </span>
+      ) : null}
 
       {showRole ? (
         <label className="flex items-center gap-2 text-xs text-muted-foreground">

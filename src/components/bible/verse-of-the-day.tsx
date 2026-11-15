@@ -4,6 +4,7 @@ import { getVerseOfTheDay } from "@/lib/bible/data";
 import { formatReference, referencePath } from "@/lib/bible/reference";
 import { localeFor } from "@/lib/bible/ui";
 import { cn } from "@/lib/utils";
+import { AreaTile } from "@/components/layout/area-card";
 
 interface Props {
   translationId: string;
@@ -23,11 +24,14 @@ export async function VerseOfTheDay({ translationId, tParam, className }: Props)
   return (
     <section
       aria-labelledby="tagesvers"
-      className={cn("rounded-card border-border bg-surface shadow-soft border p-6 sm:p-8", className)}
+      className={cn("rounded-card bg-surface p-5 shadow-soft sm:p-7", className)}
     >
-      <p id="tagesvers" className="text-accent text-xs font-semibold tracking-wider uppercase">
-        Tagesvers
-      </p>
+      <div className="flex items-center gap-2.5">
+        <AreaTile area="heute" size="sm" />
+        <p id="tagesvers" className="font-display text-xs font-black tracking-wider text-muted-foreground uppercase">
+          Tagesvers
+        </p>
+      </div>
       <blockquote className="scripture mt-3 text-balance" lang={locale}>
         {votd.verses.map((v) => (
           <span key={v.verse}>
@@ -37,7 +41,7 @@ export async function VerseOfTheDay({ translationId, tParam, className }: Props)
         ))}
       </blockquote>
       <footer className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
-        <Link href={href} className="text-primary inline-flex items-center gap-1 font-medium hover:underline">
+        <Link href={href} className="inline-flex items-center gap-1 font-display font-extrabold text-primary hover:underline">
           {formatReference(ref, locale)}
           <ArrowRight className="size-4" aria-hidden="true" />
         </Link>

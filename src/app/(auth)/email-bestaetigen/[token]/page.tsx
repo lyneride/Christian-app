@@ -19,7 +19,7 @@ export default async function EmailBestaetigenPage(props: PageProps<"/email-best
           <MailCheck className="size-7" aria-hidden="true" />
         </div>
         <div className="space-y-1">
-          <h1 className="font-serif text-2xl font-semibold tracking-tight">E-Mail-Adresse bestätigt</h1>
+          <h1 className="text-[26px] leading-tight font-black">E-Mail-Adresse bestätigt</h1>
           <p className="text-muted-foreground text-sm">
             {result.status === "already-verified"
               ? "Deine E-Mail-Adresse war schon bestätigt. Alles ist bereit."
@@ -45,7 +45,7 @@ export default async function EmailBestaetigenPage(props: PageProps<"/email-best
         <div className="bg-warning-soft text-warning mb-4 flex size-14 items-center justify-center rounded-full">
           <MailX className="size-7" aria-hidden="true" />
         </div>
-        <h1 className="font-serif text-2xl font-semibold tracking-tight">Link ungültig oder abgelaufen</h1>
+        <h1 className="text-[26px] leading-tight font-black">Link ungültig oder abgelaufen</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           {result.status === "expired"
             ? "Dieser Bestätigungslink ist abgelaufen. Links sind 24 Stunden gültig."

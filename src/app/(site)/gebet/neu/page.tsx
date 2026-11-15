@@ -21,7 +21,7 @@ export default async function NeuesAnliegenPage() {
         Zur Gebetswand
       </Link>
       <header className="mt-4 mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Anliegen teilen</h1>
+        <h1 className="text-[30px] leading-tight sm:text-4xl">Anliegen teilen</h1>
         <p className="text-muted-foreground mt-2">
           Schreib auf, was dich bewegt. Andere beten mit – ohne Bewertung und ohne Druck.
         </p>

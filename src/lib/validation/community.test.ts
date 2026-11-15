@@ -124,8 +124,8 @@ describe("parseFeedTab / parseKindParam / postPath", () => {
     expect(parseFeedTab(undefined, false)).toBe("alle");
     expect(parseFeedTab("unsinn", true)).toBe("alle");
     expect(parseFeedTab(["zeugnisse"], false)).toBe("zeugnisse");
-    expect(parseFeedTab("gefolgt", false)).toBe("alle");
-    expect(parseFeedTab("gefolgt", true)).toBe("gefolgt");
+    expect(parseFeedTab("freunde", false)).toBe("alle");
+    expect(parseFeedTab("freunde", true)).toBe("freunde");
     expect(parseFeedTab("meine", true)).toBe("meine");
   });
 

@@ -7,6 +7,7 @@ import { getUserOrThrow, UnauthorizedError } from "@/lib/auth/dal";
 import { failure, success, type ActionState } from "@/lib/action-state";
 import { notify } from "@/lib/notifications";
 import { getFriendState } from "./queries";
+import { befriendViaInvite, findInviter, regenerateInviteCode } from "./invites";
 
 const idSchema = z.string().min(5).max(64);
 const usernameSchema = z
@@ -101,5 +102,27 @@ export async function removeFriendship(friendshipId: unknown): Promise<ActionSta
     revalidate(row.requester.username);
     revalidate(row.addressee.username);
     return success("Entfernt.");
+  });
+}
+
+/** Opened an invite link and confirmed: become friends with the inviter right away. */
+export async function acceptInvite(code: unknown): Promise<ActionState> {
+  return withUser(async (user) => {
+    const inviter = await findInviter(code);
+    if (!inviter) return failure("Dieser Einladungslink gilt nicht mehr. Bitte frag nach einem neuen.");
+    const result = await befriendViaInvite(inviter, user);
+    if (result === "self") return failure("Das ist dein eigener Einladungslink – teile ihn mit anderen.");
+    revalidate(inviter.username);
+    revalidatePath("/start");
+    return success(result === "already" ? `Du und ${inviter.name} seid schon Freunde.` : `Du und ${inviter.name} seid jetzt Freunde!`);
+  });
+}
+
+/** Creates a new invite code; the old link stops working. */
+export async function renewInviteLink(): Promise<ActionState> {
+  return withUser(async (user) => {
+    await regenerateInviteCode(user.id);
+    revalidatePath("/freunde");
+    return success("Neuer Link erstellt. Der alte funktioniert nicht mehr.");
   });
 }

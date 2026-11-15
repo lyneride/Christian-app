@@ -21,11 +21,11 @@ export default async function EditPostPage(props: PageProps<"/gemeinschaft/beitr
   const lockedGroup = post.group?.visibility === "PRIVATE" ? { id: post.group.id, name: post.group.name } : undefined;
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-2xl px-4 py-5 sm:px-6 sm:py-8">
       <Link href={postPath(id)} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" aria-hidden="true" /> Zurück zum Beitrag
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Beitrag bearbeiten</h1>
+      <h1 className="mt-4 text-[30px] leading-tight sm:text-4xl">Beitrag bearbeiten</h1>
       <div className="mt-8">
         <PostCompose
           action={updatePost.bind(null, post.id)}

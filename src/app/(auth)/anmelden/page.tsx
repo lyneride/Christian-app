@@ -37,7 +37,7 @@ export default async function AnmeldenPage(props: PageProps<"/anmelden">) {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h1 className="font-serif text-2xl font-semibold tracking-tight">Willkommen zurück</h1>
+        <h1 className="text-[26px] leading-tight font-black">Willkommen zurück</h1>
         <p className="text-muted-foreground text-sm">Melde dich an, um weiterzulesen, zu beten und dabei zu sein.</p>
       </div>
 

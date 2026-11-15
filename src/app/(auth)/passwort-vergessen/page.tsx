@@ -8,7 +8,7 @@ export default function PasswortVergessenPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h1 className="font-serif text-2xl font-semibold tracking-tight">Passwort vergessen?</h1>
+        <h1 className="text-[26px] leading-tight font-black">Passwort vergessen?</h1>
         <p className="text-muted-foreground text-sm">
           Kein Problem. Gib deine E-Mail-Adresse ein, dann schicken wir dir einen Link, mit dem du ein neues Passwort
           festlegen kannst.

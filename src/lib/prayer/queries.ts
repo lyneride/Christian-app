@@ -4,6 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import type { Page } from "@/lib/pagination";
 import { canView, visibilityWhere, type Viewer } from "@/lib/visibility";
+import { areFriends, friendIds } from "@/lib/friends/queries";
 import type { PrayerCategory, PrayerFilter } from "@/lib/validation/prayer";
 import { todayKey } from "./format";
 
@@ -119,10 +120,10 @@ export async function listPrayerRequests({
   category,
   page,
 }: ListPrayerRequestsArgs): Promise<{ items: PrayerRequestListItem[]; total: number }> {
-  const memberGroupIds = viewer ? await getMemberGroupIds(viewer.id) : [];
+  const [memberGroupIds, friends] = viewer ? await Promise.all([getMemberGroupIds(viewer.id), friendIds(viewer.id)]) : [[], []];
   const where: Prisma.PrayerRequestWhereInput = {
     deletedAt: null,
-    ...visibilityWhere(viewer, memberGroupIds),
+    ...visibilityWhere(viewer, memberGroupIds, friends),
     ...(category ? { category } : {}),
   };
 
@@ -192,7 +193,8 @@ export async function canViewPrayerRequest(
   const needsMembership =
     request.visibility === "GROUP" && !!viewer && !!request.groupId && viewer.id !== request.authorId;
   const member = needsMembership ? await isActiveGroupMember(viewer.id, request.groupId as string) : false;
-  return canView(request, viewer, member);
+  const friend = request.visibility === "FRIENDS" && !!viewer && viewer.id !== request.authorId ? await areFriends(viewer.id, request.authorId) : false;
+  return canView(request, viewer, member, friend);
 }
 
 /**

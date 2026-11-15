@@ -27,14 +27,14 @@ export default async function EditEventPage(props: PageProps<"/veranstaltungen/[
     onlineUrl: event.onlineUrl ?? "",
     location: event.location ?? "",
     city: event.city ?? "",
-    visibility: event.visibility === "PRIVATE" ? "MEMBERS" : event.visibility,
+    visibility: event.visibility === "PRIVATE" || event.visibility === "FRIENDS" ? "MEMBERS" : event.visibility,
     groupId: event.groupId,
     capacity: event.capacity ? String(event.capacity) : "",
   };
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Treffen bearbeiten</h1>
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
+      <h1 className="text-[30px] leading-tight sm:text-4xl">Treffen bearbeiten</h1>
       <p className="text-muted-foreground mt-3 max-w-prose">
         Wer schon zugesagt hat, sieht die Änderungen beim nächsten Besuch.
       </p>

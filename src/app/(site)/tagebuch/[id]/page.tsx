@@ -39,7 +39,7 @@ export default async function JournalEntryPage(props: PageProps<"/tagebuch/[id]"
   const translation = await resolveTranslationId(user.preferredTranslation);
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <Link
         href="/tagebuch"
         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
@@ -52,7 +52,7 @@ export default async function JournalEntryPage(props: PageProps<"/tagebuch/[id]"
         <p className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
           {formatJournalDate(entry.date)}
         </p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">{entry.title || "Eintrag"}</h1>
+        <h1 className="mt-1 text-[30px] leading-tight sm:text-4xl">{entry.title || "Eintrag"}</h1>
         {entry.updatedAt.getTime() - entry.createdAt.getTime() > 60_000 ? (
           <p className="text-muted-foreground mt-1 text-xs">Zuletzt bearbeitet {formatRelative(entry.updatedAt)}</p>
         ) : null}

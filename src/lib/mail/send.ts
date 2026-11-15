@@ -40,7 +40,7 @@ export async function sendMail(mail: Mail): Promise<void> {
 }
 
 export function layoutMail(title: string, bodyHtml: string): string {
-  return `<!doctype html><html lang="de"><body style="font-family:system-ui,sans-serif;background:#faf7f2;padding:24px;color:#221f1a">
+  return `<!doctype html><html lang="de"><body style="font-family:system-ui,sans-serif;background:#fff8ee;padding:24px;color:#2b2340">
 <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;border:1px solid #e6dfd4">
 <h1 style="font-size:20px;margin:0 0 16px">${title}</h1>${bodyHtml}
 <p style="margin-top:32px;font-size:12px;color:#6b645b">Bleibe – Bibel. Gebet. Gemeinschaft.</p></div></body></html>`;

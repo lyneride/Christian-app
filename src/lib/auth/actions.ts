@@ -11,6 +11,7 @@ import { getCurrentUser } from "./dal";
 import { hashPassword, passwordProblems, verifyPassword } from "./password";
 import { clientIp, formatRetryAfter, rateLimit } from "./rate-limit";
 import { createSession, destroyAllSessions, destroySession } from "./session";
+import { befriendViaInvite, findInviter } from "@/lib/friends/invites";
 import { hashToken, randomToken } from "./tokens";
 
 /**
@@ -94,7 +95,7 @@ async function sendVerificationMail(user: { email: string; name: string }, token
       "E-Mail-Adresse bestätigen",
       `<p>Hallo ${escapeHtml(name)},</p>
 <p>schön, dass du bei Bleibe bist. Bitte bestätige deine E-Mail-Adresse:</p>
-<p><a href="${link}" style="display:inline-block;background:#27416f;color:#fff;text-decoration:none;padding:10px 18px;border-radius:999px">E-Mail-Adresse bestätigen</a></p>
+<p><a href="${link}" style="display:inline-block;background:#6c47f5;color:#fff;text-decoration:none;padding:10px 18px;border-radius:999px">E-Mail-Adresse bestätigen</a></p>
 <p style="font-size:13px;color:#6b645b">Oder kopiere diesen Link in deinen Browser:<br><a href="${link}">${link}</a></p>
 <p style="font-size:13px;color:#6b645b">Der Link ist 24 Stunden gültig. Falls du dich nicht registriert hast, kannst du diese E-Mail ignorieren.</p>`,
     ),
@@ -120,7 +121,7 @@ async function sendPasswordResetMail(user: { email: string; name: string }, toke
       "Passwort zurücksetzen",
       `<p>Hallo ${escapeHtml(name)},</p>
 <p>du möchtest dein Passwort bei Bleibe zurücksetzen:</p>
-<p><a href="${link}" style="display:inline-block;background:#27416f;color:#fff;text-decoration:none;padding:10px 18px;border-radius:999px">Neues Passwort festlegen</a></p>
+<p><a href="${link}" style="display:inline-block;background:#6c47f5;color:#fff;text-decoration:none;padding:10px 18px;border-radius:999px">Neues Passwort festlegen</a></p>
 <p style="font-size:13px;color:#6b645b">Oder kopiere diesen Link in deinen Browser:<br><a href="${link}">${link}</a></p>
 <p style="font-size:13px;color:#6b645b">Der Link ist eine Stunde gültig. Falls du das nicht warst, kannst du diese E-Mail ignorieren – dein Passwort bleibt unverändert.</p>`,
     ),
@@ -178,7 +179,7 @@ export async function register(_prev: AuthFormState, formData: FormData): Promis
 
     const user = await prisma.user.create({
       data: { name, username, email, passwordHash: await hashPassword(password) },
-      select: { id: true, email: true, name: true },
+      select: { id: true, email: true, name: true, username: true },
     });
 
     const token = await createVerificationToken(user.id, "EMAIL_VERIFY", EMAIL_VERIFY_TTL_MS);
@@ -190,6 +191,17 @@ export async function register(_prev: AuthFormState, formData: FormData): Promis
     }
 
     await createSession(user.id, { remember: true, userAgent: await userAgent() });
+
+    // Came in through a friend's invite link: become friends right away.
+    const invite = formData.get("invite");
+    if (invite) {
+      try {
+        const inviter = await findInviter(invite);
+        if (inviter) await befriendViaInvite(inviter, user);
+      } catch (err) {
+        console.error("[auth] Einladung konnte nicht eingelöst werden:", err);
+      }
+    }
   } catch (err) {
     if ((err as { code?: string })?.code === "P2002") {
       // Unique constraint hit by a concurrent registration.

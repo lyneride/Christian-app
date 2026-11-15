@@ -108,11 +108,11 @@ export default async function EventsPage(props: PageProps<"/veranstaltungen">) {
   const newHref = user ? `${BASE}/neu` : `/anmelden?next=${encodeURIComponent(`${BASE}/neu`)}`;
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-8">
       <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Treffen</h1>
-          <p className="text-muted-foreground mt-4 max-w-prose text-lg">
+          <h1 className="text-[30px] leading-tight sm:text-4xl">Treffen</h1>
+          <p className="mt-1.5 max-w-prose text-[15px] text-muted-foreground sm:text-base">
             Bibelabende, Gebetstreffen, Spaziergänge – online oder vor Ort.
           </p>
         </div>

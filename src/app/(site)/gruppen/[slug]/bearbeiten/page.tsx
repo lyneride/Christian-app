@@ -19,11 +19,11 @@ export default async function EditGroupPage(props: PageProps<"/gruppen/[slug]/be
   const { group } = detail;
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-2xl px-4 py-5 sm:px-6 sm:py-8">
       <Link href={groupPath(slug)} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" aria-hidden="true" /> Zurück zu {group.name}
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Gruppe bearbeiten</h1>
+      <h1 className="mt-4 text-[30px] leading-tight sm:text-4xl">Gruppe bearbeiten</h1>
       <p className="mt-2 text-muted-foreground">Die Adresse der Gruppe (/gruppen/{group.slug}) bleibt auch bei einem neuen Namen gleich.</p>
       <div className="mt-8">
         <GroupForm

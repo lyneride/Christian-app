@@ -25,7 +25,7 @@ export default async function EditNotePage(props: PageProps<"/meine-bibel/notize
   const ref = noteReference(note, translation);
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <Link
         href={LIST_PATH}
         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
@@ -33,7 +33,7 @@ export default async function EditNotePage(props: PageProps<"/meine-bibel/notize
         <ChevronLeft className="size-4" aria-hidden="true" />
         Zu den Notizen
       </Link>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Notiz bearbeiten</h1>
+      <h1 className="mt-4 text-[30px] leading-tight sm:text-4xl">Notiz bearbeiten</h1>
 
       <div className="rounded-card border-border bg-surface shadow-soft mt-6 border p-5">
         <VerseSnippet verseKey={note.verseKey} verseEnd={note.verseEnd} translation={translation} />

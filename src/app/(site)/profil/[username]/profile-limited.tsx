@@ -14,7 +14,7 @@ export function ProfileLimited({ user, signedIn }: { user: { name: string; usern
         <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
           <Avatar name={user.name} src={user.avatarUrl} size="xl" />
           <div>
-            <h1 className="font-serif text-2xl font-semibold tracking-tight">{user.name}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">{user.name}</h1>
             <p className="text-sm text-muted-foreground">@{user.username}</p>
           </div>
           <div className="flex items-center gap-2 rounded-full bg-surface-muted px-3 py-1.5 text-sm text-muted-foreground">
