@@ -75,7 +75,7 @@ export function PrayerCard({ item, viewer }: { item: PrayerRequestListItem; view
           <div className="flex items-center gap-3">
             <Link
               href={`${href}#ermutigungen`}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
+              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm -my-3 py-3 font-semibold"
               aria-label={`${comments} ${comments === 1 ? "Ermutigung" : "Ermutigungen"}`}
             >
               <MessageCircle aria-hidden="true" className="size-4" />

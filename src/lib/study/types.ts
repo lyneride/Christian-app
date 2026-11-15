@@ -16,14 +16,23 @@ export interface ChapterNote {
   updatedAt: Date;
 }
 
+/** Marked words inside one verse: character range [start, end) in the text of `translation`. */
+export interface HighlightRange {
+  start: number;
+  end: number;
+  translation: string;
+}
+
 /** Everything the reader needs to decorate one chapter for the signed-in user. */
 export interface ChapterAnnotations {
   /** verse number → highlight colour */
   highlights: Record<number, HighlightColor>;
+  /** verse number → marked words (only for highlights of single words; see `HighlightRange`) */
+  highlightRanges: Record<number, HighlightRange>;
   /** notes sorted by start verse */
   notes: ChapterNote[];
   /** verse numbers with a bookmark */
   bookmarks: Set<number>;
 }
 
-export const EMPTY_ANNOTATIONS: ChapterAnnotations = { highlights: {}, notes: [], bookmarks: new Set() };
+export const EMPTY_ANNOTATIONS: ChapterAnnotations = { highlights: {}, highlightRanges: {}, notes: [], bookmarks: new Set() };

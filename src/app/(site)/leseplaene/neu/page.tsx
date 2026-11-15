@@ -26,7 +26,7 @@ export default async function NeuerLeseplanPage(props: PageProps<"/leseplaene/ne
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
-      <Link href={preset ? `/gruppen` : "/leseplaene"} className="text-sm text-muted-foreground hover:text-primary">
+      <Link href={preset ? `/gruppen` : "/leseplaene"} className="-my-3 inline-flex py-3 text-sm font-semibold text-muted-foreground hover:text-primary">
         ← {preset ? "Gruppen" : "Alle Lesepläne"}
       </Link>
       <h1 className="mt-3 text-[30px] leading-tight sm:text-4xl">Leseplan erstellen</h1>

@@ -52,7 +52,7 @@ export function InviteShare({ url, qrSvg }: { url: string; qrSvg: string }) {
         </label>
         <Input id="invite-url" readOnly value={url} onFocus={(e) => e.currentTarget.select()} className="min-w-0 font-mono text-sm" />
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <Button onClick={copy} aria-live="polite">
           {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
           {copied ? "Kopiert!" : "Link kopieren"}

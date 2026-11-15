@@ -57,6 +57,25 @@ export const setHighlightSchema = z.object({
 });
 export type SetHighlightInput = z.infer<typeof setHighlightSchema>;
 
+/** Marked words: per verse a character range, or null for the whole verse. */
+export const MAX_VERSE_OFFSET = 10_000;
+const offsetSchema = z.number().int().min(0).max(MAX_VERSE_OFFSET);
+
+export const setTextHighlightSchema = z.object({
+  parts: z
+    .array(
+      z
+        .object({ verseKey: verseKeySchema, start: offsetSchema.nullable(), end: offsetSchema.nullable() })
+        .refine((p) => (p.start === null) === (p.end === null) && (p.start === null || (p.end as number) > p.start), {
+          error: "Die Auswahl ist ungültig.",
+        }),
+    )
+    .min(1, { error: "Bitte zuerst Text auswählen." })
+    .max(MAX_HIGHLIGHT_VERSES, { error: `Bitte höchstens ${MAX_HIGHLIGHT_VERSES} Verse auf einmal markieren.` }),
+  color: highlightColorSchema,
+});
+export type SetTextHighlightInput = z.infer<typeof setTextHighlightSchema>;
+
 // ---------------------------------------------------------------------------
 // Shared field helpers
 // ---------------------------------------------------------------------------

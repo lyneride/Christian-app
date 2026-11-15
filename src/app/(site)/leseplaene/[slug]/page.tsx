@@ -49,7 +49,7 @@ export default async function PlanPage(props: Props) {
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-5 sm:px-6 sm:py-8">
-      <Link href="/leseplaene" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary">
+      <Link href="/leseplaene" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary -my-3 py-3 font-semibold">
         <ArrowLeft className="size-4" aria-hidden="true" />
         Alle Lesepläne
       </Link>

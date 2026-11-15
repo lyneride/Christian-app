@@ -43,7 +43,7 @@ export default async function ConversationPage(props: Props) {
 
   return (
     <main data-chat-view className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 sm:px-6">
-      <header className="sticky top-14 z-20 -mx-4 border-b border-border bg-background/90 px-4 py-2.5 backdrop-blur sm:-mx-6 sm:px-6">
+      <header className="sticky top-16 z-20 -mx-4 border-b border-border bg-background px-4 py-2.5 sm:-mx-6 sm:px-6">
         <div className="flex items-center gap-2">
           <Link href="/nachrichten" className={buttonClasses("ghost", "icon", "shrink-0")} aria-label="Zurück zu allen Nachrichten">
             <ArrowLeft aria-hidden="true" />
@@ -62,7 +62,7 @@ export default async function ConversationPage(props: Props) {
                 </span>
                 <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition group-open/members:rotate-180" />
               </summary>
-              <div className="absolute inset-x-4 top-full mt-1 max-h-[60vh] space-y-4 overflow-y-auto rounded-card border border-border bg-surface p-4 shadow-pop sm:inset-x-6">
+              <div className="absolute inset-x-4 top-full mt-1 max-h-[60dvh] space-y-4 overflow-y-auto rounded-card border border-border bg-surface p-4 shadow-pop sm:inset-x-6">
                 <ul className="flex flex-wrap gap-x-4 gap-y-2" aria-label="Wer ist dabei">
                   {conversation.participants.map((p) => (
                     <li key={p.user.id} className="min-w-0">

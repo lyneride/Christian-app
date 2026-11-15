@@ -43,7 +43,7 @@ export default async function PostPage(props: Props) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 md:py-14">
-      <Link href={back.href} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+      <Link href={back.href} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground -my-3 py-3 font-semibold">
         <ArrowLeft className="size-4" aria-hidden="true" /> Zurück zu {back.label}
       </Link>
 

@@ -30,7 +30,7 @@ export default async function NewPostPage(props: PageProps<"/gemeinschaft/neu">)
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-5 sm:px-6 sm:py-8">
-      <Link href={presetGroup ? `/gruppen/${presetGroup.slug}` : "/gemeinschaft"} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+      <Link href={presetGroup ? `/gruppen/${presetGroup.slug}` : "/gemeinschaft"} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground -my-3 py-3 font-semibold">
         <ArrowLeft className="size-4" aria-hidden="true" /> Zurück
       </Link>
       <h1 className="mt-4 text-[30px] leading-tight sm:text-4xl">{kind === "POST" ? "Neuer Beitrag" : `${POST_KIND_LABELS[kind].label} teilen`}</h1>

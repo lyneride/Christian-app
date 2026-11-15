@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useState, type ReactNode } from "react";
 import {
   Bookmark,
   BookmarkCheck,
@@ -9,11 +8,11 @@ import {
   Brain,
   Copy,
   Eraser,
-  Highlighter,
   Link2,
+  LogIn,
   NotebookPen,
-  X,
   Send,
+  X,
   type LucideIcon,
 } from "lucide-react";
 import { HIGHLIGHT_COLOR_LIST, type HighlightColor } from "@/lib/study/reader-api";
@@ -30,183 +29,159 @@ export interface StudyActionHandlers {
   loginUrl: string;
   /** whether the first selected verse currently has a bookmark */
   bookmarked: boolean;
+  /** whether anything in the selection is highlighted (shows „Entfernen“) */
+  canErase: boolean;
   pending: boolean;
   onHighlight: (color: HighlightColor | null) => void;
   onNote: () => void;
   onBookmark: () => void;
   onMemorize: () => void;
-  /** send the selection to a friend as a direct message */
+  /** send the selection to a friend or into a chat */
   onSend: () => void;
 }
 
 interface Props {
+  /** "verses": whole verses tapped; "text": words selected by long-press and drag */
+  mode: "verses" | "text";
   reference: string;
-  feedback: ActionFeedback | null;
   onCopy: () => void;
   onCopyLink: () => void;
   onCrossRefs: () => void;
   onClear: () => void;
   study: StudyActionHandlers;
-  extraActions?: ReactNode;
 }
 
-const actionClass =
-  "inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-medium transition hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50 aria-pressed:bg-surface-muted";
+const chipClass =
+  "inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full border-2 border-border bg-surface px-4 font-display text-sm font-extrabold transition active:scale-95 hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50";
 
-function ActionButton({
-  icon: Icon,
-  label,
-  onClick,
-  href,
-  disabled,
-  pressed,
-  controls,
-}: {
-  icon: LucideIcon;
-  label: string;
-  onClick?: () => void;
-  /** renders a link instead of a button (guests) */
-  href?: string;
-  disabled?: boolean;
-  pressed?: boolean;
-  controls?: string;
-}) {
+function Chip({ icon: Icon, label, onClick, href, disabled }: { icon: LucideIcon; label: string; onClick?: () => void; href?: string; disabled?: boolean }) {
   if (href) {
     return (
-      <Link href={href} className={actionClass}>
+      <Link href={href} className={chipClass}>
         <Icon className="size-4" aria-hidden="true" />
-        <span>{label}</span>
+        {label}
       </Link>
     );
   }
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      aria-pressed={pressed}
-      aria-expanded={controls ? pressed : undefined}
-      aria-controls={controls}
-      className={actionClass}
-    >
+    <button type="button" onClick={onClick} disabled={disabled} className={chipClass}>
       <Icon className="size-4" aria-hidden="true" />
-      <span>{label}</span>
+      {label}
     </button>
   );
 }
 
-/** Floating bar at the bottom while verses are selected. */
-export function VerseActionBar({
-  reference,
-  feedback,
-  onCopy,
-  onCopyLink,
-  onCrossRefs,
-  onClear,
-  study,
-  extraActions,
-}: Props) {
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const pickerId = useId();
+/**
+ * Bottom sheet while verses (tap) or words (long-press and drag) are selected:
+ * colours first – the most common action is one tap – then the other actions
+ * in one swipeable row. On phones it replaces the bottom bar (see globals.css).
+ */
+export function VerseActionBar({ mode, reference, onCopy, onCopyLink, onCrossRefs, onClear, study }: Props) {
   const guestHref = study.signedIn ? undefined : study.loginUrl;
 
   return (
     <div
+      data-verse-actions
       role="region"
-      aria-label="Aktionen für die ausgewählten Verse"
-      className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+      aria-label={mode === "text" ? "Aktionen für den ausgewählten Text" : "Aktionen für die ausgewählten Verse"}
+      className="fixed inset-x-0 bottom-0 z-40 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
     >
-      <div className="border-border bg-surface shadow-soft mx-auto max-w-3xl rounded-2xl border p-2">
-        <div className="flex flex-wrap items-center gap-1">
-          <p className="flex flex-wrap items-baseline gap-x-2 px-2 text-sm">
-            <span className="font-semibold">{reference}</span>
-            <span
-              role="status"
-              aria-live="polite"
-              className={cn("text-xs", feedback?.tone === "error" ? "text-danger" : "text-success")}
-            >
-              {feedback?.text}
-            </span>
+      <div className="border-border bg-surface shadow-pop mx-auto max-w-3xl space-y-3 rounded-3xl border p-3">
+        <div className="flex items-center gap-2 pl-1">
+          <p className="min-w-0 flex-1">
+            <span className="font-display block truncate font-extrabold">{reference}</span>
+            {mode === "text" ? <span className="text-muted-foreground block text-xs">Ausgewählter Text</span> : null}
           </p>
-          <div className="ml-auto flex flex-wrap items-center gap-0.5">
-            <ActionButton icon={Copy} label="Kopieren" onClick={onCopy} />
-            <ActionButton icon={Link2} label="Link teilen" onClick={onCopyLink} />
-            <ActionButton icon={BookText} label="Querverweise" onClick={onCrossRefs} />
-            <ActionButton
-              icon={Highlighter}
-              label="Markieren"
-              href={guestHref}
-              pressed={pickerOpen}
-              controls={study.signedIn ? pickerId : undefined}
-              onClick={() => setPickerOpen((o) => !o)}
-            />
-            <ActionButton icon={NotebookPen} label="Notiz" href={guestHref} onClick={study.onNote} />
-            <ActionButton
-              icon={study.bookmarked ? BookmarkCheck : Bookmark}
-              label={study.bookmarked ? "Lesezeichen entfernen" : "Lesezeichen"}
-              href={guestHref}
-              onClick={study.onBookmark}
-              disabled={study.pending}
-            />
-            <ActionButton
-              icon={Brain}
-              label="Merken"
-              href={guestHref}
-              onClick={study.onMemorize}
-              disabled={study.pending}
-            />
-            <ActionButton icon={Send} label="Senden" href={guestHref} onClick={study.onSend} disabled={study.pending} />
-            {extraActions}
-            <button
-              type="button"
-              onClick={onClear}
-              aria-label="Auswahl aufheben"
-              className="hover:bg-surface-muted inline-flex size-9 items-center justify-center rounded-full"
-            >
-              <X className="size-4" aria-hidden="true" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClear}
+            aria-label="Auswahl aufheben"
+            className="hover:bg-surface-muted bg-surface-muted inline-flex size-11 shrink-0 items-center justify-center rounded-full"
+          >
+            <X className="size-5" aria-hidden="true" />
+          </button>
         </div>
 
-        {pickerOpen && study.signedIn ? (
-          <div
-            id={pickerId}
-            role="group"
-            aria-label="Farbe für die Markierung"
-            className="border-border mt-1 flex flex-wrap items-center gap-2 border-t px-2 pt-2"
-          >
+        {study.signedIn ? (
+          <div role="group" aria-label="Markieren in Farbe" className="flex items-center gap-2">
             {HIGHLIGHT_COLOR_LIST.map((c) => (
               <button
                 key={c.value}
                 type="button"
-                aria-label={c.label}
+                aria-label={`${c.label} markieren`}
                 title={c.label}
                 disabled={study.pending}
-                onClick={() => {
-                  study.onHighlight(c.value);
-                  setPickerOpen(false);
-                }}
+                onClick={() => study.onHighlight(c.value)}
                 className={cn(
-                  "border-foreground/15 size-8 rounded-full border transition hover:scale-110 disabled:opacity-50",
+                  "border-foreground/15 size-11 shrink-0 rounded-full border-2 transition active:scale-90 disabled:opacity-50",
                   c.className,
                 )}
               />
             ))}
-            <button
-              type="button"
-              disabled={study.pending}
-              onClick={() => {
-                study.onHighlight(null);
-                setPickerOpen(false);
-              }}
-              className="hover:bg-surface-muted inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-sm disabled:opacity-50"
-            >
-              <Eraser className="size-4" aria-hidden="true" />
-              Entfernen
-            </button>
+            {study.canErase ? (
+              <button
+                type="button"
+                disabled={study.pending}
+                onClick={() => study.onHighlight(null)}
+                aria-label="Markierung entfernen"
+                className="hover:bg-surface-muted ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-full disabled:opacity-50"
+              >
+                <Eraser className="size-5" aria-hidden="true" />
+              </button>
+            ) : null}
           </div>
-        ) : null}
+        ) : (
+          <Link
+            href={study.loginUrl}
+            className="bg-primary-soft text-primary flex h-11 items-center justify-center gap-2 rounded-full text-sm font-extrabold"
+          >
+            <LogIn className="size-4" aria-hidden="true" />
+            Zum Markieren anmelden
+          </Link>
+        )}
+
+        <div className="scrollbar-none -mx-3 flex gap-2 overflow-x-auto px-3">
+          <Chip icon={Copy} label="Kopieren" onClick={onCopy} />
+          <Chip icon={NotebookPen} label="Notiz" href={guestHref} onClick={study.onNote} />
+          {mode === "verses" ? (
+            <>
+              <Chip icon={Send} label="Senden" href={guestHref} onClick={study.onSend} disabled={study.pending} />
+              <Chip icon={Brain} label="Merken" href={guestHref} onClick={study.onMemorize} disabled={study.pending} />
+              <Chip
+                icon={study.bookmarked ? BookmarkCheck : Bookmark}
+                label={study.bookmarked ? "Lesezeichen weg" : "Lesezeichen"}
+                href={guestHref}
+                onClick={study.onBookmark}
+                disabled={study.pending}
+              />
+              <Chip icon={BookText} label="Querverweise" onClick={onCrossRefs} />
+              <Chip icon={Link2} label="Link" onClick={onCopyLink} />
+            </>
+          ) : null}
+        </div>
       </div>
+    </div>
+  );
+}
+
+/** Short confirmation („Markiert“) above the bottom bar after an action. */
+export function ReaderToast({ feedback }: { feedback: ActionFeedback | null }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="pointer-events-none fixed inset-x-0 bottom-[calc(96px+env(safe-area-inset-bottom))] z-40 flex justify-center px-4 md:bottom-8"
+    >
+      {feedback ? (
+        <span
+          className={cn(
+            "rounded-full px-4 py-2 text-sm font-extrabold shadow-pop",
+            feedback.tone === "error" ? "bg-danger text-white" : "bg-foreground text-background",
+          )}
+        >
+          {feedback.text}
+        </span>
+      ) : null}
     </div>
   );
 }

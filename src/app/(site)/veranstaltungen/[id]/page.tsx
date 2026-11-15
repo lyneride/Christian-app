@@ -52,7 +52,7 @@ export default async function EventPage(props: PageProps<"/veranstaltungen/[id]"
       <nav aria-label="Zurück" className="mb-6 text-sm">
         <Link
           href="/veranstaltungen"
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 -my-3 py-3 font-semibold"
         >
           <ArrowLeft aria-hidden="true" className="size-4" /> Alle Treffen
         </Link>

@@ -535,6 +535,10 @@ model Highlight {
   verseKey    String // "43:3:16"
   color       String   @default("yellow")
   translation String   @default("LUT1912")
+  /// Marked words only: character range [startOffset, endOffset) in the verse text of `translation`.
+  /// Both null = the whole verse. Other translations show the whole verse.
+  startOffset Int?
+  endOffset   Int?
   createdAt   DateTime @default(now())
 
   @@unique([userId, verseKey])

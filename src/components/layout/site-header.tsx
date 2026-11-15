@@ -18,7 +18,7 @@ async function Help() {
  */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-30 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+    <header className="sticky top-0 z-30 bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-1.5 md:hidden" aria-label="Bleibe – Startseite">
           <Logo className="size-9" />

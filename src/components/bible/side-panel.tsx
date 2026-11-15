@@ -63,7 +63,7 @@ export function SidePanel({
         aria-labelledby={titleId}
         className={cn(
           "border-border bg-surface shadow-soft fixed z-50 flex flex-col",
-          "inset-x-0 bottom-0 max-h-[80vh] rounded-t-2xl border-t",
+          "inset-x-0 bottom-0 max-h-[85dvh] rounded-t-3xl border-t pb-[env(safe-area-inset-bottom)]",
           "md:inset-y-0 md:right-0 md:left-auto md:max-h-none md:w-[26rem] md:rounded-none md:border-t-0 md:border-l",
         )}
       >
@@ -79,13 +79,13 @@ export function SidePanel({
             type="button"
             onClick={onClose}
             aria-label={closeLabel}
-            className="hover:bg-surface-muted inline-flex size-9 shrink-0 items-center justify-center rounded-full"
+            className="hover:bg-surface-muted bg-surface-muted inline-flex size-11 shrink-0 items-center justify-center rounded-full"
           >
             <X className="size-5" aria-hidden="true" />
           </button>
         </header>
         {toolbar}
-        <div className="flex-1 overflow-y-auto px-5 py-4" aria-live="polite" aria-busy={busy}>
+        <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4" aria-live="polite" aria-busy={busy}>
           {children}
         </div>
         {footer ? (

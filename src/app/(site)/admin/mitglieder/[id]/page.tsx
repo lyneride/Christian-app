@@ -77,7 +77,7 @@ export default async function MemberDetailPage(props: PageProps<"/admin/mitglied
       <div>
         <Link
           href="/admin/mitglieder"
-          className="text-muted-foreground inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline"
+          className="text-muted-foreground inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline -my-3 py-3 font-semibold"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
           Alle Mitglieder

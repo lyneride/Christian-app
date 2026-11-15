@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { BOOKS } from "@/lib/bible/books";
 import type { Page } from "@/lib/pagination";
 import { isHighlightColor, type HighlightColor, type NoteVisibility } from "@/lib/validation/study";
-import type { ChapterAnnotations, ChapterNote } from "./types";
+import type { ChapterAnnotations, ChapterNote, HighlightRange } from "./types";
 
 export type { ChapterAnnotations, ChapterNote } from "./types";
 
@@ -68,17 +68,25 @@ export const getChapterAnnotations = cache(
     const [highlights, notes, bookmarks] = await Promise.all([
       prisma.highlight.findMany({
         where: { userId, verseKey: { startsWith: prefix } },
-        select: { verseKey: true, color: true },
+        select: { verseKey: true, color: true, startOffset: true, endOffset: true, translation: true },
       }),
       prisma.note.findMany({ where: { userId, verseKey: { startsWith: prefix } }, select: noteSelect }),
       prisma.bookmark.findMany({ where: { userId, verseKey: { startsWith: prefix } }, select: { verseKey: true } }),
     ]);
 
     const highlightMap: Record<number, HighlightColor> = {};
-    for (const h of highlights) highlightMap[verseOf(h.verseKey)] = isHighlightColor(h.color) ? h.color : "yellow";
+    const rangeMap: Record<number, HighlightRange> = {};
+    for (const h of highlights) {
+      const verse = verseOf(h.verseKey);
+      highlightMap[verse] = isHighlightColor(h.color) ? h.color : "yellow";
+      if (h.startOffset !== null && h.endOffset !== null && h.endOffset > h.startOffset) {
+        rangeMap[verse] = { start: h.startOffset, end: h.endOffset, translation: h.translation };
+      }
+    }
 
     return {
       highlights: highlightMap,
+      highlightRanges: rangeMap,
       notes: notes
         .map(toChapterNote)
         .sort((a, b) => a.verse - b.verse || a.updatedAt.getTime() - b.updatedAt.getTime()),

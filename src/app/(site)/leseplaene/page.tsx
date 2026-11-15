@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Compass, Plus } from "lucide-react";
 import { PlanCard } from "@/components/plans/plan-card";
+import { PlanRow } from "@/components/plans/plan-row";
 import { buttonClasses } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { planStatus } from "@/lib/plans/progress";
@@ -45,7 +46,7 @@ export default async function PlansPage() {
       </header>
 
       {groups.length > 1 ? (
-        <nav aria-label="Kategorien" className="-mx-4 mt-6 overflow-x-auto px-4 scrollbar-none sm:mx-0 sm:px-0">
+        <nav aria-label="Kategorien" className="scroll-fade-x -mx-4 mt-6 overflow-x-auto px-4 scrollbar-none sm:mx-0 sm:px-0">
           <ul className="flex w-max gap-2 sm:w-auto sm:flex-wrap">
             {groups.map((group) => (
               <li key={group.category}>
@@ -103,7 +104,18 @@ export default async function PlansPage() {
                 Ein Bibelbuch Kapitel für Kapitel – dazu ein kostenloser Kommentar zum Mitlesen, online oder als PDF.
               </p>
             ) : null}
-            <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Phones: a compact list (one tap per plan); larger screens: cards. */}
+            <ul className="rounded-card border-border bg-surface shadow-soft mt-4 divide-y divide-border overflow-hidden border sm:hidden">
+              {group.plans.map((plan) => {
+                const sub = subscribedIds.has(plan.id) ? own.find((s) => s.planId === plan.id) : undefined;
+                return (
+                  <li key={plan.id}>
+                    <PlanRow plan={plan} completed={sub ? sub.completedDays.length : undefined} />
+                  </li>
+                );
+              })}
+            </ul>
+            <ul className="mt-4 hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
               {group.plans.map((plan) => {
                 const sub = subscribedIds.has(plan.id) ? own.find((s) => s.planId === plan.id) : undefined;
                 return (

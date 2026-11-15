@@ -35,7 +35,7 @@ function applyToggle(state: Optimistic, kind: ReactionKind): Optimistic {
 }
 
 const pill =
-  "inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+  "inline-flex h-10 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 /** Amen / Herz / Ich bete with counts, optimistic toggling, plus the comment count. */
 export function ReactionBar({ postId, reactions, viewerReaction, signedIn, commentCount, commentHref, loginHref }: Props) {

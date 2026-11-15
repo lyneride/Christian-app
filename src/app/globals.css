@@ -262,3 +262,26 @@ body:has([data-chat-view]) :is([data-site-footer], [data-nav-spacer]) {
     display: none;
   }
 }
+
+/* Verse actions open: they take the place of the bottom bar on phones. */
+@media (width < 48rem) {
+  body:has([data-verse-actions]) [data-bottom-nav] {
+    display: none;
+  }
+}
+
+/* iPhone: form fields under 16px make Safari zoom in on focus – keep them at least 16px on touch screens. */
+@media (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* Horizontally scrolling chip rows: fade the right edge on phones so it is clear there is more. */
+@utility scroll-fade-x {
+  @media (width < 40rem) {
+    mask-image: linear-gradient(to right, black calc(100% - 2.75rem), transparent);
+  }
+}

@@ -100,7 +100,7 @@ const LAYOUT_OPTIONS: readonly { value: VerseLayout; label: string; title: strin
 ];
 
 /** "Leseansicht" popover: font size, font family and verse layout. */
-export function ReaderSettingsMenu({ className }: { className?: string }) {
+export function ReaderSettingsMenu({ className, children }: { className?: string; children?: React.ReactNode }) {
   const settings = useReaderSettings();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -132,8 +132,8 @@ export function ReaderSettingsMenu({ className }: { className?: string }) {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={panelId}
-        title="Leseansicht anpassen"
-        className={buttonClasses("ghost", "sm", "gap-1.5 px-2.5")}
+        title="Übersetzung und Leseansicht"
+        className={buttonClasses("ghost", "sm", "size-10 gap-1.5 px-0 sm:w-auto sm:px-2.5")}
       >
         <ALargeSmall aria-hidden="true" />
         <span className="hidden sm:inline">Leseansicht</span>
@@ -144,10 +144,11 @@ export function ReaderSettingsMenu({ className }: { className?: string }) {
         role="dialog"
         aria-label="Leseansicht"
         className={cn(
-          "border-border bg-surface shadow-soft absolute right-0 z-50 mt-2 w-72 space-y-4 rounded-xl border p-4",
+          "border-border bg-surface shadow-pop absolute right-0 z-50 mt-2 max-h-[70dvh] w-[min(18rem,calc(100vw-1rem))] space-y-4 overflow-y-auto rounded-2xl border p-4",
           open ? "block" : "hidden",
         )}
       >
+        {children}
         <ToggleGroup
           label="Schriftgröße"
           options={FONT_SIZE_OPTIONS.map((o) => ({ value: o.value, label: o.label, title: `Schriftgröße ${o.label}` }))}

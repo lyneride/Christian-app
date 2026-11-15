@@ -12,7 +12,7 @@ export default async function NewGroupPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-5 sm:px-6 sm:py-8">
-      <Link href="/gruppen" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+      <Link href="/gruppen" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground -my-3 py-3 font-semibold">
         <ArrowLeft className="size-4" aria-hidden="true" /> Zurück zu den Gruppen
       </Link>
       <h1 className="mt-4 text-[30px] leading-tight sm:text-4xl">Gruppe gründen</h1>

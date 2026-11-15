@@ -145,15 +145,24 @@ export function TourHost({ userId, autoStart }: { userId: string | null; autoSta
     const el = findTarget(step.target);
     let raf = 0;
     const measure = () => {
-      setViewport({ w: window.innerWidth, h: window.innerHeight });
+      const vh = window.innerHeight;
+      setViewport({ w: window.innerWidth, h: vh });
       if (!el) return setRect(null);
       const r = el.getBoundingClientRect();
       const pad = 6;
-      setRect({ top: r.top - pad, left: r.left - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
+      // Tall targets (e.g. the list of Bible books): spotlight only the visible top part and
+      // keep ~280px free below it for Rebi's bubble, so the bubble never ends up off-screen.
+      const top = Math.max(r.top - pad, 8);
+      const bottom = Math.min(r.bottom + pad, vh - 8);
+      const height = Math.max(48, Math.min(bottom - top, vh - top - 280));
+      setRect({ top, left: r.left - pad, width: r.width + pad * 2, height });
     };
     if (el) {
       const r = el.getBoundingClientRect();
-      if (r.top < 70 || r.bottom > window.innerHeight - 90) el.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
+      const tall = r.height > window.innerHeight * 0.45;
+      const behavior = reducedMotion() ? "auto" : "smooth";
+      if (tall) window.scrollTo({ top: window.scrollY + r.top - 140, behavior });
+      else if (r.top < 70 || r.bottom > window.innerHeight - 90) el.scrollIntoView({ block: "center", behavior });
     }
     measure();
     const onChange = () => {

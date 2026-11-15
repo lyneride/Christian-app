@@ -17,16 +17,20 @@ export function AreaTabs() {
 
   return (
     <nav aria-label={`${area.label}: Bereiche`} className="mx-auto w-full max-w-6xl px-4 pt-3 sm:px-6" data-tour={`tabs-${area.key}`}>
-      <ul className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
+      {/* Phones: equal columns so every tab is visible – nothing hides off-screen. */}
+      <ul
+        className="grid gap-1.5 py-1 sm:flex sm:gap-2"
+        style={{ gridTemplateColumns: `repeat(${area.tabs.length}, minmax(0, 1fr))` }}
+      >
         {area.tabs.map((tab) => {
           const on = tab.href === pathname;
           return (
-            <li key={tab.href} className="shrink-0">
+            <li key={tab.href} className="min-w-0 sm:shrink-0">
               <Link
                 href={tab.href}
                 aria-current={on ? "page" : undefined}
                 className={cn(
-                  "inline-flex h-10 items-center rounded-full px-4 font-display text-sm font-black transition",
+                  "flex h-11 w-full items-center justify-center rounded-full px-2 font-display text-[13px] font-black whitespace-nowrap transition sm:inline-flex sm:w-auto sm:px-4 sm:text-sm",
                   on ? cn(style.bg, "text-foreground dark:text-background") : "bg-surface text-foreground shadow-soft hover:bg-surface-muted",
                 )}
               >

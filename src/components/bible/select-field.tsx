@@ -27,7 +27,7 @@ export function SelectField({
         {label}
       </label>
       <div className="relative">
-        <Select id={id} className={cn("h-9 py-1 text-sm", selectClassName)} {...props}>
+        <Select id={id} className={cn("h-10 py-1 pr-8 text-sm", selectClassName)} {...props}>
           {children}
         </Select>
         <ChevronDown

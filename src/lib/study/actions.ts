@@ -17,10 +17,12 @@ import {
   memoryVerseAddSchema,
   noteSchema,
   setHighlightSchema,
+  setTextHighlightSchema,
   type HighlightColor,
   type ReviewResult,
 } from "@/lib/validation/study";
 import { nextState } from "./leitner";
+import { mergeRanges, type WordRange } from "./ranges";
 
 /**
  * Server actions for the personal study tools. Every action re-checks the
@@ -106,7 +108,7 @@ export async function setHighlight(
           prisma.highlight.upsert({
             where: { userId_verseKey: { userId: user.id, verseKey: key } },
             create: { userId: user.id, verseKey: key, color: c, translation: t },
-            update: { color: c, translation: t },
+            update: { color: c, translation: t, startOffset: null, endOffset: null },
           }),
         ),
       );
@@ -119,6 +121,63 @@ export async function setHighlight(
   revalidateReader();
   revalidateMeineBibel();
   return success(undefined, { data: { count: keys.length, color: parsed.data.color } });
+}
+
+/**
+ * Marks selected words (long-press and drag in the reader). Each part is one
+ * verse with a character range in the text of `translation` (null = whole
+ * verse). Merges with an existing highlight on the same verse.
+ */
+export async function setTextHighlight(
+  parts: { verseKey: string; start: number | null; end: number | null }[],
+  color: HighlightColor,
+  translation?: string,
+): Promise<ActionState> {
+  const user = await actionUser();
+  if (!user) return failure(LOGIN_REQUIRED);
+
+  const parsed = setTextHighlightSchema.safeParse({ parts, color });
+  if (!parsed.success) return failure(CHECK_INPUT, { errors: fieldErrors(parsed.error) });
+
+  try {
+    const t = await resolveTranslationId(translation ?? user.preferredTranslation);
+    const byKey = new Map<string, WordRange | null>();
+    for (const p of parsed.data.parts) {
+      const next = p.start === null || p.end === null ? null : { start: p.start, end: p.end };
+      byKey.set(p.verseKey, byKey.has(p.verseKey) ? mergeRanges(byKey.get(p.verseKey), next) : next);
+    }
+    const keys = [...byKey.keys()];
+    const existing = await prisma.highlight.findMany({
+      where: { userId: user.id, verseKey: { in: keys } },
+      select: { verseKey: true, startOffset: true, endOffset: true, translation: true },
+    });
+    const current = new Map(
+      existing.map((h) => [
+        h.verseKey,
+        // Ranges from another translation do not fit this text: the new selection replaces them.
+        h.startOffset === null || h.endOffset === null ? null : h.translation === t ? { start: h.startOffset, end: h.endOffset } : undefined,
+      ]),
+    );
+    const c = parsed.data.color;
+    await prisma.$transaction(
+      keys.map((key) => {
+        const range = current.has(key) ? mergeRanges(current.get(key), byKey.get(key) ?? null) : (byKey.get(key) ?? null);
+        const offsets = { startOffset: range?.start ?? null, endOffset: range?.end ?? null };
+        return prisma.highlight.upsert({
+          where: { userId_verseKey: { userId: user.id, verseKey: key } },
+          create: { userId: user.id, verseKey: key, color: c, translation: t, ...offsets },
+          update: { color: c, translation: t, ...offsets },
+        });
+      }),
+    );
+  } catch (err) {
+    console.error("[meine-bibel] Markierung konnte nicht gespeichert werden:", err);
+    return failure(GENERIC_ERROR);
+  }
+
+  revalidateReader();
+  revalidateMeineBibel();
+  return success(undefined, { data: { count: parsed.data.parts.length, color: parsed.data.color } });
 }
 
 // ---------------------------------------------------------------------------

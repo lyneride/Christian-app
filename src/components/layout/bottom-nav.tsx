@@ -20,7 +20,7 @@ export function BottomNav({ signedIn, ichBadge = 0 }: { signedIn: boolean; ichBa
     <nav
       data-bottom-nav
       aria-label="Hauptnavigation"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       <ul className="mx-auto flex h-[76px] max-w-lg items-stretch px-1.5">
         {AREAS.map((area) => {

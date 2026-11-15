@@ -123,7 +123,7 @@ export async function MemberList({
   emptyText?: string;
 }) {
   const members = await listMembers(groupId, status, limit);
-  if (members.length === 0) return <p className="text-sm text-muted-foreground">{emptyText}</p>;
+  if (members.length === 0) return <p className="py-3 text-sm text-muted-foreground">{emptyText}</p>;
   return (
     <ul className="divide-y divide-border">
       {members.map((m) => (

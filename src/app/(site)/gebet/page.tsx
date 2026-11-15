@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { HandHeart, Plus } from "lucide-react";
+import { ChevronDown, HandHeart, Plus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { pageHref, parsePage } from "@/lib/pagination";
 import { listPrayerRequests } from "@/lib/prayer/queries";
@@ -95,7 +95,10 @@ export default async function GebetPage(props: PageProps<"/gebet">) {
       </header>
 
       <div data-tour="prayer-filter" className="mt-5">
-      <nav aria-label="Filter" className="scrollbar-none flex w-full gap-1 overflow-x-auto rounded-full bg-surface-muted p-1 sm:w-fit">
+      <nav
+        aria-label="Filter"
+        className={cn("scrollbar-none flex w-full gap-1 overflow-x-auto rounded-full bg-surface-muted p-1 sm:w-fit", filters.length > 3 && "scroll-fade-x")}
+      >
         {filters.map((f) => {
           const active = f === filter;
           return (
@@ -104,7 +107,7 @@ export default async function GebetPage(props: PageProps<"/gebet">) {
               href={pageHref("/gebet", { ...params, filter: f === "alle" ? undefined : f }, 1)}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "shrink-0 rounded-full px-4 py-2 font-display text-sm font-black transition-colors",
+                "inline-flex h-10 shrink-0 items-center rounded-full px-4 font-display text-sm font-black transition-colors",
                 active ? "bg-surface text-foreground shadow-soft" : "text-muted-foreground hover:text-foreground",
               )}
             >
@@ -114,7 +117,24 @@ export default async function GebetPage(props: PageProps<"/gebet">) {
         })}
       </nav>
 
-      <nav className="scrollbar-none -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0" aria-label="Kategorien">
+      {/* Phones: categories fold away behind one button – less to look at, same choice. */}
+      <details className="group/kat mt-3 sm:hidden" open={category ? true : undefined}>
+        <summary className="inline-flex h-10 cursor-pointer list-none items-center gap-1.5 rounded-full border-2 border-border bg-surface px-4 font-display text-sm font-black [&::-webkit-details-marker]:hidden">
+          Kategorie: {category ? CATEGORY_LABELS[category].label : "Alle"}
+          <ChevronDown aria-hidden="true" className="size-4 transition group-open/kat:rotate-180" />
+        </summary>
+        <nav className="mt-2 flex flex-wrap gap-2" aria-label="Kategorien">
+          <CategoryChip href={pageHref("/gebet", { ...params, kategorie: undefined }, 1)} active={!category}>
+            Alle Kategorien
+          </CategoryChip>
+          {PRAYER_CATEGORIES.map((c) => (
+            <CategoryChip key={c} href={pageHref("/gebet", { ...params, kategorie: c }, 1)} active={category === c}>
+              {CATEGORY_LABELS[c].label}
+            </CategoryChip>
+          ))}
+        </nav>
+      </details>
+      <nav className="mt-3 hidden flex-wrap gap-2 sm:flex" aria-label="Kategorien">
         <CategoryChip href={pageHref("/gebet", { ...params, kategorie: undefined }, 1)} active={!category}>
           Alle Kategorien
         </CategoryChip>
@@ -160,7 +180,7 @@ function CategoryChip({ href, active, children }: { href: string; active: boolea
       href={href}
       aria-current={active ? "true" : undefined}
       className={cn(
-        "inline-flex h-9 shrink-0 items-center rounded-full border-2 px-3.5 text-[13px] font-bold whitespace-nowrap transition-colors",
+        "inline-flex h-10 shrink-0 items-center rounded-full border-2 px-3.5 text-[13px] font-bold whitespace-nowrap transition-colors",
         active ? "border-foreground bg-foreground text-background" : "border-border bg-surface text-foreground hover:border-foreground/30",
       )}
     >

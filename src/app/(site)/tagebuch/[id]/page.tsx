@@ -42,7 +42,7 @@ export default async function JournalEntryPage(props: PageProps<"/tagebuch/[id]"
     <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
       <Link
         href="/tagebuch"
-        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
+        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm -my-3 py-3 font-semibold"
       >
         <ChevronLeft className="size-4" aria-hidden="true" />
         Zum Tagebuch

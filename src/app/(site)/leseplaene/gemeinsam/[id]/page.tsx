@@ -54,7 +54,7 @@ export default async function GemeinsamPage(props: PageProps<"/leseplaene/gemein
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-8">
-      <Link href="/leseplaene/meine" className="text-sm text-muted-foreground hover:text-primary">
+      <Link href="/leseplaene/meine" className="-my-3 inline-flex py-3 text-sm font-semibold text-muted-foreground hover:text-primary">
         ← Meine Lesepläne
       </Link>
       <header className="mt-3 flex flex-wrap items-start justify-between gap-4">

@@ -34,7 +34,7 @@ interface Props {
 function NavLink({ target, direction }: { target: ChapterTarget | null; direction: "prev" | "next" }) {
   const Icon = direction === "prev" ? ChevronLeft : ChevronRight;
   const prefix = direction === "prev" ? "Vorheriges Kapitel" : "Nächstes Kapitel";
-  const cls = buttonClasses("ghost", "sm", "size-9 px-0");
+  const cls = buttonClasses("ghost", "sm", "size-10 shrink-0 px-0");
   if (!target) {
     return (
       <span aria-disabled="true" className={cn(cls, "pointer-events-none opacity-40")}>
@@ -62,9 +62,9 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
   const query = { t, p, v };
 
   return (
-    <div className="border-border/80 bg-background/90 sticky top-14 z-30 border-b backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2 sm:px-6">
-        <nav aria-label="Kapitelnavigation" className="flex items-center gap-1">
+    <div className="border-border/80 bg-background sticky top-16 z-30 border-b">
+      <div className="mx-auto flex max-w-6xl items-center gap-x-3 gap-y-2 px-2 py-2 sm:px-6 md:flex-wrap">
+        <nav aria-label="Kapitelnavigation" className="flex min-w-0 flex-1 items-center gap-1 md:flex-none">
           <NavLink target={prev} direction="prev" />
           <SelectField
             id={`${id}-book`}
@@ -72,7 +72,7 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
             hideLabel
             value={bookSlug}
             onChange={(e) => router.push(buildReaderUrl(e.target.value, 1, { t, p }))}
-            className="w-36 sm:w-44"
+            className="min-w-0 flex-1 md:w-44 md:flex-none"
           >
             {books.map((b) => (
               <option key={b.slug} value={b.slug}>
@@ -86,7 +86,7 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
             hideLabel
             value={chapter}
             onChange={(e) => router.push(buildReaderUrl(bookSlug, Number(e.target.value), { t, p }))}
-            className="w-20"
+            className="w-[4.5rem] shrink-0"
           >
             {Array.from({ length: chapterCount }, (_, i) => (
               <option key={i + 1} value={i + 1}>
@@ -99,7 +99,7 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
 
         <ReferenceJump t={t} p={p} className="hidden md:flex" />
 
-        <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
+        <div className="flex shrink-0 items-center gap-2 md:ml-auto">
           <TranslationSelect
             id={`${id}-t`}
             label="Übersetzung"
@@ -109,7 +109,7 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
             param="t"
             pathname={pathname}
             query={query}
-            className="w-32 sm:w-40"
+            className="hidden w-40 md:block"
           />
           <TranslationSelect
             id={`${id}-p`}
@@ -122,9 +122,33 @@ export function ReaderToolbar({ books, bookSlug, chapter, chapterCount, translat
             query={query}
             noneLabel="Parallel: keine"
             exclude={t}
-            className="w-32 sm:w-40"
+            className="hidden w-40 md:block"
           />
-          <ReaderSettingsMenu />
+          {/* Phones: translations live in the "Aa" menu to keep the toolbar to one row. */}
+          <ReaderSettingsMenu>
+            <div className="space-y-3 md:hidden">
+              <TranslationSelect
+                id={`${id}-tm`}
+                label="Übersetzung"
+                translations={translations}
+                value={t}
+                param="t"
+                pathname={pathname}
+                query={query}
+              />
+              <TranslationSelect
+                id={`${id}-pm`}
+                label="Parallel lesen"
+                translations={translations}
+                value={p}
+                param="p"
+                pathname={pathname}
+                query={query}
+                noneLabel="Keine"
+                exclude={t}
+              />
+            </div>
+          </ReaderSettingsMenu>
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@ import { Select } from "@/components/ui/input";
 import { UserLink } from "@/components/profile/user-link";
 import type { MemberRowData } from "@/lib/groups/queries";
 import { canActOn, canChangeRole, type MembershipLike } from "@/lib/groups/roles";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { GROUP_ROLES, GROUP_ROLE_LABELS } from "@/lib/validation/groups";
 
 interface Props {
@@ -45,8 +45,8 @@ export function MemberRow({ groupId, member, actor, isSelf, manage = false }: Pr
 
   return (
     <li className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
-      <div className="flex min-w-0 flex-1 items-center gap-3">
-        <UserLink user={member.user} size="sm" />
+      <div className={cn("flex min-w-0 flex-1 items-center gap-3", manage && "basis-full sm:basis-0")}>
+        <UserLink user={member.user} size="sm" className="min-w-0" />
         {member.status === "ACTIVE" && member.role !== "MEMBER" ? (
           <Badge variant={member.role === "OWNER" ? "accent" : "primary"}>{GROUP_ROLE_LABELS[member.role]}</Badge>
         ) : null}
@@ -70,7 +70,7 @@ export function MemberRow({ groupId, member, actor, isSelf, manage = false }: Pr
             aria-labelledby={`${selectId}-label`}
             value={member.role}
             disabled={pending}
-            className="h-8 w-auto py-0 text-xs"
+            className="h-10 w-auto py-0 text-sm"
             onChange={(e) => {
               const role = e.target.value as GroupRole;
               if (role === "OWNER" && !window.confirm(`Die Leitung an ${member.user.name} übergeben? Du bleibst in der Mitleitung.`)) {

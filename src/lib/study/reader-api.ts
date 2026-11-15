@@ -4,6 +4,8 @@
  *
  *   setHighlight(verseKeys: string[], color: HighlightColor | null, translation?: string) → ActionState
  *     null removes the highlight; data: { count, color }
+ *   setTextHighlight(parts: { verseKey, start, end }[], color, translation?) → ActionState
+ *     marks selected words (character ranges per verse, null = whole verse)
  *   toggleBookmark(verseKey: string, label?: string) → ActionState (data: { bookmarked })
  *   addNote(prevState, formData) → ActionState (data: { id })
  *     form fields: verseKey (hidden), verseEnd?, title?, body, visibility ("PRIVATE" | "MEMBERS")
@@ -16,7 +18,7 @@
  * Note that `bookmarks` is a Set; spread it (`[...bookmarks]`) before passing
  * it to a client component.
  */
-export { addMemoryVerse, addNote, logChapterRead, setHighlight, toggleBookmark } from "./actions";
+export { addMemoryVerse, addNote, logChapterRead, setHighlight, setTextHighlight, toggleBookmark } from "./actions";
 export type { ChapterAnnotations, ChapterNote } from "./types";
 export { EMPTY_ANNOTATIONS } from "./types";
 export type { HighlightColor, NoteVisibility } from "@/lib/validation/study";

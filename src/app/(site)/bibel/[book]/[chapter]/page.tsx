@@ -65,10 +65,10 @@ interface StudyData extends Omit<ReaderStudy, "loginUrl"> {
   readToday: boolean;
 }
 
-const GUEST: StudyData = { signedIn: false, highlights: {}, bookmarks: [], notes: [], readToday: false };
+const GUEST: StudyData = { signedIn: false, highlights: {}, highlightRanges: {}, bookmarks: [], notes: [], readToday: false };
 
 /** Highlights, notes, bookmarks and today's reading-log entry of the signed-in user. */
-async function loadStudy(userId: string | null, bookNumber: number, chapter: number): Promise<StudyData> {
+async function loadStudy(userId: string | null, bookNumber: number, chapter: number, translation: string): Promise<StudyData> {
   if (!userId) return GUEST;
   const dayStart = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
   const [annotations, log] = await Promise.all([
@@ -85,9 +85,15 @@ async function loadStudy(userId: string | null, bookNumber: number, chapter: num
     title: n.title,
     excerpt: excerpt([n.body.replace(/[#*_>`]/g, "")], 140),
   }));
+  // Marked words only fit the translation they were made in; elsewhere the whole verse shows.
+  const highlightRanges: Record<number, { start: number; end: number }> = {};
+  for (const [verse, r] of Object.entries(annotations.highlightRanges)) {
+    if (r.translation === translation) highlightRanges[Number(verse)] = { start: r.start, end: r.end };
+  }
   return {
     signedIn: true,
     highlights: annotations.highlights,
+    highlightRanges,
     bookmarks: [...annotations.bookmarks],
     notes,
     readToday: Boolean(log),
@@ -127,7 +133,7 @@ export default async function ChapterPage(props: Props) {
   ]);
   const [parallel, studyData] = await Promise.all([
     parallelInfo ? getChapter(parallelInfo.id, book.number, chapter) : null,
-    loadStudy(user?.id ?? null, book.number, chapter),
+    loadStudy(user?.id ?? null, book.number, chapter, t),
   ]);
   const p = parallelInfo?.id ?? null;
   const vRaw = first(sp.v);

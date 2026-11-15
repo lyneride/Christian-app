@@ -21,7 +21,7 @@ export default async function NeuGemeinsamPage(props: PageProps<"/leseplaene/gem
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-5 sm:px-6 sm:py-8">
-      <Link href={`/leseplaene/${plan.slug}`} className="text-sm text-muted-foreground hover:text-primary">
+      <Link href={`/leseplaene/${plan.slug}`} className="-my-3 inline-flex py-3 text-sm font-semibold text-muted-foreground hover:text-primary">
         ← {plan.title}
       </Link>
       <h1 className="mt-3 text-[30px] leading-tight sm:text-4xl">Gemeinsam lesen</h1>

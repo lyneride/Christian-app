@@ -17,16 +17,16 @@ export function SettingsNav() {
   const pathname = usePathname();
   return (
     <nav aria-label="Einstellungen">
-      <ul className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-col md:px-0 md:pb-0">
+      <ul className="grid grid-cols-2 gap-1.5 md:flex md:flex-col md:gap-1">
         {ITEMS.map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
-            <li key={item.href} className="shrink-0">
+            <li key={item.href} className="min-w-0">
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-full px-3.5 py-2 text-sm font-medium transition-colors md:rounded-xl",
+                  "flex min-h-11 items-center gap-2.5 rounded-full px-3.5 py-2 text-sm font-bold transition-colors md:rounded-xl",
                   active ? "bg-primary-soft text-primary" : "text-muted-foreground hover:bg-surface-muted hover:text-foreground",
                 )}
               >

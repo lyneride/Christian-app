@@ -34,7 +34,7 @@ export function ReadingLinks({ readings, locale = "de", translation, plain, clas
               </span>
             ) : null}
             {href ? (
-              <Link href={href} className={cn("font-medium text-primary underline-offset-4 hover:underline", linkClassName)}>
+              <Link href={href} className={cn("-my-2 inline-block py-2 font-semibold text-primary underline-offset-4 hover:underline", linkClassName)}>
                 {label}
               </Link>
             ) : (

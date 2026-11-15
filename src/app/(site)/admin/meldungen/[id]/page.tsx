@@ -43,7 +43,7 @@ export default async function ReportDetailPage(props: PageProps<"/admin/meldunge
       <div>
         <Link
           href="/admin/meldungen"
-          className="text-muted-foreground inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline"
+          className="text-muted-foreground inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline -my-3 py-3 font-semibold"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
           Alle Meldungen
