@@ -427,6 +427,8 @@ model ReadingPlan {
   category      String
   minutesPerDay Int                @default(10)
   dayCount      Int
+  /// JSON: PlanResource[] – free companion reading (commentaries) for book studies, linked not copied.
+  resources     String?
   isSystem      Boolean            @default(true)
   authorId      String?
   author        User?              @relation(fields: [authorId], references: [id], onDelete: SetNull)

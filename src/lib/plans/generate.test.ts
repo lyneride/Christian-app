@@ -54,4 +54,35 @@ describe("generatePlans", () => {
     const psalms = plan.days.flat().filter((r) => r.book === 19).map((r) => r.chapter);
     expect(new Set(psalms).size).toBe(150);
   });
+  it("3- and 6-month plans cover the whole Bible exactly once", () => {
+    for (const [slug, days] of [["bibel-in-3-monaten", 90], ["bibel-in-6-monaten", 180]] as const) {
+      const plan = plans.find((p) => p.slug === slug)!;
+      expect(plan.days).toHaveLength(days);
+      const keys = new Set(plan.days.flat().map((r) => `${r.book}:${r.chapter}`));
+      expect(plan.days.flat()).toHaveLength(1189);
+      expect(keys.size).toBe(1189);
+    }
+  });
+  it("book studies read one whole book chapter by chapter and link free companions", () => {
+    const studies = plans.filter((p) => p.category === "studie");
+    expect(studies.length).toBeGreaterThanOrEqual(10);
+    for (const p of studies) {
+      expect(p.resources?.length, p.slug).toBeGreaterThan(0);
+      for (const res of p.resources!) {
+        expect(res.url, p.slug).toMatch(/^https:\/\/www\.bibelkommentare\.de\//);
+        expect(["pdf", "online"]).toContain(res.kind);
+      }
+      const books = new Set(p.days.flat().map((r) => r.book));
+      expect(books.size, p.slug).toBe(1);
+      const book = BOOKS[[...books][0] - 1];
+      expect(p.days.flat(), p.slug).toHaveLength(book.chapters);
+    }
+  });
+  it("verse ranges are ordered", () => {
+    for (const p of plans) {
+      for (const r of p.days.flat()) {
+        if (r.verseStart && r.verseEnd) expect(r.verseEnd, `${p.slug} ${r.book}:${r.chapter}`).toBeGreaterThanOrEqual(r.verseStart);
+      }
+    }
+  });
 });

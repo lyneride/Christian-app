@@ -8,9 +8,9 @@
  */
 import { BOOKS, getBookByNumber } from "@/lib/bible/books";
 import { formatReference, referencePath, type Locale } from "@/lib/bible/reference";
-import type { PlanCategory, Reading } from "./generate";
+import type { PlanCategory, PlanResource, Reading } from "./generate";
 
-export type { Reading } from "./generate";
+export type { PlanResource, Reading } from "./generate";
 
 /* ------------------------------------------------------------------ */
 /* Categories                                                           */
@@ -20,6 +20,7 @@ export const CATEGORY_ORDER: readonly PlanCategory[] = [
   "eigen",
   "einstieg",
   "thema",
+  "studie",
   "buch",
   "neues-testament",
   "altes-testament",
@@ -31,7 +32,8 @@ export const CATEGORY_LABELS: Record<PlanCategory, string> = {
   "neues-testament": "Neues Testament",
   "altes-testament": "Altes Testament",
   einstieg: "Einstieg",
-  thema: "Thema",
+  thema: "Themen",
+  studie: "Bücherstudien",
   buch: "Ein Buch",
   eigen: "Eigene Pläne",
 };
@@ -43,6 +45,33 @@ export function isPlanCategory(value: unknown): value is PlanCategory {
 /** Label for a category stored in the database (unknown values fall back to "Weitere"). */
 export function categoryLabel(category: string): string {
   return isPlanCategory(category) ? CATEGORY_LABELS[category] : "Weitere";
+}
+
+/* ------------------------------------------------------------------ */
+/* Companion reading                                                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Parses `ReadingPlan.resources` (JSON). Only well-formed entries with an
+ * https link survive, so a bad row never breaks the page.
+ */
+export function parseResources(json: string | null | undefined): PlanResource[] {
+  if (!json) return [];
+  let raw: unknown;
+  try {
+    raw = JSON.parse(json);
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item): PlanResource[] => {
+    if (!item || typeof item !== "object") return [];
+    const { kind, title, author, url, note } = item as Record<string, unknown>;
+    if (kind !== "pdf" && kind !== "online") return [];
+    if (typeof title !== "string" || typeof author !== "string" || typeof url !== "string" || typeof note !== "string") return [];
+    if (!/^https:\/\//.test(url)) return [];
+    return [{ kind, title, author, url, note }];
+  });
 }
 
 /* ------------------------------------------------------------------ */

@@ -10,7 +10,7 @@ import { listMySubscriptions, listPlans, type MySubscription } from "@/lib/plans
 export const metadata: Metadata = {
   title: "Lesepläne",
   description:
-    "Bibellesepläne in deinem Tempo: die ganze Bibel in einem Jahr, das Neue Testament in 90 Tagen, einzelne Bücher oder kurze Einstiegspläne – ohne Druck, ohne Streak.",
+    "Bibellesepläne in deinem Tempo: die ganze Bibel in 3, 6 oder 12 Monaten, Themen wie Agape oder Gebet, Bücherstudien mit kostenlosem Kommentar – ohne Druck, ohne Streak.",
 };
 
 function byProgress(a: MySubscription, b: MySubscription): number {
@@ -44,6 +44,24 @@ export default async function PlansPage() {
         </Link>
       </header>
 
+      {groups.length > 1 ? (
+        <nav aria-label="Kategorien" className="-mx-4 mt-6 overflow-x-auto px-4 scrollbar-none sm:mx-0 sm:px-0">
+          <ul className="flex w-max gap-2 sm:w-auto sm:flex-wrap">
+            {groups.map((group) => (
+              <li key={group.category}>
+                <a
+                  href={`#kategorie-${group.category}`}
+                  className="inline-flex h-10 items-center gap-1.5 rounded-full border-2 border-border bg-surface px-4 font-display text-sm font-extrabold whitespace-nowrap transition hover:border-area-bibel hover:bg-area-bibel-soft"
+                >
+                  {group.label}
+                  <span className="text-xs font-bold text-muted-foreground">{group.plans.length}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ) : null}
+
       {user && own.length > 0 ? (
         <section aria-labelledby="deine-plaene" className="mt-10">
           <div className="flex flex-wrap items-end justify-between gap-3">
@@ -76,10 +94,15 @@ export default async function PlansPage() {
         </p>
       ) : (
         groups.map((group) => (
-          <section key={group.category} aria-labelledby={`kategorie-${group.category}`} className="mt-12">
-            <h2 id={`kategorie-${group.category}`} className="text-2xl font-semibold tracking-tight">
+          <section key={group.category} aria-labelledby={`kategorie-${group.category}`} className="mt-12 scroll-mt-24">
+            <h2 id={`kategorie-${group.category}`} className="text-2xl font-extrabold">
               {group.label}
             </h2>
+            {group.category === "studie" ? (
+              <p className="mt-1 max-w-prose text-sm text-muted-foreground">
+                Ein Bibelbuch Kapitel für Kapitel – dazu ein kostenloser Kommentar zum Mitlesen, online oder als PDF.
+              </p>
+            ) : null}
             <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {group.plans.map((plan) => {
                 const sub = subscribedIds.has(plan.id) ? own.find((s) => s.planId === plan.id) : undefined;

@@ -26,6 +26,7 @@ async function seedPlans() {
         category: plan.category,
         minutesPerDay: plan.minutesPerDay,
         dayCount: plan.days.length,
+        resources: plan.resources ? JSON.stringify(plan.resources) : null,
         isSystem: true,
       },
       update: {
@@ -34,6 +35,7 @@ async function seedPlans() {
         category: plan.category,
         minutesPerDay: plan.minutesPerDay,
         dayCount: plan.days.length,
+        resources: plan.resources ? JSON.stringify(plan.resources) : null,
       },
     });
     await prisma.planDay.deleteMany({ where: { planId: record.id } });

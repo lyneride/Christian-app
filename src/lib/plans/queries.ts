@@ -6,7 +6,7 @@ import { DEFAULT_TRANSLATION, getTranslation } from "@/lib/bible/data";
 import type { Locale } from "@/lib/bible/reference";
 import { localeFor } from "@/lib/bible/ui";
 import type { PlanCategory } from "./generate";
-import { CATEGORY_LABELS, CATEGORY_ORDER, categoryLabel, nextOpenDay, parseReadings, type Reading } from "./progress";
+import { CATEGORY_LABELS, CATEGORY_ORDER, categoryLabel, nextOpenDay, parseReadings, parseResources, type PlanResource, type Reading } from "./progress";
 
 export { CATEGORY_LABELS, CATEGORY_ORDER };
 
@@ -23,6 +23,7 @@ export const planSummarySelect = {
   category: true,
   minutesPerDay: true,
   dayCount: true,
+  resources: true,
 } satisfies Prisma.ReadingPlanSelect;
 
 export type PlanSummary = Prisma.ReadingPlanGetPayload<{ select: typeof planSummarySelect }>;
@@ -34,6 +35,8 @@ export interface PlanDayReadings {
 
 export interface PlanWithDays extends PlanSummary {
   days: PlanDayReadings[];
+  /** free companion reading (book studies), parsed */
+  companions: PlanResource[];
 }
 
 export interface PlanGroup {
@@ -70,7 +73,11 @@ export const getPlanBySlug = cache(async (slug: string): Promise<PlanWithDays | 
   });
   if (!plan) return null;
   const { days, ...summary } = plan;
-  return { ...summary, days: days.map((d) => ({ day: d.day, readings: parseReadings(d.readings) })) };
+  return {
+    ...summary,
+    days: days.map((d) => ({ day: d.day, readings: parseReadings(d.readings) })),
+    companions: parseResources(summary.resources),
+  };
 });
 
 export interface SubscriptionInfo {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   categoryLabel,
+  parseResources,
   encouragement,
   estimatedFinish,
   fullChapters,
@@ -113,6 +114,7 @@ describe("labels", () => {
   it("labels categories", () => {
     expect(categoryLabel("ganze-bibel")).toBe("Ganze Bibel");
     expect(categoryLabel("buch")).toBe("Ein Buch");
+    expect(categoryLabel("studie")).toBe("Bücherstudien");
     expect(categoryLabel("unbekannt")).toBe("Weitere");
   });
 });
@@ -205,5 +207,23 @@ describe("planStatus", () => {
     expect(planStatus({ completedAt: null, archivedAt: null })).toBe("active");
     expect(planStatus({ completedAt: new Date(), archivedAt: null })).toBe("finished");
     expect(planStatus({ completedAt: new Date(), archivedAt: new Date() })).toBe("archived");
+  });
+});
+
+describe("parseResources", () => {
+  it("keeps well-formed https entries only", () => {
+    const json = JSON.stringify([
+      { kind: "pdf", title: "T", author: "A", url: "https://www.bibelkommentare.de/get/cmt.1.pdf", note: "N" },
+      { kind: "pdf", title: "T", author: "A", url: "http://unsicher.example/x.pdf", note: "N" },
+      { kind: "video", title: "T", author: "A", url: "https://x.example", note: "N" },
+      { kind: "online", title: "T" },
+      null,
+    ]);
+    expect(parseResources(json)).toEqual([{ kind: "pdf", title: "T", author: "A", url: "https://www.bibelkommentare.de/get/cmt.1.pdf", note: "N" }]);
+  });
+  it("tolerates empty and broken JSON", () => {
+    expect(parseResources(null)).toEqual([]);
+    expect(parseResources("{kaputt")).toEqual([]);
+    expect(parseResources('{"a":1}')).toEqual([]);
   });
 });

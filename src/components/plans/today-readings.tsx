@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { getPreferredTranslation, readerContext, todaysReadings } from "@/lib/plans/queries";
+import { parseResources, readingsLabel } from "@/lib/plans/progress";
+import { CompanionHint } from "./companion-reading";
 import { cn } from "@/lib/utils";
 import { MarkDayButton } from "./mark-day-button";
 import { planHref } from "./plan-card";
@@ -45,6 +47,7 @@ export async function TodayReadings({ userId, translation, fallback = null, clas
                   </span>
                 </p>
                 <ReadingLinks readings={item.readings} locale={reader.locale} translation={reader.translation} className="text-base" />
+                <CompanionHint resources={parseResources(item.plan.resources)} label={readingsLabel(item.readings, reader.locale)} />
                 <ProgressBar value={item.completedCount} max={item.plan.dayCount} label={`Fortschritt: ${item.plan.title}`} size="sm" className="max-w-xs" />
               </div>
               <MarkDayButton planId={item.plan.id} day={item.day} done={false} size="md" className="shrink-0" />

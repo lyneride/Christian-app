@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowDown, ArrowLeft, CalendarDays, Clock, LibraryBig, PartyPopper, Users } from "lucide-react";
 import { DayList, dayAnchor } from "@/components/plans/day-list";
+import { CompanionHint, CompanionReading } from "@/components/plans/companion-reading";
 import { MarkDayButton } from "@/components/plans/mark-day-button";
 import { ArchiveButton, ResetButton, SubscribeButton } from "@/components/plans/plan-buttons";
 import { ProgressBar } from "@/components/plans/progress-bar";
@@ -12,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth/dal";
-import { categoryLabel, encouragement, estimatedFinish, nextOpenDay, percent, planStatus, readingsSummary } from "@/lib/plans/progress";
+import { categoryLabel, encouragement, estimatedFinish, nextOpenDay, percent, planStatus, readingsLabel, readingsSummary } from "@/lib/plans/progress";
 import { getPlanBySlug, getSubscription, readerContext } from "@/lib/plans/queries";
 import { formatDate } from "@/lib/utils";
 
@@ -169,11 +170,14 @@ export default async function PlanPage(props: Props) {
                 <p className="text-sm text-muted-foreground">Lies in Ruhe – und markiere den Tag danach als gelesen.</p>
               </div>
               <ReadingLinks readings={today.readings} locale={reader.locale} translation={reader.translation} className="text-lg" />
+              <CompanionHint resources={plan.companions} label={readingsLabel(today.readings, reader.locale)} />
               <MarkDayButton planId={plan.id} day={today.day} done={false} size="md" />
             </CardContent>
           </Card>
         </section>
       ) : null}
+
+      <CompanionReading resources={plan.companions} className="mt-8" />
 
       <section aria-labelledby="alle-tage" className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">

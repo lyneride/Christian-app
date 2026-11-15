@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Clock } from "lucide-react";
+import { ArrowRight, BookOpenText, CalendarDays, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { PlanSummary } from "@/lib/plans/queries";
-import { categoryLabel, percent, type PlanStatus } from "@/lib/plans/progress";
+import { categoryLabel, parseResources, percent, type PlanStatus } from "@/lib/plans/progress";
 import { cn, truncate } from "@/lib/utils";
 import { ProgressBar } from "./progress-bar";
 
@@ -36,6 +36,11 @@ export function PlanCard({ plan, progress, showCategory, className }: PlanCardPr
         {showCategory ? (
           <Badge variant="outline" className="self-start">
             {categoryLabel(plan.category)}
+          </Badge>
+        ) : null}
+        {parseResources(plan.resources).length > 0 ? (
+          <Badge variant="outline" className="self-start">
+            <BookOpenText aria-hidden="true" className="size-3" /> mit Kommentar
           </Badge>
         ) : null}
         <h3 id={headingId} className="text-lg leading-snug font-semibold tracking-tight">
