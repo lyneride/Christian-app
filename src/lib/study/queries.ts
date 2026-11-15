@@ -142,8 +142,8 @@ export async function listHighlights(
 /** Number of highlights per colour (for the filter chips). */
 export async function highlightColorCounts(userId: string): Promise<Record<HighlightColor, number>> {
   const rows = await prisma.highlight.groupBy({ by: ["color"], where: { userId }, _count: { _all: true } });
-  const counts: Record<HighlightColor, number> = { yellow: 0, green: 0, blue: 0, pink: 0, orange: 0 };
-  for (const r of rows) if (isHighlightColor(r.color)) counts[r.color] = r._count._all;
+  const counts: Record<HighlightColor, number> = {};
+  for (const r of rows) if (isHighlightColor(r.color)) counts[r.color] = (counts[r.color] ?? 0) + r._count._all;
   return counts;
 }
 

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { getMarkerPalette } from "./marker-queries";
 import { getUserOrThrow, UnauthorizedError, type CurrentUser } from "@/lib/auth/dal";
 import { failure, fieldErrors, safeNext, stringValues, success, type ActionState } from "@/lib/action-state";
 import { getBookByNumber } from "@/lib/bible/books";
@@ -81,6 +82,12 @@ function revalidateMerken() {
 // Highlights
 // ---------------------------------------------------------------------------
 
+const UNKNOWN_MARKER = "Diese Farbe gibt es nicht mehr. Bitte lade die Seite neu.";
+
+async function isOwnMarker(userId: string, key: string): Promise<boolean> {
+  return (await getMarkerPalette(userId)).some((m) => m.key === key);
+}
+
 /**
  * Sets (or with `color = null` removes) the highlight on a set of verses.
  * Called by the reader's action bar with the selected verse keys.
@@ -96,6 +103,7 @@ export async function setHighlight(
   const parsed = setHighlightSchema.safeParse({ verseKeys, color });
   if (!parsed.success) return failure(CHECK_INPUT, { errors: fieldErrors(parsed.error) });
   const keys = [...new Set(parsed.data.verseKeys)];
+  if (parsed.data.color !== null && !(await isOwnMarker(user.id, parsed.data.color))) return failure(UNKNOWN_MARKER);
 
   try {
     if (parsed.data.color === null) {
@@ -138,6 +146,7 @@ export async function setTextHighlight(
 
   const parsed = setTextHighlightSchema.safeParse({ parts, color });
   if (!parsed.success) return failure(CHECK_INPUT, { errors: fieldErrors(parsed.error) });
+  if (!(await isOwnMarker(user.id, parsed.data.color))) return failure(UNKNOWN_MARKER);
 
   try {
     const t = await resolveTranslationId(translation ?? user.preferredTranslation);

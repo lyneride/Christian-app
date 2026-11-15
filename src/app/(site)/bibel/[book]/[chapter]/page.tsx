@@ -23,6 +23,8 @@ import { buildBookUrl, buildReaderUrl, clampVerseRange, excerpt, localeFor, toTr
 import { getCurrentUser } from "@/lib/auth/dal";
 import { prisma } from "@/lib/db";
 import { getChapterAnnotations } from "@/lib/study/queries";
+import { getMarkerPalette } from "@/lib/study/marker-queries";
+import { DEFAULT_PALETTE } from "@/lib/study/markers";
 import { cn } from "@/lib/utils";
 
 type Props = PageProps<"/bibel/[book]/[chapter]">;
@@ -65,18 +67,19 @@ interface StudyData extends Omit<ReaderStudy, "loginUrl"> {
   readToday: boolean;
 }
 
-const GUEST: StudyData = { signedIn: false, highlights: {}, highlightRanges: {}, bookmarks: [], notes: [], readToday: false };
+const GUEST: StudyData = { signedIn: false, highlights: {}, highlightRanges: {}, bookmarks: [], notes: [], readToday: false, markers: [...DEFAULT_PALETTE] };
 
 /** Highlights, notes, bookmarks and today's reading-log entry of the signed-in user. */
 async function loadStudy(userId: string | null, bookNumber: number, chapter: number, translation: string): Promise<StudyData> {
   if (!userId) return GUEST;
   const dayStart = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`);
-  const [annotations, log] = await Promise.all([
+  const [annotations, log, markers] = await Promise.all([
     getChapterAnnotations(userId, bookNumber, chapter),
     prisma.readingLog.findFirst({
       where: { userId, book: bookNumber, chapter, readAt: { gte: dayStart } },
       select: { id: true },
     }),
+    getMarkerPalette(userId),
   ]);
   const notes: ReaderNote[] = annotations.notes.map((n) => ({
     id: n.id,
@@ -97,6 +100,7 @@ async function loadStudy(userId: string | null, bookNumber: number, chapter: num
     bookmarks: [...annotations.bookmarks],
     notes,
     readToday: Boolean(log),
+    markers,
   };
 }
 

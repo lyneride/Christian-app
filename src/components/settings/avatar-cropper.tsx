@@ -12,6 +12,9 @@ interface Props {
   file: File;
   onCancel: () => void;
   onConfirm: (blob: Blob) => void;
+  /** "round" for people, "rounded" (square with soft corners) for groups */
+  shape?: "round" | "rounded";
+  label?: string;
 }
 
 interface Source {
@@ -49,7 +52,7 @@ function clamp(n: number, min: number, max: number) {
  * Square cropper with zoom (slider, mouse wheel, pinch) and drag. Exports a
  * 512×512 JPEG, so even a 20 MB photo becomes a ~100 KB upload.
  */
-export function AvatarCropper({ file, onCancel, onConfirm }: Props) {
+export function AvatarCropper({ file, onCancel, onConfirm, shape = "round", label = "Profilbild zuschneiden" }: Props) {
   const [source, setSource] = useState<Source | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1); // 1 = cover, up to 4
@@ -145,12 +148,12 @@ export function AvatarCropper({ file, onCancel, onConfirm }: Props) {
   const top = VIEW / 2 - drawn.h / 2 + offset.y;
 
   return (
-    <div className="space-y-4" role="dialog" aria-label="Profilbild zuschneiden">
+    <div className="space-y-4" role="dialog" aria-label={label}>
       <p className="text-sm text-muted-foreground">Ziehe das Bild, um den Ausschnitt zu wählen. Zoomen mit dem Regler, dem Mausrad oder zwei Fingern.</p>
       {error ? <p role="alert" className="text-sm text-danger">{error}</p> : null}
       <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
         <div
-          className="relative shrink-0 cursor-grab touch-none overflow-hidden rounded-full border border-border bg-surface-muted select-none active:cursor-grabbing"
+          className={`relative shrink-0 cursor-grab touch-none overflow-hidden border border-border bg-surface-muted select-none active:cursor-grabbing ${shape === "round" ? "rounded-full" : "rounded-[2.5rem]"}`}
           style={{ width: VIEW, height: VIEW }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}

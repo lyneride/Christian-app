@@ -14,6 +14,7 @@ export async function anonymiseUser(userId: string) {
     prisma.notification.deleteMany({ where: { userId } }),
     prisma.follow.deleteMany({ where: { OR: [{ followerId: userId }, { followingId: userId }] } }),
     prisma.highlight.deleteMany({ where: { userId } }),
+    prisma.markerColor.deleteMany({ where: { userId } }),
     prisma.note.deleteMany({ where: { userId } }),
     prisma.bookmark.deleteMany({ where: { userId } }),
     prisma.journalEntry.deleteMany({ where: { userId } }),

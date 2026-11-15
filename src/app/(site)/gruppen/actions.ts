@@ -16,10 +16,12 @@ import {
   groupIdSchema,
   groupSchema,
   groupSlugBase,
+  parseGroupImageAction,
   userIdSchema,
   type GroupInput,
 } from "@/lib/validation/groups";
 import { groupPath } from "@/lib/validation/community";
+import { AvatarError, deleteAvatar, prepareAvatar, saveAvatar } from "@/lib/uploads/avatar";
 
 /**
  * Server actions for groups: founding, editing, joining and member
@@ -57,12 +59,39 @@ function parseGroupForm(formData: FormData): ParsedGroupForm {
     kind: values.kind ?? "",
     city: values.city ?? "",
     visibility: values.visibility ?? "",
-    imageUrl: values.imageUrl ?? "",
   });
   if (!parsed.success) {
     return { ok: false, error: failure("Bitte prüfe deine Eingaben.", { errors: fieldErrors(parsed.error), values }) };
   }
   return { ok: true, data: parsed.data, values };
+}
+
+type GroupImage = { ok: true; action: "keep" | "remove" } | { ok: true; action: "replace"; webp: Buffer } | { ok: false; error: string };
+
+/** The group picture from the form: chosen and cropped in the browser like a profile picture. */
+async function readGroupImage(formData: FormData): Promise<GroupImage> {
+  const action = parseGroupImageAction(formData.get("imageAction"));
+  if (action !== "replace") return { ok: true, action };
+  const file = formData.get("image");
+  if (!(file instanceof File) || file.size === 0) return { ok: true, action: "keep" };
+  try {
+    return { ok: true, action, webp: await prepareAvatar(file) };
+  } catch (err) {
+    if (err instanceof AvatarError) return { ok: false, error: err.message };
+    throw err;
+  }
+}
+
+/** Stores a new group picture and removes the previous one. Returns the URL, or null when storing failed. */
+async function saveGroupImage(groupId: string, webp: Buffer, previous: string | null): Promise<string | null> {
+  try {
+    const url = await saveAvatar(groupId, webp);
+    if (previous && previous !== url) await deleteAvatar(previous);
+    return url;
+  } catch (err) {
+    console.error("[gruppen] Gruppenbild konnte nicht gespeichert werden:", err);
+    return null;
+  }
 }
 
 /** Unique slug: slugified name, with a numeric suffix on collision. */
@@ -81,7 +110,7 @@ async function uniqueSlug(name: string): Promise<string> {
 
 async function findGroup(groupId: string) {
   if (!groupIdSchema.safeParse(groupId).success) return null;
-  return prisma.group.findUnique({ where: { id: groupId }, select: { id: true, slug: true, name: true, visibility: true } });
+  return prisma.group.findUnique({ where: { id: groupId }, select: { id: true, slug: true, name: true, visibility: true, imageUrl: true } });
 }
 
 // ---------------------------------------------------------------------------
@@ -94,11 +123,13 @@ export async function createGroup(_prev: ActionState, formData: FormData): Promi
 
   const result = parseGroupForm(formData);
   if (!result.ok) return result.error;
+  const image = await readGroupImage(formData);
+  if (!image.ok) return failure(image.error, { errors: { image: [image.error] }, values: result.values });
 
   let slug: string;
   try {
     slug = await uniqueSlug(result.data.name);
-    await prisma.group.create({
+    const group = await prisma.group.create({
       data: {
         ...result.data,
         slug,
@@ -107,6 +138,10 @@ export async function createGroup(_prev: ActionState, formData: FormData): Promi
       },
       select: { id: true },
     });
+    if (image.action === "replace") {
+      const url = await saveGroupImage(group.id, image.webp, null);
+      if (url) await prisma.group.update({ where: { id: group.id }, data: { imageUrl: url } });
+    }
   } catch (err) {
     console.error("[gruppen] Gruppe konnte nicht angelegt werden:", err);
     return failure(GENERIC_ERROR, { values: result.values });
@@ -126,9 +161,19 @@ export async function updateGroup(groupId: string, _prev: ActionState, formData:
 
   const result = parseGroupForm(formData);
   if (!result.ok) return result.error;
+  const image = await readGroupImage(formData);
+  if (!image.ok) return failure(image.error, { errors: { image: [image.error] }, values: result.values });
 
   try {
-    await prisma.group.update({ where: { id: group.id }, data: result.data });
+    let imageUrl: string | null | undefined;
+    if (image.action === "remove") {
+      await deleteAvatar(group.imageUrl);
+      imageUrl = null;
+    } else if (image.action === "replace") {
+      imageUrl = await saveGroupImage(group.id, image.webp, group.imageUrl);
+      if (imageUrl === null) return failure("Das Bild konnte nicht gespeichert werden. Bitte versuch es noch einmal.", { values: result.values });
+    }
+    await prisma.group.update({ where: { id: group.id }, data: { ...result.data, ...(imageUrl !== undefined ? { imageUrl } : {}) } });
     // A group that becomes closed keeps its content inside: existing posts become group-only.
     if (result.data.visibility === "PRIVATE" && group.visibility !== "PRIVATE") {
       await prisma.post.updateMany({ where: { groupId: group.id }, data: { visibility: "GROUP" } });

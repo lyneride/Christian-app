@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
-  HIGHLIGHT_COLOR_VALUES,
   NOTE_VISIBILITY_LABELS,
   bookmarkSchema,
   chapterReadSchema,
@@ -56,16 +55,16 @@ describe("setHighlightSchema", () => {
     });
     expect(setHighlightSchema.parse({ verseKeys: ["43:3:16"], color: null }).color).toBeNull();
     expect(fieldErrors(setHighlightSchema.safeParse({ verseKeys: [], color: "yellow" })).verseKeys).toBeDefined();
-    expect(fieldErrors(setHighlightSchema.safeParse({ verseKeys: ["43:3:16"], color: "red" })).color).toEqual([
+    expect(fieldErrors(setHighlightSchema.safeParse({ verseKeys: ["43:3:16"], color: "Rot!" })).color).toEqual([
       "Bitte eine Farbe wählen.",
     ]);
     const tooMany = Array.from({ length: 201 }, (_, i) => `43:3:${i + 1}`);
     expect(setHighlightSchema.safeParse({ verseKeys: tooMany, color: "yellow" }).success).toBe(false);
   });
 
-  it("knows all colours", () => {
-    for (const c of HIGHLIGHT_COLOR_VALUES) expect(isHighlightColor(c)).toBe(true);
-    expect(isHighlightColor("red")).toBe(false);
+  it("accepts marker keys only", () => {
+    for (const c of ["yellow", "purple", "c1a2b3c4"]) expect(isHighlightColor(c)).toBe(true);
+    for (const c of ["", "Rot", "1abc", "a", "x".repeat(30)]) expect(isHighlightColor(c)).toBe(false);
     expect(isHighlightColor(undefined)).toBe(false);
   });
 });

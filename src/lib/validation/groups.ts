@@ -86,16 +86,12 @@ export const groupSchema = z
     kind: z.enum(GROUP_KINDS, { error: "Bitte wähle, ob ihr euch online oder vor Ort trefft." }),
     city: z.string().trim().max(80, "Der Ortsname darf höchstens 80 Zeichen lang sein.").optional().default(""),
     visibility: z.enum(GROUP_VISIBILITIES, { error: "Bitte wähle, wie man der Gruppe beitreten kann." }),
-    imageUrl: z.string().trim().max(500, "Die Bild-Adresse ist zu lang.").optional().default(""),
   })
   .superRefine((data, ctx) => {
     if (data.kind === "LOCAL" && !data.city) {
       ctx.addIssue({ code: "custom", path: ["city"], message: "Für eine Gruppe vor Ort brauchen wir die Stadt." });
     } else if (data.city && data.city.length < 2) {
       ctx.addIssue({ code: "custom", path: ["city"], message: "Der Ortsname braucht mindestens 2 Zeichen." });
-    }
-    if (data.imageUrl && !z.url({ protocol: /^https$/ }).safeParse(data.imageUrl).success) {
-      ctx.addIssue({ code: "custom", path: ["imageUrl"], message: "Bitte eine vollständige https-Adresse angeben." });
     }
   })
   .transform((data) => ({
@@ -104,8 +100,15 @@ export const groupSchema = z
     kind: data.kind,
     city: data.city || null,
     visibility: data.visibility,
-    imageUrl: data.imageUrl || null,
   }));
+
+/** What happens to the group picture when the form is saved. */
+export const GROUP_IMAGE_ACTIONS = ["keep", "replace", "remove"] as const;
+export type GroupImageAction = (typeof GROUP_IMAGE_ACTIONS)[number];
+
+export function parseGroupImageAction(value: unknown): GroupImageAction {
+  return GROUP_IMAGE_ACTIONS.includes(value as GroupImageAction) ? (value as GroupImageAction) : "keep";
+}
 
 export type GroupInput = z.infer<typeof groupSchema>;
 

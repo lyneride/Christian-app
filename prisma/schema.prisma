@@ -68,6 +68,7 @@ model User {
   readingPlans           ReadingPlan[]
   planSubscriptions      PlanSubscription[]
   highlights             Highlight[]
+  markerColors           MarkerColor[]
   notes                  Note[]
   bookmarks              Bookmark[]
   readingLogs            ReadingLog[]
@@ -543,6 +544,27 @@ model Highlight {
 
   @@unique([userId, verseKey])
   @@index([userId, createdAt])
+}
+
+/// A user's marker colour (palette for highlights). No rows = the default palette.
+model MarkerColor {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// value stored in Highlight.color
+  key       String
+  /// meaning, e.g. "Verheißungen" (may be empty)
+  name      String   @default("")
+  /// OKLCH hue 0–359
+  hue       Int
+  /// 1 (zart) … 5 (kräftig)
+  strength  Int      @default(2)
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, key])
+  @@index([userId, position])
 }
 
 model Note {

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { BOOK_COUNT } from "@/lib/bible/books";
 import { parseReference } from "@/lib/bible/reference";
+import { isMarkerKey, MARKER_KEY_PATTERN, MAX_MARKER_NAME, MAX_STRENGTH, MIN_STRENGTH } from "@/lib/study/markers";
 
 /**
  * Validation for the personal study tools ("Meine Bibel", "Tagebuch", "Merken").
@@ -37,14 +38,23 @@ export function verseOfKey(key: string): number {
 // Highlights
 // ---------------------------------------------------------------------------
 
-export const HIGHLIGHT_COLOR_VALUES = ["yellow", "green", "blue", "pink", "orange"] as const;
-export type HighlightColor = (typeof HIGHLIGHT_COLOR_VALUES)[number];
+/** Key of one of the user's marker colours (see src/lib/study/markers.ts); checked against the palette on save. */
+export type HighlightColor = string;
 
-export const highlightColorSchema = z.enum(HIGHLIGHT_COLOR_VALUES, { error: "Bitte eine Farbe wählen." });
+export const highlightColorSchema = z.string({ error: "Bitte eine Farbe wählen." }).regex(MARKER_KEY_PATTERN, "Bitte eine Farbe wählen.");
 
 export function isHighlightColor(value: unknown): value is HighlightColor {
-  return typeof value === "string" && (HIGHLIGHT_COLOR_VALUES as readonly string[]).includes(value);
+  return isMarkerKey(value);
 }
+
+/** One marker colour as edited in the settings. `key` null = new colour. */
+export const markerInputSchema = z.object({
+  key: z.string().regex(MARKER_KEY_PATTERN, "Unbekannte Farbe.").nullable(),
+  name: z.string().trim().max(MAX_MARKER_NAME, `Die Bedeutung darf höchstens ${MAX_MARKER_NAME} Zeichen lang sein.`),
+  hue: z.number().int().min(0).max(359),
+  strength: z.number().int().min(MIN_STRENGTH).max(MAX_STRENGTH),
+});
+export type MarkerInput = z.infer<typeof markerInputSchema>;
 
 export const MAX_HIGHLIGHT_VERSES = 200;
 

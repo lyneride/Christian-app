@@ -1,6 +1,8 @@
 import "server-only";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
+import { getMarkerPalettes } from "@/lib/study/marker-queries";
+import { resolveMarker } from "@/lib/study/markers";
 import { getBookByNumber } from "@/lib/bible/books";
 import { formatReference, parseVerseKey } from "@/lib/bible/reference";
 import { fullChapters, nextOpenDay, parseReadings, percent, type Reading } from "./progress";
@@ -98,6 +100,8 @@ export interface SharedMark {
   reference: string;
   path: string;
   color?: string;
+  /** the highlight's colour and meaning in the marker's own palette */
+  marker?: { label: string; light: string; dark: string };
   note?: { id: string; title: string | null; excerpt: string };
 }
 
@@ -111,7 +115,7 @@ export async function sharedMarksForDay(group: PlanGroupDetail, day: number, tra
   const sharers = group.members.filter((m) => m.status === "ACTIVE" && m.shareHighlights).map((m) => m.userId);
   if (sharers.length === 0) return [];
   const prefixes = chapters.map((c) => `${c.book}:${c.chapter}:`);
-  const [highlights, notes] = await Promise.all([
+  const [highlights, notes, palettes] = await Promise.all([
     prisma.highlight.findMany({
       where: { userId: { in: sharers }, OR: prefixes.map((p) => ({ verseKey: { startsWith: p } })) },
       select: { verseKey: true, color: true, user: { select: memberSelect } },
@@ -124,13 +128,21 @@ export async function sharedMarksForDay(group: PlanGroupDetail, day: number, tra
       orderBy: { updatedAt: "desc" },
       take: 100,
     }),
+    getMarkerPalettes(sharers),
   ]);
   const marks: SharedMark[] = [];
   for (const h of highlights) {
     const v = parseVerseKey(h.verseKey);
     if (!v) continue;
     const ref = { book: v.book, chapter: v.chapter, verseStart: v.verse };
-    marks.push({ user: h.user, color: h.color, reference: formatReference(ref, "de"), path: `/bibel/${v.book.id.toLowerCase()}/${v.chapter}?v=${v.verse}&t=${translation}` });
+    const m = resolveMarker(palettes.get(h.user.id) ?? [], h.color);
+    marks.push({
+      user: h.user,
+      color: h.color,
+      marker: { label: m.label, light: m.light, dark: m.dark },
+      reference: formatReference(ref, "de"),
+      path: `/bibel/${v.book.id.toLowerCase()}/${v.chapter}?v=${v.verse}&t=${translation}`,
+    });
   }
   for (const n of notes) {
     const v = parseVerseKey(n.verseKey);

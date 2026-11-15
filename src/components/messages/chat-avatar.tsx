@@ -7,14 +7,21 @@ import { cn } from "@/lib/utils";
 export function ChatAvatar({
   isGroup,
   others,
+  image,
   size = "md",
   className,
 }: {
   isGroup: boolean;
   others: Participant[];
+  /** picture of the Bleibe group a group chat belongs to */
+  image?: string | null;
   size?: "sm" | "md";
   className?: string;
 }) {
+  if (isGroup && image) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={image} alt="" className={cn("shrink-0 rounded-xl object-cover", size === "sm" ? "size-8" : "size-10", className)} />;
+  }
   if (!isGroup) {
     const first = others[0];
     return <Avatar name={first?.name ?? "?"} src={first?.avatarUrl} size={size} className={className} />;

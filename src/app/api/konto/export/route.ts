@@ -10,7 +10,7 @@ export async function GET() {
   if (!user) return Response.json({ error: "Nicht angemeldet." }, { status: 401 });
   const userId = user.id;
 
-  const [profile, posts, comments, prayerRequests, notes, highlights, bookmarks, journalEntries, memoryVerses, planSubscriptions] =
+  const [profile, posts, comments, prayerRequests, notes, highlights, bookmarks, journalEntries, memoryVerses, planSubscriptions, markerColors] =
     await Promise.all([
       prisma.user.findUniqueOrThrow({
         where: { id: userId },
@@ -74,10 +74,11 @@ export async function GET() {
           progress: { select: { day: true, completedAt: true }, orderBy: { day: "asc" } },
         },
       }),
+      prisma.markerColor.findMany({ where: { userId }, orderBy: { position: "asc" }, select: { key: true, name: true, hue: true, strength: true } }),
     ]);
 
   const body = JSON.stringify(
-    { exportedAt: new Date().toISOString(), profile, posts, comments, prayerRequests, notes, highlights, bookmarks, journalEntries, memoryVerses, planSubscriptions },
+    { exportedAt: new Date().toISOString(), profile, posts, comments, prayerRequests, notes, highlights, markerColors, bookmarks, journalEntries, memoryVerses, planSubscriptions },
     null,
     2,
   );

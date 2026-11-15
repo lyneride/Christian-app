@@ -34,7 +34,7 @@ export function ConversationList({ conversations, viewerId }: { conversations: C
               )}
               aria-label={`${title}${unread ? `, ${unreadLabel(c.unreadCount)}` : ""}`}
             >
-              <ChatAvatar isGroup={c.isGroup} others={c.others} />
+              <ChatAvatar isGroup={c.isGroup} others={c.others} image={c.group?.imageUrl} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
                   <p className={cn("flex min-w-0 items-center gap-1.5 text-sm", unread ? "font-bold" : "font-semibold")}>

@@ -51,7 +51,7 @@ export default async function ConversationPage(props: Props) {
           {conversation.isGroup ? (
             <details className="group/members static min-w-0 flex-1">
               <summary className="flex cursor-pointer list-none items-center gap-2.5 rounded-2xl py-1 pr-2 hover:bg-surface-muted [&::-webkit-details-marker]:hidden">
-                <ChatAvatar isGroup others={conversation.others} size="sm" />
+                <ChatAvatar isGroup others={conversation.others} image={conversation.group?.imageUrl} size="sm" />
                 <span className="min-w-0 flex-1">
                   <h1 className="truncate font-display text-base font-extrabold">{chatTitle(conversation)}</h1>
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">

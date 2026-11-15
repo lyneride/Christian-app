@@ -16,12 +16,16 @@ import {
 } from "@/lib/bible/ui";
 import {
   addMemoryVerse,
-  highlightClass,
+  MARKER_BG,
+  markerStyle,
+  resolveMarker,
   setHighlight,
   setTextHighlight,
   toggleBookmark,
   type HighlightColor,
+  type Marker,
 } from "@/lib/study/reader-api";
+import { DEFAULT_PALETTE } from "@/lib/study/markers";
 import { coversWholeVerse, mergeRanges, snapToWords, splitByRange, type WordRange } from "@/lib/study/ranges";
 import { cn } from "@/lib/utils";
 import { CrossReferencesPanel } from "./cross-references-panel";
@@ -55,6 +59,8 @@ export interface ReaderStudy {
   highlightRanges?: Record<number, WordRange>;
   bookmarks: number[];
   notes: ReaderNote[];
+  /** the user's marker colours (default palette for guests) */
+  markers?: Marker[];
 }
 
 export interface VerseListProps {
@@ -181,6 +187,7 @@ export function VerseList({
   );
   const highlights = highlightState.colors;
   const ranges = highlightState.ranges;
+  const palette = study.markers?.length ? study.markers : DEFAULT_PALETTE;
   const [bookmarks, toggleOptimisticBookmark] = useOptimistic(study.bookmarks, (state: number[], verse: number) =>
     state.includes(verse) ? state.filter((v) => v !== verse) : [...state, verse],
   );
@@ -376,6 +383,13 @@ export function VerseList({
     setPanel("notes");
   }
 
+  /** Background colour variables of a highlighted verse (see MARKER_BG). */
+  function verseStyle(n: number, main: boolean) {
+    const color = highlights[n];
+    if (!color || (main && ranges[n])) return undefined;
+    return markerStyle(resolveMarker(palette, color));
+  }
+
   function verseClasses(n: number, main: boolean) {
     const color = highlights[n];
     const partial = main && color && ranges[n];
@@ -383,7 +397,7 @@ export function VerseList({
     const isSelected = selected.includes(n);
     return cn(
       "-mx-1 cursor-pointer scroll-mt-40 rounded-md box-decoration-clone px-1 py-0.5 transition-colors [touch-action:manipulation]",
-      color && !partial ? highlightClass(color) : isLinked ? "bg-area-bibel-soft" : "md:hover:bg-surface-muted",
+      color && !partial ? MARKER_BG : isLinked ? "bg-area-bibel-soft" : "md:hover:bg-surface-muted",
       // Selected = underlined in the brand colour, clearly different from a coloured highlight.
       isSelected && "decoration-primary underline decoration-2 underline-offset-[5px] ring-primary/50 ring-2 ring-inset",
     );
@@ -398,7 +412,9 @@ export function VerseList({
     return (
       <>
         {before}
-        <mark className={cn("rounded-sm box-decoration-clone px-0.5 text-inherit", highlightClass(color))}>{marked}</mark>
+        <mark className={cn("rounded-sm box-decoration-clone px-0.5 text-inherit", MARKER_BG)} style={markerStyle(resolveMarker(palette, color))}>
+          {marked}
+        </mark>
         {after}
       </>
     );
@@ -446,7 +462,7 @@ export function VerseList({
   function verseNode(n: number, text: ReactNode, opts: { id: string; lang?: string; withMarkers: boolean; main: boolean }) {
     return (
       <>
-        <span id={opts.id} lang={opts.lang} className={verseClasses(n, opts.main)} {...verseProps(n)}>
+        <span id={opts.id} lang={opts.lang} className={verseClasses(n, opts.main)} style={verseStyle(n, opts.main)} {...verseProps(n)}>
           <sup className="verse-number">{n}</sup>
           {opts.main && typeof text === "string" ? <span data-vt={n}>{verseText(n, text)}</span> : text}
         </span>
@@ -532,6 +548,7 @@ export function VerseList({
               loginUrl: study.loginUrl,
               bookmarked: firstVerse !== null && bookmarks.includes(firstVerse),
               canErase: activeVerses.some((v) => highlights[v]),
+              markers: palette,
               pending,
               onHighlight: doHighlight,
               onNote: openNoteForm,

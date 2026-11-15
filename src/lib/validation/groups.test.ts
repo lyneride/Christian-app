@@ -15,6 +15,7 @@ import {
   groupSchema,
   groupSlugBase,
   parseGroupFilter,
+  parseGroupImageAction,
   parseTextFilter,
 } from "./groups";
 
@@ -29,7 +30,6 @@ const valid = {
   kind: "ONLINE",
   city: "",
   visibility: "PUBLIC",
-  imageUrl: "",
 };
 
 describe("labels", () => {
@@ -49,7 +49,6 @@ describe("groupSchema", () => {
       kind: "ONLINE",
       city: null,
       visibility: "PUBLIC",
-      imageUrl: null,
     });
   });
 
@@ -60,10 +59,11 @@ describe("groupSchema", () => {
     expect(fieldErrors(groupSchema.safeParse({ ...valid, city: "x".repeat(81) })).city).toBeDefined();
   });
 
-  it("only accepts https image urls", () => {
-    expect(groupSchema.parse({ ...valid, imageUrl: "https://example.org/bild.jpg" }).imageUrl).toBe("https://example.org/bild.jpg");
-    expect(fieldErrors(groupSchema.safeParse({ ...valid, imageUrl: "http://example.org/bild.jpg" })).imageUrl).toBeDefined();
-    expect(fieldErrors(groupSchema.safeParse({ ...valid, imageUrl: "kein-link" })).imageUrl).toBeDefined();
+  it("knows what to do with the group picture", () => {
+    expect(parseGroupImageAction("replace")).toBe("replace");
+    expect(parseGroupImageAction("remove")).toBe("remove");
+    expect(parseGroupImageAction("https://example.org/bild.jpg")).toBe("keep");
+    expect(parseGroupImageAction(undefined)).toBe("keep");
   });
 
   it("enforces name and description lengths with German messages", () => {

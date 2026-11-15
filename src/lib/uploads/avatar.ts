@@ -50,13 +50,22 @@ function usesBlob(): boolean {
   return blobConfigured();
 }
 
-export async function storeAvatar(userId: string, file: File): Promise<string> {
+/** Checks and converts an uploaded picture; throws AvatarError with a German message. */
+export async function prepareAvatar(file: File): Promise<Buffer> {
   if (!file || file.size === 0) throw new AvatarError("Bitte eine Bilddatei auswählen.");
   if (file.size > AVATAR_MAX_BYTES) throw new AvatarError("Das Bild ist größer als 5 MB.");
   if (file.type && !AVATAR_TYPES.includes(file.type)) throw new AvatarError("Nur JPG, PNG, WebP oder GIF sind möglich.");
-  const webp = await toWebp(Buffer.from(await file.arrayBuffer()));
+  return toWebp(Buffer.from(await file.arrayBuffer()));
+}
+
+/** Profile picture of a user (or a group: `ownerId` is the group id). Returns the URL to store. */
+export async function storeAvatar(ownerId: string, file: File): Promise<string> {
+  return saveAvatar(ownerId, await prepareAvatar(file));
+}
+
+export async function saveAvatar(ownerId: string, webp: Buffer): Promise<string> {
   const hash = createHash("sha256").update(webp).digest("hex").slice(0, 12);
-  const name = `avatars/${userId}-${hash}.webp`;
+  const name = `avatars/${ownerId}-${hash}.webp`;
 
   if (usesBlob()) {
     const { put } = await import("@vercel/blob");

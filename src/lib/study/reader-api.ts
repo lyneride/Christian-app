@@ -3,6 +3,7 @@
  * actions from here in client components; the types are plain data.
  *
  *   setHighlight(verseKeys: string[], color: HighlightColor | null, translation?: string) → ActionState
+ *     color = key of one of the user's marker colours (see ./markers.ts)
  *     null removes the highlight; data: { count, color }
  *   setTextHighlight(parts: { verseKey, start, end }[], color, translation?) → ActionState
  *     marks selected words (character ranges per verse, null = whole verse)
@@ -22,4 +23,4 @@ export { addMemoryVerse, addNote, logChapterRead, setHighlight, setTextHighlight
 export type { ChapterAnnotations, ChapterNote } from "./types";
 export { EMPTY_ANNOTATIONS } from "./types";
 export type { HighlightColor, NoteVisibility } from "@/lib/validation/study";
-export { HIGHLIGHT_COLORS, HIGHLIGHT_COLOR_LIST, highlightClass } from "@/components/study/highlight-colors";
+export { MARKER_BG, markerStyle, resolveMarker, type Marker } from "./markers";

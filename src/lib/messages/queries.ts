@@ -23,6 +23,7 @@ export interface ChatGroup {
   id: string;
   slug: string;
   name: string;
+  imageUrl: string | null;
 }
 
 export interface ConversationSummary {
@@ -62,7 +63,7 @@ export interface MessageItem {
 
 export const MESSAGE_PAGE_SIZE = 50;
 
-const chatGroupSelect = { id: true, slug: true, name: true } as const;
+const chatGroupSelect = { id: true, slug: true, name: true, imageUrl: true } as const;
 
 /**
  * Chats the user may see: they take part and, for a group's chat, are still an

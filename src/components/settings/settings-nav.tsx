@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Download, KeyRound, MonitorSmartphone, UserRound } from "lucide-react";
+import { Download, Highlighter, KeyRound, MonitorSmartphone, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
   { href: "/einstellungen/profil", label: "Profil", icon: UserRound },
+  { href: "/einstellungen/markierungen", label: "Markerfarben", icon: Highlighter },
   { href: "/einstellungen/konto", label: "Konto", icon: KeyRound },
   { href: "/einstellungen/sitzungen", label: "Sitzungen", icon: MonitorSmartphone },
   { href: "/einstellungen/daten", label: "Deine Daten", icon: Download },
@@ -17,7 +18,7 @@ export function SettingsNav() {
   const pathname = usePathname();
   return (
     <nav aria-label="Einstellungen">
-      <ul className="grid grid-cols-2 gap-1.5 md:flex md:flex-col md:gap-1">
+      <ul className="grid grid-cols-2 gap-1.5 md:flex md:flex-col md:gap-1 [&>li:last-child:nth-child(odd)]:col-span-2">
         {ITEMS.map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (

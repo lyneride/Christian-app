@@ -5,6 +5,7 @@ import { ArrowLeft, Lock, Settings, Users } from "lucide-react";
 import { Markdown } from "@/components/community/markdown";
 import { PostCompose } from "@/components/community/post-compose";
 import { PostList } from "@/components/community/post-list";
+import { GroupAvatar } from "@/components/groups/group-avatar";
 import { GroupKindBadge } from "@/components/groups/group-card";
 import { GroupEvents, GroupPrayers, MemberList } from "@/components/groups/group-sections";
 import { GroupReadingPlans } from "@/components/groups/group-plans";
@@ -63,9 +64,6 @@ export default async function GroupPage(props: Props) {
       </Link>
 
       <header className="mt-4 overflow-hidden rounded-card border border-border bg-surface shadow-soft">
-        {group.imageUrl ? (
-          <div aria-hidden="true" className="h-40 w-full bg-surface-muted bg-cover bg-center sm:h-56" style={{ backgroundImage: `url("${group.imageUrl}")` }} />
-        ) : null}
         <div className="p-5 sm:p-8">
           <div className="flex flex-wrap items-center gap-1.5">
             <GroupKindBadge kind={group.kind} city={group.city} />
@@ -78,7 +76,10 @@ export default async function GroupPage(props: Props) {
               <Users className="size-3" aria-hidden="true" /> {pluralize(memberCount, "Mitglied", "Mitglieder")}
             </Badge>
           </div>
-          <h1 className="mt-3 text-[30px] leading-tight sm:text-4xl">{group.name}</h1>
+          <div className="mt-4 flex items-center gap-4">
+            <GroupAvatar name={group.name} src={group.imageUrl} size="lg" />
+            <h1 className="min-w-0 text-[28px] leading-tight [overflow-wrap:anywhere] sm:text-4xl">{group.name}</h1>
+          </div>
           <Markdown html={renderMarkdown(group.description)} className="mt-4 max-w-prose" />
           <div className="mt-6 flex flex-wrap items-center gap-3">
             {user && isActiveMember ? <GroupChatButton groupId={group.id} unread={chatUnread} /> : null}

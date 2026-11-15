@@ -15,8 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { ProgressBar } from "@/components/plans/progress-bar";
 import { InviteFriendsForm } from "@/components/plans/invite-friends-form";
 import { JoinPlanGroupButton, LeavePlanGroupButton, ShareHighlightsToggle } from "@/components/plans/shared-plan-buttons";
-import { HIGHLIGHT_COLORS } from "@/components/study/highlight-colors";
-import type { HighlightColor } from "@/lib/validation/study";
+import { MARKER_BG, markerStyle } from "@/lib/study/markers";
 import { buttonClasses } from "@/components/ui/button";
 import { formatRelative } from "@/lib/utils";
 
@@ -50,7 +49,6 @@ export default async function GemeinsamPage(props: PageProps<"/leseplaene/gemein
   const notYet = active.filter((m) => !m.days.includes(day));
   const canModerate = user.role === "ADMIN" || user.role === "MODERATOR";
   const spans = mergeReadings(readings);
-  const colorClass = (c?: string) => (c && c in HIGHLIGHT_COLORS ? HIGHLIGHT_COLORS[c as HighlightColor].className : "bg-highlight-yellow");
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-8">
@@ -241,9 +239,14 @@ export default async function GemeinsamPage(props: PageProps<"/leseplaene/gemein
                       <p>
                         <span className="font-medium">{m.user.name}</span>{" "}
                         {m.note ? "hat eine Notiz geteilt zu" : "hat markiert:"}{" "}
-                        <Link href={m.path} className={`rounded px-1 ${m.note ? "text-primary underline-offset-4 hover:underline" : colorClass(m.color)}`}>
+                        <Link
+                          href={m.path}
+                          className={m.note || !m.marker ? "text-primary rounded px-1 underline-offset-4 hover:underline" : `rounded px-1 ${MARKER_BG}`}
+                          style={!m.note && m.marker ? markerStyle(m.marker) : undefined}
+                        >
                           {m.reference}
                         </Link>
+                        {!m.note && m.marker ? <span className="text-muted-foreground"> · {m.marker.label}</span> : null}
                       </p>
                       {m.note ? (
                         <p className="mt-1 text-muted-foreground">

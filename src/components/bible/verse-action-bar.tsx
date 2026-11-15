@@ -12,10 +12,11 @@ import {
   LogIn,
   NotebookPen,
   Send,
+  SlidersHorizontal,
   X,
   type LucideIcon,
 } from "lucide-react";
-import { HIGHLIGHT_COLOR_LIST, type HighlightColor } from "@/lib/study/reader-api";
+import { MARKER_BG, markerStyle, type HighlightColor, type Marker } from "@/lib/study/reader-api";
 import { cn } from "@/lib/utils";
 
 export interface ActionFeedback {
@@ -31,6 +32,8 @@ export interface StudyActionHandlers {
   bookmarked: boolean;
   /** whether anything in the selection is highlighted (shows „Entfernen“) */
   canErase: boolean;
+  /** the user's marker colours, in order */
+  markers: readonly Marker[];
   pending: boolean;
   onHighlight: (color: HighlightColor | null) => void;
   onNote: () => void;
@@ -53,6 +56,10 @@ interface Props {
 
 const chipClass =
   "inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full border-2 border-border bg-surface px-4 font-display text-sm font-extrabold transition active:scale-95 hover:bg-surface-muted disabled:pointer-events-none disabled:opacity-50";
+
+const tileClass =
+  "flex w-[4.75rem] shrink-0 flex-col items-center gap-1 rounded-2xl pt-0.5 pb-1 transition active:scale-95 disabled:opacity-50";
+const tileLabel = "text-muted-foreground line-clamp-2 w-full text-center text-[11px] leading-tight font-bold tracking-tight break-words hyphens-auto";
 
 function Chip({ icon: Icon, label, onClick, href, disabled }: { icon: LucideIcon; label: string; onClick?: () => void; href?: string; disabled?: boolean }) {
   if (href) {
@@ -103,32 +110,41 @@ export function VerseActionBar({ mode, reference, onCopy, onCopyLink, onCrossRef
         </div>
 
         {study.signedIn ? (
-          <div role="group" aria-label="Markieren in Farbe" className="flex items-center gap-2">
-            {HIGHLIGHT_COLOR_LIST.map((c) => (
-              <button
-                key={c.value}
-                type="button"
-                aria-label={`${c.label} markieren`}
-                title={c.label}
-                disabled={study.pending}
-                onClick={() => study.onHighlight(c.value)}
-                className={cn(
-                  "border-foreground/15 size-11 shrink-0 rounded-full border-2 transition active:scale-90 disabled:opacity-50",
-                  c.className,
-                )}
-              />
-            ))}
+          <div role="group" aria-label="Markieren in Farbe" className="scroll-fade-x scrollbar-none -mx-3 flex gap-0.5 overflow-x-auto overscroll-x-contain px-2">
             {study.canErase ? (
               <button
                 type="button"
                 disabled={study.pending}
                 onClick={() => study.onHighlight(null)}
-                aria-label="Markierung entfernen"
-                className="hover:bg-surface-muted ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-full disabled:opacity-50"
+                className={tileClass}
               >
-                <Eraser className="size-5" aria-hidden="true" />
+                <span className="bg-surface-muted inline-flex size-11 items-center justify-center rounded-full">
+                  <Eraser className="size-5" aria-hidden="true" />
+                </span>
+                <span className={tileLabel}>Entfernen</span>
               </button>
             ) : null}
+            {study.markers.map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                aria-label={m.name ? `Markieren: ${m.name} (${m.colorName})` : `${m.colorName} markieren`}
+                disabled={study.pending}
+                onClick={() => study.onHighlight(m.key)}
+                className={tileClass}
+              >
+                <span aria-hidden="true" className={cn("border-foreground/15 size-11 rounded-full border-2", MARKER_BG)} style={markerStyle(m)} />
+                <span aria-hidden="true" lang="de" className={tileLabel}>
+                  {m.label}
+                </span>
+              </button>
+            ))}
+            <Link href="/einstellungen/markierungen" className={tileClass}>
+              <span className="border-border inline-flex size-11 items-center justify-center rounded-full border-2 border-dashed">
+                <SlidersHorizontal className="size-5" aria-hidden="true" />
+              </span>
+              <span className={tileLabel}>Farben anpassen</span>
+            </Link>
           </div>
         ) : (
           <Link

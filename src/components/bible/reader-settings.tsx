@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { ALargeSmall } from "lucide-react";
+import Link from "next/link";
+import { ALargeSmall, Highlighter } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
 import {
   FONT_SIZE_OPTIONS,
@@ -167,6 +168,15 @@ export function ReaderSettingsMenu({ className, children }: { className?: string
           value={settings.layout}
           onChange={(layout) => update({ layout })}
         />
+        <div className="border-border border-t pt-2">
+          <Link
+            href="/einstellungen/markierungen"
+            className="hover:bg-surface-muted -mx-2 flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-bold"
+          >
+            <Highlighter className="text-primary size-4" aria-hidden="true" />
+            Markerfarben und Bedeutungen
+          </Link>
+        </div>
       </div>
     </div>
   );
