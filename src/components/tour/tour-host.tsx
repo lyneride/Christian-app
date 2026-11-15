@@ -14,6 +14,8 @@ type Rect = { top: number; left: number; width: number; height: number };
 const noopSubscribe = () => () => {};
 
 const OFF_KEY = "bleibe:tours:off";
+/** Progress key for visitors who are not signed in. */
+const GUEST = "guest";
 const SKIP_PATH_KEY = "bleibe:tour:skip-path";
 
 function storageKey(userId: string, kind: TourKind) {
@@ -46,11 +48,12 @@ function findTarget(target: string | string[] | undefined): HTMLElement | null {
 const reducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
- * Runs Rebi's tours: the welcome tour after the first sign-in and one detailed tour per area
- * on the first visit of that area. Remembered per user on this device; restart via the „?“ menu,
- * the Ich page or `?tour=1` in the URL.
+ * Runs Rebi's tours. They start by themselves only when `autoStart` is set: for guests (the
+ * welcome tour, once per device) and for brand-new accounts right after registering (welcome
+ * tour, then each area's tour on its first visit). A normal sign-in never starts a tour.
+ * Anyone can start a tour via the „?“ menu, the Ich page or `?tour=1` in the URL.
  */
-export function TourHost({ userId }: { userId: string | null }) {
+export function TourHost({ userId, autoStart }: { userId: string | null; autoStart: boolean }) {
   const pathname = usePathname() ?? "/";
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -63,16 +66,19 @@ export function TourHost({ userId }: { userId: string | null }) {
   const restoreFocus = useRef<HTMLElement | null>(null);
   const titleId = useId();
 
-  const start = useCallback((kind: TourKind) => {
-    restoreFocus.current = document.activeElement as HTMLElement | null;
-    setActive({ tour: tourFor(kind), step: 0 });
-  }, []);
+  const start = useCallback(
+    (kind: TourKind) => {
+      restoreFocus.current = document.activeElement as HTMLElement | null;
+      setActive({ tour: tourFor(kind, userId !== null), step: 0 });
+    },
+    [userId],
+  );
 
   const close = useCallback(
     () => {
       setActive((cur) => {
-        if (cur && userId) {
-          markDone(userId, cur.tour.kind);
+        if (cur) {
+          markDone(userId ?? GUEST, cur.tour.kind);
           if (cur.tour.kind === "welcome") {
             try {
               sessionStorage.setItem(SKIP_PATH_KEY, window.location.pathname);
@@ -94,15 +100,24 @@ export function TourHost({ userId }: { userId: string | null }) {
     return () => window.removeEventListener(TOUR_EVENT, onStart);
   }, [start]);
 
-  // Automatic start: welcome tour first, then each area's tour on its first visit.
+  // Automatic start: welcome tour first, then (members only) each area's tour on its first visit.
   useEffect(() => {
-    if (!userId || active) return;
+    if (active) return;
     const area = areaForPath(pathname);
     if (searchParams?.get("tour") === "1" && area) {
       const params = new URLSearchParams(searchParams.toString());
       params.delete("tour");
+      const kind = area.key;
       router.replace((pathname + (params.size ? `?${params}` : "")) as never, { scroll: false });
-      const t = setTimeout(() => start(area.key), 500);
+      // Not cleared on purpose: removing `?tour=1` re-runs this effect before the timer fires.
+      window.setTimeout(() => start(kind), 500);
+      return;
+    }
+    if (!autoStart) return;
+    if (!userId) {
+      // Guests: on the start page or in an area – never over invite, legal or help pages.
+      if ((pathname !== "/" && !area) || isDone(GUEST, "welcome")) return;
+      const t = setTimeout(() => start("welcome"), 900);
       return () => clearTimeout(t);
     }
     if (!area) return;
@@ -110,7 +125,8 @@ export function TourHost({ userId }: { userId: string | null }) {
     try {
       skipPath = sessionStorage.getItem(SKIP_PATH_KEY);
     } catch {}
-    if (!isDone(userId, "welcome")) {
+    // Seen as a guest on this device already? Then the new account skips straight to the area tours.
+    if (!isDone(userId, "welcome") && !isDone(GUEST, "welcome")) {
       const t = setTimeout(() => start("welcome"), 900);
       return () => clearTimeout(t);
     }
@@ -119,7 +135,7 @@ export function TourHost({ userId }: { userId: string | null }) {
       const t = setTimeout(() => start(area.key), 900);
       return () => clearTimeout(t);
     }
-  }, [pathname, searchParams, userId, active, start, router]);
+  }, [pathname, searchParams, userId, autoStart, active, start, router]);
 
   const step = active ? active.tour.steps[active.step] : null;
 

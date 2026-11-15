@@ -36,7 +36,7 @@ export const WELCOME_TOUR: Tour = {
     { target: tab("gemeinschaft"), pose: "point", title: "Gemeinschaft", text: "Beiträge, Gruppen mit eigenem Chat und Treffen in deiner Nähe." },
     { target: tab("ich"), pose: "point", title: "Ich", text: "Dein Profil, Freunde, Nachrichten, Tagebuch und Einstellungen." },
     { target: "help", pose: "point", title: "Das Fragezeichen", text: "Hier kann ich dir alles jederzeit nochmal zeigen." },
-    { pose: "celebrate", title: "Geschafft!", text: "In jedem Bereich zeig ich dir beim ersten Öffnen noch alles genauer." },
+    { pose: "celebrate", title: "Geschafft!", text: "Über das Fragezeichen oben zeig ich dir in jedem Bereich alles noch genauer." },
   ],
 };
 
@@ -114,6 +114,18 @@ export const AREA_TOURS: Record<AreaKey, Tour> = {
   },
 };
 
-export function tourFor(kind: TourKind): Tour {
-  return kind === "welcome" ? WELCOME_TOUR : AREA_TOURS[kind];
+/** The welcome tour for visitors who are not signed in: same tour, guest wording for "Ich" and the ending. */
+const GUEST_WELCOME_TOUR: Tour = {
+  ...WELCOME_TOUR,
+  steps: WELCOME_TOUR.steps.map((step) => {
+    if (step.title === "Ich") return { ...step, text: "Hier meldest du dich an – oder legst in einer Minute ein kostenloses Konto an." };
+    if (step.title === "Geschafft!")
+      return { ...step, text: "Lesen geht sofort. Mit einem kostenlosen Konto kannst du mitbeten, schreiben und Freunde finden." };
+    return step;
+  }),
+};
+
+export function tourFor(kind: TourKind, signedIn = true): Tour {
+  if (kind === "welcome") return signedIn ? WELCOME_TOUR : GUEST_WELCOME_TOUR;
+  return AREA_TOURS[kind];
 }

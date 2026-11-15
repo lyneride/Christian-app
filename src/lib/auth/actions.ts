@@ -10,6 +10,7 @@ import { loginSchema, registerSchema, requestPasswordResetSchema, resetPasswordS
 import { getCurrentUser } from "./dal";
 import { hashPassword, passwordProblems, verifyPassword } from "./password";
 import { clientIp, formatRetryAfter, rateLimit } from "./rate-limit";
+import { startOnboarding } from "./onboarding";
 import { createSession, destroyAllSessions, destroySession } from "./session";
 import { befriendViaInvite, findInviter } from "@/lib/friends/invites";
 import { hashToken, randomToken } from "./tokens";
@@ -191,6 +192,8 @@ export async function register(_prev: AuthFormState, formData: FormData): Promis
     }
 
     await createSession(user.id, { remember: true, userAgent: await userAgent() });
+    // Brand-new account: Rebi's tours may start by themselves on this device.
+    await startOnboarding(user.id);
 
     // Came in through a friend's invite link: become friends right away.
     const invite = formData.get("invite");

@@ -8,6 +8,7 @@ import { getCurrentUser } from "@/lib/auth/dal";
 import { totalUnreadMessages } from "@/lib/messages/queries";
 import { countIncomingRequests } from "@/lib/friends/queries";
 import { TourHost } from "@/components/tour/tour-host";
+import { isOnboarding } from "@/lib/auth/onboarding";
 
 /** Reads the user once per request (memoised) so both navigations know about badges. */
 async function navState() {
@@ -27,7 +28,9 @@ async function BottomNavForUser() {
 
 async function TourHostForUser() {
   const user = await getCurrentUser();
-  return <TourHost userId={user?.id ?? null} />;
+  // Guests get the welcome tour once; members only right after registering (see onboarding.ts).
+  const autoStart = user ? await isOnboarding(user.id) : true;
+  return <TourHost userId={user?.id ?? null} autoStart={autoStart} />;
 }
 
 export default function SiteLayout({ children }: LayoutProps<"/">) {
