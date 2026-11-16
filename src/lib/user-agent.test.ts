@@ -18,6 +18,10 @@ describe("describeUserAgent", () => {
     ).toBe("Chrome auf Android");
   });
 
+  it("shows the terminal app by its own label", () => {
+    expect(describeUserAgent("Bleibe-Terminal (iPhone 8)")).toBe("Bleibe-Terminal (iPhone 8)");
+  });
+
   it("falls back gracefully", () => {
     expect(describeUserAgent(null)).toBe("Unbekanntes Gerät");
     expect(describeUserAgent("")).toBe("Unbekanntes Gerät");

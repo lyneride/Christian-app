@@ -1,6 +1,8 @@
 /** Short German device description from a User-Agent string, e.g. "Chrome auf Windows". */
 export function describeUserAgent(ua: string | null | undefined): string {
   if (!ua) return "Unbekanntes Gerät";
+  // The native terminal app labels its sessions itself, e.g. "Bleibe-Terminal (iPhone 8)".
+  if (ua.startsWith("Bleibe-Terminal")) return ua.slice(0, 60);
   const browser = /Edg(e|A|iOS)?\//.test(ua)
     ? "Edge"
     : /OPR\/|Opera/.test(ua)
